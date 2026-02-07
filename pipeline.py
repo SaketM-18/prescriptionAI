@@ -1,8 +1,12 @@
 import pytesseract
 from PIL import Image
+import json, os
 from google import genai
 
-client = genai.Client(api_key="AIzaSyCvphqIp4rjmJKjwD4kqJORPo_nz0lW1zc")
+with open("key.json") as f:
+    key_data = json.load(f)
+
+client = genai.Client(api_key=key_data["api_key"])
 
 
 def extract_text(image_path):

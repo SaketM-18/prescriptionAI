@@ -203,43 +203,97 @@
         }
 
         /* Results */
+        /* Results */
         .results-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
-            gap: 2px;
-            background: var(--black);
-            /* creates borders */
-            border: 2px solid var(--black);
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 25px;
+            margin-top: 40px;
         }
 
         .med-card {
             background: var(--white);
-            padding: 40px;
-            transition: background 0.3s;
+            padding: 0;
+            border: 3px solid var(--black);
+            transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            position: relative;
+            overflow: hidden;
+            box-shadow: 10px 10px 0px rgba(0, 0, 0, 0.1);
+        }
+
+        body.dark-mode .med-card {
+            box-shadow: 10px 10px 0px rgba(255, 255, 255, 0.1);
+            border-color: var(--white);
         }
 
         .med-card:hover {
-            background: #f0f8ff;
+            transform: translate(-4px, -4px);
+            box-shadow: 14px 14px 0px var(--accent);
+        }
+
+        .med-header {
+            background: var(--black);
+            color: var(--white);
+            padding: 20px 30px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            border-bottom: 3px solid var(--black);
+        }
+
+        body.dark-mode .med-header {
+            background: var(--white);
+            color: var(--black);
+            border-bottom-color: var(--white);
+        }
+
+        .med-icon {
+            font-size: 1.5rem;
         }
 
         .med-name {
-            font-size: 2rem;
-            margin-bottom: 20px;
-            color: var(--accent);
+            font-size: 1.8rem;
+            font-weight: 900;
+            margin: 0;
+            text-transform: uppercase;
+        }
+
+        .med-details-grid {
+            padding: 30px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 25px;
+        }
+
+        .detail-item {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .detail-item.full-width {
+            grid-column: span 2;
+            border-top: 2px dashed var(--gray);
+            padding-top: 15px;
+            margin-top: 5px;
+        }
+
+        body.dark-mode .detail-item.full-width {
+            border-top-color: #333;
         }
 
         .label {
-            font-size: 0.8rem;
+            font-size: 0.75rem;
             text-transform: uppercase;
             font-weight: 900;
             color: var(--text-gray);
-            display: block;
-            margin-top: 15px;
+            letter-spacing: 1px;
         }
 
         .value {
             font-size: 1.1rem;
             font-weight: 600;
+            color: var(--black);
         }
 
         /* Loading */
@@ -467,9 +521,11 @@
                 <label class="label">LANGUAGE</label>
                 <select name="language">
                     <option value="English">English</option>
-                    <option value="Hindi">Hindi</option>
-                    <option value="Tamil">Tamil</option>
-                    <option value="Telugu">Telugu</option>
+                    <option value="Hindi">हिन्दी</option>
+                    <option value="Kannada">ಕನ್ನಡ</option>
+                    <option value="Tamil">தமிழ்</option>
+                    <option value="Telugu">తెలుగు</option>
+                    <option value="Malayalam">മലയാളം</option>
                 </select>
 
                 <label class="label">FILE</label>
@@ -498,25 +554,29 @@
         <div class="results-grid">
             {% for med in (translated if translated else english) %}
             <div class="med-card">
-                <div class="med-name">{{ med.name }}</div>
-                <div><span class="label">PURPOSE</span>
-                    <div class="value">{{ med.purpose }}</div>
+                <div class="med-header">
+                    <div class="med-icon"></div>
+                    <div class="med-name">{{ med.name }}</div>
                 </div>
-                <div><span class="label">DOSAGE</span>
-                    <div class="value">{{ med.dosage }}</div>
+
+                <div class="med-details-grid">
+                    <div class="detail-item">
+                        <span class="label">PURPOSE</span>
+                        <div class="value">{{ med.purpose }}</div>
+                    </div>
+                    <div class="detail-item">
+                        <span class="label">DOSAGE</span>
+                        <div class="value">{{ med.dosage }}</div>
+                    </div>
+                    <div class="detail-item">
+                        <span class="label">TIMING</span>
+                        <div class="value">{{ med.timing }}</div>
+                    </div>
+                    <div class="detail-item full-width">
+                        <span class="label" style="color: var(--accent)">WARNING</span>
+                        <div class="value">{{ med.warnings }}</div>
+                    </div>
                 </div>
-                <div><span class="label">TIMING</span>
-                    <div class="value">{{ med.timing }}</div>
-                </div>
-                <div><span class="label">WARNING</span>
-                    <div class="value" style="color:red">{{ med.warnings }}</div>
-                </div>
-                {% if med.generic_alternative %}
-                <div style="margin-top: 15px; border-top: 1px dashed #ccc; padding-top: 10px;">
-                    <span class="label" style="color: var(--accent)">💰 COST SAVER</span>
-                    <div class="value">{{ med.generic_alternative }}</div>
-                </div>
-                {% endif %}
             </div>
             {% endfor %}
         </div>
