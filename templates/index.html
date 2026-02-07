@@ -4,25 +4,35 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ClearScript - Medical AI</title>
+    <title>ClearScript AI</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;600&family=Syne:wght@400;600;700;800&display=swap"
+        rel="stylesheet">
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;900&display=swap');
-
         :root {
-            --black: #000000;
-            --white: #ffffff;
-            --accent: #2962ff;
+            --bg: #030303;
+            --text: #ffffff;
+            --accent: #3b82f6;
             /* Electric Blue */
-            --gray: #f4f4f4;
-            --text-gray: #666;
+            --card-bg: rgba(255, 255, 255, 0.03);
+            --border: rgba(255, 255, 255, 0.1);
+            --font-heading: 'Syne', sans-serif;
+            --font-body: 'Manrope', sans-serif;
         }
 
         body {
-            font-family: 'Inter', sans-serif;
-            background-color: var(--white);
-            color: var(--black);
+            font-family: var(--font-body);
+            background-color: var(--bg);
+            background-image:
+                linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+            background-size: 50px 50px;
+            color: var(--text);
             margin: 0;
-            padding: 0;
+            padding: 20px;
+            min-height: 100vh;
             overflow-x: hidden;
             -webkit-font-smoothing: antialiased;
         }
@@ -30,30 +40,40 @@
         /* Typography */
         h1,
         h2,
-        h3 {
-            font-weight: 900;
-            letter-spacing: -0.05em;
+        h3,
+        .brand,
+        .med-name {
+            font-weight: 800;
             text-transform: uppercase;
+            letter-spacing: -0.03em;
             margin: 0;
         }
 
         h1 {
-            font-size: 8vw;
-            line-height: 0.9;
+            font-size: 10vw;
+            line-height: 0.85;
+            color: var(--text);
+            mix-blend-mode: exclusion;
+        }
+
+        h2 {
+            font-size: 3rem;
+            margin-bottom: 20px;
         }
 
         p {
-            font-size: 1.2rem;
+            font-size: 1.25rem;
             line-height: 1.6;
-            color: var(--text-gray);
+            color: rgba(255, 255, 255, 0.7);
             max-width: 600px;
+            font-weight: 300;
         }
 
         /* Layout */
         .container {
-            max-width: 1400px;
+            max-width: 1600px;
             margin: 0 auto;
-            padding: 40px 20px;
+            padding: 0 40px;
         }
 
         header {
@@ -61,84 +81,71 @@
             justify-content: space-between;
             align-items: center;
             padding: 40px 0;
-            border-bottom: 2px solid var(--black);
+            border-bottom: 1px solid var(--border);
             margin-bottom: 80px;
         }
 
         .brand {
             font-size: 1.5rem;
-            font-weight: 900;
+            font-weight: 800;
             letter-spacing: -0.05em;
         }
 
-        /* Hero Section */
+        /* Hero */
         .hero {
             display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 40px;
+            grid-template-columns: 1.5fr 1fr;
+            gap: 60px;
             align-items: center;
-            margin-bottom: 150px;
+            min-height: 70vh;
         }
 
         .hero-text h1 span {
             display: block;
             color: var(--accent);
+            -webkit-text-stroke: 2px var(--accent);
+            color: transparent;
         }
 
         .hero-visual {
-            position: relative;
-            height: 500px;
-            background: var(--gray);
-            border-radius: 0;
-            overflow: hidden;
+            height: 100%;
+            border: 1px solid var(--border);
             display: flex;
             align-items: center;
             justify-content: center;
+            background: rgba(255, 255, 255, 0.02);
         }
 
         /* Interactions */
         .upload-trigger {
-            display: inline-block;
-            background: var(--black);
-            color: var(--white);
-            padding: 25px 60px;
-            font-size: 1.5rem;
-            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--text);
+            color: var(--bg);
+            padding: 25px 50px;
+            font-size: 1.2rem;
+            font-weight: 700;
             border: none;
             cursor: pointer;
-            margin-top: 40px;
-            transition: transform 0.3s cubic-bezier(0.165, 0.84, 0.44, 1);
-            position: relative;
-            overflow: hidden;
-        }
-
-        .upload-trigger::after {
-            content: "→";
-            position: absolute;
-            right: 30px;
-            opacity: 0;
-            transition: all 0.3s;
+            margin-top: 50px;
+            transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+            text-transform: uppercase;
         }
 
         .upload-trigger:hover {
-            padding-right: 80px;
-            transform: scale(1.05);
+            background: var(--accent);
+            color: var(--text);
+            padding-right: 70px;
         }
 
-        .upload-trigger:hover::after {
-            opacity: 1;
-            right: 40px;
-        }
-
-        /* Form Hidden by Default */
+        /* Form Overlay */
         #upload-form {
             display: none;
             position: fixed;
-            top: 0;
-            left: 0;
-            width: 100vw;
-            height: 100vh;
-            background: rgba(255, 255, 255, 0.98);
+            inset: 0;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(20px);
             z-index: 999;
             justify-content: center;
             align-items: center;
@@ -147,8 +154,9 @@
         .form-content {
             width: 100%;
             max-width: 500px;
-            padding: 40px;
-            border: 4px solid var(--black);
+            padding: 60px;
+            background: var(--bg);
+            border: 1px solid var(--border);
         }
 
         input[type="file"],
@@ -156,11 +164,15 @@
             width: 100%;
             padding: 20px;
             margin-bottom: 20px;
-            border: 2px solid var(--black);
-            font-family: 'Inter', sans-serif;
-            font-size: 1rem;
-            font-weight: 600;
+            border: 1px solid var(--border);
             background: transparent;
+            color: var(--text);
+            font-family: var(--font-body);
+            font-size: 1rem;
+        }
+
+        select option {
+            background: var(--bg);
         }
 
         /* How It Works - Marquee Style */
@@ -203,112 +215,76 @@
         }
 
         /* Results */
-        /* Results */
         .results-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
-            gap: 25px;
-            margin-top: 40px;
+            gap: 40px;
+            margin-top: 60px;
         }
 
         .med-card {
-            background: var(--white);
+            background: var(--card-bg);
+            border: 1px solid var(--border);
             padding: 0;
-            border: 3px solid var(--black);
-            transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            transition: all 0.5s;
             position: relative;
-            overflow: hidden;
-            box-shadow: 10px 10px 0px rgba(0, 0, 0, 0.1);
-        }
-
-        body.dark-mode .med-card {
-            box-shadow: 10px 10px 0px rgba(255, 255, 255, 0.1);
-            border-color: var(--white);
         }
 
         .med-card:hover {
-            transform: translate(-4px, -4px);
-            box-shadow: 14px 14px 0px var(--accent);
+            border-color: var(--accent);
+            transform: translateY(-10px);
+            background: rgba(59, 130, 246, 0.05);
         }
 
         .med-header {
-            background: var(--black);
-            color: var(--white);
-            padding: 20px 30px;
+            padding: 30px;
+            border-bottom: 1px solid var(--border);
             display: flex;
             align-items: center;
-            gap: 15px;
-            border-bottom: 3px solid var(--black);
-        }
-
-        body.dark-mode .med-header {
-            background: var(--white);
-            color: var(--black);
-            border-bottom-color: var(--white);
-        }
-
-        .med-icon {
-            font-size: 1.5rem;
+            gap: 20px;
         }
 
         .med-name {
-            font-size: 1.8rem;
-            font-weight: 900;
-            margin: 0;
-            text-transform: uppercase;
+            font-size: 2rem;
+            color: var(--text);
         }
 
         .med-details-grid {
             padding: 30px;
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 25px;
-        }
-
-        .detail-item {
-            display: flex;
-            flex-direction: column;
-            gap: 5px;
-        }
-
-        .detail-item.full-width {
-            grid-column: span 2;
-            border-top: 2px dashed var(--gray);
-            padding-top: 15px;
-            margin-top: 5px;
-        }
-
-        body.dark-mode .detail-item.full-width {
-            border-top-color: #333;
+            gap: 30px;
         }
 
         .label {
-            font-size: 0.75rem;
+            font-size: 0.7rem;
             text-transform: uppercase;
-            font-weight: 900;
-            color: var(--text-gray);
-            letter-spacing: 1px;
+            letter-spacing: 2px;
+            color: var(--accent);
+            margin-bottom: 8px;
+            display: block;
+            font-weight: 700;
         }
 
         .value {
             font-size: 1.1rem;
-            font-weight: 600;
-            color: var(--black);
+            color: var(--text);
+            font-weight: 300;
+        }
+
+        .value[style*="font-size"] {
+            letter-spacing: 2px;
         }
 
         /* Loading */
         #loading {
             position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: var(--black);
-            color: var(--white);
+            inset: 0;
+            background: var(--bg);
+            color: var(--text);
             display: none;
             justify-content: center;
             align-items: center;
-            flex-direction: column;
             z-index: 1000;
         }
 
@@ -450,21 +426,7 @@
 </head>
 
 <body>
-    <!-- Theme Toggle -->
-    <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle Dark Mode">🌓</button>
 
-    <script>
-        function toggleTheme() {
-            document.body.classList.toggle('dark-mode');
-            const isDark = document.body.classList.contains('dark-mode');
-            localStorage.setItem('theme', isDark ? 'dark' : 'light');
-        }
-
-        // Load saved theme
-        if (localStorage.getItem('theme') === 'dark') {
-            document.body.classList.add('dark-mode');
-        }
-    </script>
 
     <div id="loading">
         <div class="typewriter">
@@ -485,20 +447,72 @@
                     engine handle the rest.</p>
                 <button class="upload-trigger" onclick="showForm()">START ANALYSIS</button>
             </div>
-            <div class="hero-visual">
-                <!-- Abstract visual or large type -->
-                <svg width="200" height="200" viewBox="0 0 100 100">
-                    <circle cx="50" cy="50" r="40" stroke="black" stroke-width="2" fill="none" />
-                    <line x1="50" y1="10" x2="50" y2="90" stroke="black" stroke-width="2">
-                        <animateTransform attributeName="transform" type="rotate" from="0 50 50" to="360 50 50"
-                            dur="10s" repeatCount="indefinite" />
-                    </line>
-                    <line x1="10" y1="50" x2="90" y2="50" stroke="black" stroke-width="2">
-                        <animateTransform attributeName="transform" type="rotate" from="0 50 50" to="-360 50 50"
-                            dur="15s" repeatCount="indefinite" />
-                    </line>
-                </svg>
+            <div class="pill-container">
+                <div class="glass-pill">
+                    <div class="pill-core"></div>
+                    <div class="pill-highlight"></div>
+                </div>
             </div>
+
+            <style>
+                .pill-container {
+                    perspective: 1000px;
+                    width: 300px;
+                    height: 300px;
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
+                }
+
+                .glass-pill {
+                    width: 120px;
+                    height: 240px;
+                    background: rgba(255, 255, 255, 0.05);
+                    border-radius: 100px;
+                    border: 1px solid rgba(255, 255, 255, 0.2);
+                    box-shadow:
+                        0 0 20px rgba(59, 130, 246, 0.3),
+                        inset 0 0 20px rgba(255, 255, 255, 0.1);
+                    backdrop-filter: blur(5px);
+                    position: relative;
+                    transform-style: preserve-3d;
+                    animation: tumble 15s linear infinite;
+                }
+
+                .pill-core {
+                    position: absolute;
+                    top: 10px;
+                    left: 10px;
+                    right: 10px;
+                    bottom: 10px;
+                    border-radius: 90px;
+                    background: linear-gradient(180deg, var(--accent) 50%, #ffffff 50%);
+                    filter: blur(10px);
+                    opacity: 0.8;
+                    transform: translateZ(-10px);
+                }
+
+                .pill-highlight {
+                    position: absolute;
+                    top: 0;
+                    left: 0;
+                    width: 100%;
+                    height: 100%;
+                    border-radius: 100px;
+                    background: linear-gradient(135deg, rgba(255, 255, 255, 0.4) 0%, transparent 40%, rgba(255, 255, 255, 0.1) 100%);
+                    mix-blend-mode: overlay;
+                }
+
+                @keyframes tumble {
+                    0% {
+                        transform: rotateX(0deg) rotateY(0deg) rotateZ(0deg);
+                    }
+
+                    100% {
+                        transform: rotateX(360deg) rotateY(180deg) rotateZ(360deg);
+                    }
+                }
+            </style>
         </section>
     </div>
 
@@ -566,7 +580,9 @@
                     </div>
                     <div class="detail-item">
                         <span class="label">DOSAGE</span>
-                        <div class="value">{{ med.dosage }}</div>
+                        <div class="value" style="font-size: 1.4rem;">
+                            {{ med.visual_timing | default(med.dosage) }}
+                        </div>
                     </div>
                     <div class="detail-item">
                         <span class="label">TIMING</span>
