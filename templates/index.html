@@ -8,7 +8,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link
-        href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;600&family=Syne:wght@400;600;700;800&display=swap"
+        href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;600;800&family=Syne:wght@400;600;700;800&display=swap"
         rel="stylesheet">
     <style>
         :root {
@@ -192,16 +192,20 @@
 
         .step-item {
             flex-shrink: 0;
-            font-size: 4rem;
-            font-weight: 900;
+            font-family: var(--font-body);
+            font-size: 5rem;
+            font-weight: 800;
             color: transparent;
-            -webkit-text-stroke: 2px var(--white);
-            transition: color 0.3s;
+            -webkit-text-stroke: 1px rgba(255, 255, 255, 0.5);
+            transition: all 0.8s ease-in-out;
+            cursor: default;
         }
 
         .step-item:hover {
             color: var(--accent);
-            -webkit-text-stroke: 2px var(--accent);
+            -webkit-text-stroke: 1px var(--accent);
+            opacity: 1;
+            transform: scale(1.02);
         }
 
         @keyframes marquee {
@@ -447,72 +451,107 @@
                     engine handle the rest.</p>
                 <button class="upload-trigger" onclick="showForm()">START ANALYSIS</button>
             </div>
-            <div class="pill-container">
-                <div class="glass-pill">
-                    <div class="pill-core"></div>
-                    <div class="pill-highlight"></div>
-                </div>
-            </div>
+            <div id="pill-canvas"></div>
 
-            <style>
-                .pill-container {
-                    perspective: 1000px;
-                    width: 300px;
-                    height: 300px;
-                    display: flex;
-                    justify-content: center;
-                    align-items: center;
+            <!-- Three.js Implementation -->
+            <script type="module">
+                import * as THREE from 'https://cdn.skypack.dev/three@0.136.0';
+
+                const container = document.getElementById('pill-canvas');
+
+                // Scene Setup
+                const scene = new THREE.Scene();
+                const camera = new THREE.PerspectiveCamera(45, 1, 0.1, 100);
+                camera.position.z = 3.5;
+
+                const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+                renderer.setSize(400, 400);
+                renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+                renderer.toneMapping = THREE.ACESFilmicToneMapping;
+                renderer.outputEncoding = THREE.sRGBEncoding;
+                container.appendChild(renderer.domElement);
+
+                // Lighting
+                const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
+                scene.add(ambientLight);
+
+                const dirLight = new THREE.DirectionalLight(0xffffff, 2);
+                dirLight.position.set(5, 5, 5);
+                scene.add(dirLight);
+
+                const blueLight = new THREE.PointLight(0x3b82f6, 5, 10);
+                blueLight.position.set(-2, 2, 2);
+                scene.add(blueLight);
+
+                // Pill Group
+                const pillGroup = new THREE.Group();
+                scene.add(pillGroup);
+
+                // Geometries
+                const radius = 0.6;
+                const length = 1.2;
+
+                // Materials
+                const whiteMaterial = new THREE.MeshPhysicalMaterial({
+                    color: 0xffffff,
+                    metalness: 0,
+                    roughness: 0.1,
+                    clearcoat: 1.0,
+                    clearcoatRoughness: 0.1
+                });
+
+                const blueMaterial = new THREE.MeshPhysicalMaterial({
+                    color: 0x3b82f6,
+                    metalness: 0.2,
+                    roughness: 0.2,
+                    clearcoat: 1.0,
+                    clearcoatRoughness: 0.1,
+                    emissive: 0x1d4ed8,
+                    emissiveIntensity: 0.2
+                });
+
+                // Left Hemisphere (Blue)
+                const sphereGeo = new THREE.SphereGeometry(radius, 32, 32, 0, Math.PI * 2, 0, Math.PI / 2);
+                const blueEnd = new THREE.Mesh(sphereGeo, blueMaterial);
+                blueEnd.rotation.x = -Math.PI / 2;
+                blueEnd.position.y = length / 4;
+                pillGroup.add(blueEnd);
+
+                // Right Hemisphere (White)
+                const whiteEnd = new THREE.Mesh(sphereGeo, whiteMaterial);
+                whiteEnd.rotation.x = Math.PI / 2;
+                whiteEnd.position.y = -length / 4;
+                pillGroup.add(whiteEnd);
+
+                // Cylinder Body (Split)
+                const cylBlue = new THREE.Mesh(new THREE.CylinderGeometry(radius, radius, length / 2, 32), blueMaterial);
+                cylBlue.position.y = length / 8;
+                pillGroup.add(cylBlue);
+
+                const cylWhite = new THREE.Mesh(new THREE.CylinderGeometry(radius, radius, length / 2, 32), whiteMaterial);
+                cylWhite.position.y = -length / 8;
+                pillGroup.add(cylWhite);
+
+                // Animation Loop
+                const clock = new THREE.Clock();
+
+                function animate() {
+                    requestAnimationFrame(animate);
+                    const t = clock.getElapsedTime();
+
+                    // Floating
+                    pillGroup.position.y = Math.sin(t * 1.5) * 0.1;
+
+                    // Rotation (Complex Tumble)
+                    pillGroup.rotation.z = Math.PI / 4 + Math.sin(t * 0.5) * 0.2;
+                    pillGroup.rotation.x = t * 0.5;
+                    pillGroup.rotation.y = t * 0.8;
+
+                    renderer.render(scene, camera);
                 }
 
-                .glass-pill {
-                    width: 120px;
-                    height: 240px;
-                    background: rgba(255, 255, 255, 0.05);
-                    border-radius: 100px;
-                    border: 1px solid rgba(255, 255, 255, 0.2);
-                    box-shadow:
-                        0 0 20px rgba(59, 130, 246, 0.3),
-                        inset 0 0 20px rgba(255, 255, 255, 0.1);
-                    backdrop-filter: blur(5px);
-                    position: relative;
-                    transform-style: preserve-3d;
-                    animation: tumble 15s linear infinite;
-                }
-
-                .pill-core {
-                    position: absolute;
-                    top: 10px;
-                    left: 10px;
-                    right: 10px;
-                    bottom: 10px;
-                    border-radius: 90px;
-                    background: linear-gradient(180deg, var(--accent) 50%, #ffffff 50%);
-                    filter: blur(10px);
-                    opacity: 0.8;
-                    transform: translateZ(-10px);
-                }
-
-                .pill-highlight {
-                    position: absolute;
-                    top: 0;
-                    left: 0;
-                    width: 100%;
-                    height: 100%;
-                    border-radius: 100px;
-                    background: linear-gradient(135deg, rgba(255, 255, 255, 0.4) 0%, transparent 40%, rgba(255, 255, 255, 0.1) 100%);
-                    mix-blend-mode: overlay;
-                }
-
-                @keyframes tumble {
-                    0% {
-                        transform: rotateX(0deg) rotateY(0deg) rotateZ(0deg);
-                    }
-
-                    100% {
-                        transform: rotateX(360deg) rotateY(180deg) rotateZ(360deg);
-                    }
-                }
-            </style>
+                animate();
+            </script>
         </section>
     </div>
 
