@@ -8,32 +8,32 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link
-        href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;600;800&family=Syne:wght@400;600;700;800&display=swap"
+        href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;700&family=Merriweather:wght@300;400;700;900&display=swap"
         rel="stylesheet">
     <style>
         :root {
-            --bg: #030303;
-            --text: #ffffff;
-            --accent: #3b82f6;
-            /* Electric Blue */
-            --card-bg: rgba(255, 255, 255, 0.03);
-            --border: rgba(255, 255, 255, 0.1);
-            --font-heading: 'Syne', sans-serif;
+            --bg: #f9f9f9;
+            /* Paper White */
+            --text: #2d2d2d;
+            /* Charcoal */
+            --accent: #1a3c5e;
+            /* Trust Blue (Deep) */
+            --secondary: #3b82f6;
+            /* Action Blue (Bright) */
+            --card-bg: #ffffff;
+            --border: #e5e7eb;
+            --font-heading: 'Merriweather', serif;
             --font-body: 'Manrope', sans-serif;
         }
 
         body {
             font-family: var(--font-body);
             background-color: var(--bg);
-            background-image:
-                linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
-            background-size: 50px 50px;
             color: var(--text);
             margin: 0;
-            padding: 20px;
+            padding: 0;
             min-height: 100vh;
-            overflow-x: hidden;
+            line-height: 1.6;
             -webkit-font-smoothing: antialiased;
         }
 
@@ -41,102 +41,95 @@
         h1,
         h2,
         h3,
-        .brand,
-        .med-name {
-            font-weight: 800;
-            text-transform: uppercase;
-            letter-spacing: -0.03em;
+        .brand {
+            font-family: var(--font-heading);
+            font-weight: 900;
+            color: var(--accent);
+            text-transform: none;
+            /* Sentence case is more journalistic */
+            letter-spacing: -0.01em;
             margin: 0;
         }
 
         h1 {
-            font-size: 10vw;
-            line-height: 0.85;
-            color: var(--text);
-            mix-blend-mode: exclusion;
+            font-size: 4rem;
+            line-height: 1.2;
+            margin-bottom: 25px;
         }
 
         h2 {
-            font-size: 3rem;
+            font-size: 2rem;
             margin-bottom: 20px;
+            border-bottom: 3px solid var(--secondary);
+            display: inline-block;
+            padding-bottom: 5px;
         }
 
         p {
-            font-size: 1.25rem;
-            line-height: 1.6;
-            color: rgba(255, 255, 255, 0.7);
-            max-width: 600px;
-            font-weight: 300;
+            font-size: 1.15rem;
+            color: #4b5563;
+            max-width: 650px;
+            margin-bottom: 30px;
         }
 
         /* Layout */
         .container {
-            max-width: 1600px;
+            max-width: 1200px;
             margin: 0 auto;
-            padding: 0 40px;
+            padding: 0 20px;
         }
 
         header {
+            background: var(--card-bg);
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+            padding: 20px 0;
+            margin-bottom: 60px;
+        }
+
+        .header-content {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 40px 0;
-            border-bottom: 1px solid var(--border);
-            margin-bottom: 80px;
         }
 
         .brand {
             font-size: 1.5rem;
-            font-weight: 800;
-            letter-spacing: -0.05em;
+            color: var(--accent);
         }
 
         /* Hero */
         .hero {
-            display: grid;
-            grid-template-columns: 1.5fr 1fr;
-            gap: 60px;
-            align-items: center;
-            min-height: 70vh;
-        }
-
-        .hero-text h1 span {
-            display: block;
-            color: var(--accent);
-            -webkit-text-stroke: 2px var(--accent);
-            color: transparent;
-        }
-
-        .hero-visual {
-            height: 100%;
-            border: 1px solid var(--border);
             display: flex;
+            flex-direction: row;
             align-items: center;
-            justify-content: center;
-            background: rgba(255, 255, 255, 0.02);
+            justify-content: space-between;
+            gap: 50px;
+            padding-bottom: 60px;
+            border-bottom: 1px solid var(--border);
+            margin-bottom: 60px;
         }
 
-        /* Interactions */
+        .hero-text {
+            flex: 1;
+        }
+
         .upload-trigger {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            background: var(--text);
-            color: var(--bg);
-            padding: 25px 50px;
-            font-size: 1.2rem;
+            display: inline-block;
+            background: var(--secondary);
+            color: white;
+            padding: 16px 32px;
+            font-size: 1.1rem;
             font-weight: 700;
             border: none;
             cursor: pointer;
-            margin-top: 50px;
-            transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+            border-radius: 4px;
+            transition: background 0.2s;
             text-transform: uppercase;
+            letter-spacing: 0.05em;
         }
 
         .upload-trigger:hover {
             background: var(--accent);
-            color: var(--text);
-            padding-right: 70px;
         }
 
         /* Form Overlay */
@@ -144,183 +137,139 @@
             display: none;
             position: fixed;
             inset: 0;
-            background: rgba(0, 0, 0, 0.8);
-            backdrop-filter: blur(20px);
+            background: rgba(255, 255, 255, 0.95);
+            /* Light overlay */
             z-index: 999;
             justify-content: center;
             align-items: center;
         }
 
         .form-content {
+            background: white;
+            padding: 40px;
             width: 100%;
             max-width: 500px;
-            padding: 60px;
-            background: var(--bg);
             border: 1px solid var(--border);
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.1);
         }
 
-        input[type="file"],
-        select {
-            width: 100%;
-            padding: 20px;
-            margin-bottom: 20px;
-            border: 1px solid var(--border);
-            background: transparent;
-            color: var(--text);
-            font-family: var(--font-body);
-            font-size: 1rem;
-        }
-
-        select option {
-            background: var(--bg);
-        }
-
-        /* How It Works - Marquee Style */
-        .marquee-section {
-            background: var(--black);
-            color: var(--white);
-            padding: 100px 0;
-            overflow: hidden;
-            margin-bottom: 100px;
-        }
-
-        .marquee-content {
-            display: flex;
-            gap: 80px;
-            animation: marquee 20s linear infinite;
-        }
-
-        .step-item {
-            flex-shrink: 0;
-            font-family: var(--font-body);
-            font-size: 5rem;
-            font-weight: 800;
-            color: transparent;
-            -webkit-text-stroke: 1px rgba(255, 255, 255, 0.5);
-            transition: all 0.8s ease-in-out;
-            cursor: default;
-        }
-
-        .step-item:hover {
+        .label {
+            display: block;
+            font-family: var(--font-heading);
+            font-weight: 700;
+            margin-bottom: 10px;
             color: var(--accent);
-            -webkit-text-stroke: 1px var(--accent);
-            opacity: 1;
-            transform: scale(1.02);
+            font-size: 0.9rem;
+            text-transform: uppercase;
         }
 
-        @keyframes marquee {
-            0% {
-                transform: translateX(0);
-            }
+        select,
+        input[type="file"] {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid var(--border);
+            border-radius: 4px;
+            font-family: var(--font-body);
+            margin-bottom: 25px;
+            background: #fdfdfd;
+        }
 
-            100% {
-                transform: translateX(-100%);
-            }
+        select:focus,
+        input:focus {
+            border-color: var(--secondary);
+            outline: none;
         }
 
         /* Results */
         .results-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
-            gap: 40px;
-            margin-top: 60px;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 30px;
+            margin-top: 40px;
         }
 
         .med-card {
-            background: var(--card-bg);
+            background: white;
             border: 1px solid var(--border);
+            border-top: 4px solid var(--accent);
             padding: 0;
-            transition: all 0.5s;
-            position: relative;
+            transition: transform 0.2s, box-shadow 0.2s;
         }
 
         .med-card:hover {
-            border-color: var(--accent);
-            transform: translateY(-10px);
-            background: rgba(59, 130, 246, 0.05);
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.05);
         }
 
         .med-header {
-            padding: 30px;
+            padding: 20px;
             border-bottom: 1px solid var(--border);
-            display: flex;
-            align-items: center;
-            gap: 20px;
+            background: #f8fafc;
         }
 
         .med-name {
-            font-size: 2rem;
+            font-size: 1.25rem;
             color: var(--text);
         }
 
         .med-details-grid {
-            padding: 30px;
+            padding: 20px;
             display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 30px;
+            gap: 15px;
         }
 
-        .label {
-            font-size: 0.7rem;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-            color: var(--accent);
-            margin-bottom: 8px;
-            display: block;
-            font-weight: 700;
+        .detail-item .label {
+            font-size: 0.75rem;
+            color: #6b7280;
+            margin-bottom: 4px;
         }
 
-        .value {
-            font-size: 1.1rem;
-            color: var(--text);
-            font-weight: 300;
-        }
-
-        .value[style*="font-size"] {
-            letter-spacing: 2px;
+        .detail-item .value {
+            font-size: 1rem;
+            font-weight: 500;
         }
 
         /* Loading */
         #loading {
+            display: none;
             position: fixed;
             inset: 0;
-            background: var(--bg);
-            color: var(--text);
-            display: none;
+            background: rgba(255, 255, 255, 0.9);
+            z-index: 1000;
             justify-content: center;
             align-items: center;
-            z-index: 1000;
+            flex-direction: column;
         }
 
-        .typewriter h2 {
-            overflow: hidden;
-            border-right: .15em solid var(--accent);
-            white-space: nowrap;
-            margin: 0 auto;
-            letter-spacing: .15em;
-            animation: typing 3.5s steps(40, end), blink-caret .75s step-end infinite;
-            font-size: 3rem;
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 4px solid var(--border);
+            border-top-color: var(--secondary);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-bottom: 20px;
         }
 
-        @keyframes typing {
-            from {
-                width: 0
-            }
-
+        @keyframes spin {
             to {
-                width: 100%
+                transform: rotate(360deg);
             }
         }
 
-        @keyframes blink-caret {
-
-            from,
-            to {
-                border-color: transparent
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 2.5rem;
             }
 
-            50% {
-                border-color: var(--accent);
+            .hero {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .header-content {
+                flex-direction: column;
+                gap: 20px;
             }
         }
 
@@ -434,209 +383,223 @@
 
     <div id="loading">
         <div class="typewriter">
-            <h2>ANALYZING SCRIPT...</h2>
+            <h2>{{ texts.analyzing }}</h2>
         </div>
     </div>
 
     <div class="container">
         <header>
             <div class="brand">CLEARSCRIPT.</div>
-            <div>AI POWERED PRECISION</div>
+            <div>{{ texts.brand_tagline }}</div>
         </header>
 
         <section class="hero">
             <div class="hero-text">
-                <h1>DECODE<br><span>YOUR HEALTH</span></h1>
-                <p>Advanced AI prescription analysis. Accuracy meets simplicity. Upload your prescription and let our
-                    engine handle the rest.</p>
-                <button class="upload-trigger" onclick="showForm()">START ANALYSIS</button>
+                <h1>{{ texts.hero_title|safe }}</h1>
+                <p>{{ texts.hero_desc }}</p>
+                <button class="upload-trigger" onclick="showForm()">{{ texts.start_btn }}</button>
             </div>
             <div id="pill-canvas"></div>
 
-            <!-- Three.js Implementation -->
-            <script type="module">
-                import * as THREE from 'https://cdn.skypack.dev/three@0.136.0';
-
-                const container = document.getElementById('pill-canvas');
-
-                // Scene Setup
-                const scene = new THREE.Scene();
-                const camera = new THREE.PerspectiveCamera(45, 1, 0.1, 100);
-                camera.position.z = 3.5;
-
-                const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
-                renderer.setSize(400, 400);
-                renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-                renderer.toneMapping = THREE.ACESFilmicToneMapping;
-                renderer.outputEncoding = THREE.sRGBEncoding;
-                container.appendChild(renderer.domElement);
-
-                // Lighting
-                const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
-                scene.add(ambientLight);
-
-                const dirLight = new THREE.DirectionalLight(0xffffff, 2);
-                dirLight.position.set(5, 5, 5);
-                scene.add(dirLight);
-
-                const blueLight = new THREE.PointLight(0x3b82f6, 5, 10);
-                blueLight.position.set(-2, 2, 2);
-                scene.add(blueLight);
-
-                // Pill Group
-                const pillGroup = new THREE.Group();
-                scene.add(pillGroup);
-
-                // Geometries
-                const radius = 0.6;
-                const length = 1.2;
-
-                // Materials
-                const whiteMaterial = new THREE.MeshPhysicalMaterial({
-                    color: 0xffffff,
-                    metalness: 0,
-                    roughness: 0.1,
-                    clearcoat: 1.0,
-                    clearcoatRoughness: 0.1
-                });
-
-                const blueMaterial = new THREE.MeshPhysicalMaterial({
-                    color: 0x3b82f6,
-                    metalness: 0.2,
-                    roughness: 0.2,
-                    clearcoat: 1.0,
-                    clearcoatRoughness: 0.1,
-                    emissive: 0x1d4ed8,
-                    emissiveIntensity: 0.2
-                });
-
-                // Left Hemisphere (Blue)
-                const sphereGeo = new THREE.SphereGeometry(radius, 32, 32, 0, Math.PI * 2, 0, Math.PI / 2);
-                const blueEnd = new THREE.Mesh(sphereGeo, blueMaterial);
-                blueEnd.rotation.x = -Math.PI / 2;
-                blueEnd.position.y = length / 4;
-                pillGroup.add(blueEnd);
-
-                // Right Hemisphere (White)
-                const whiteEnd = new THREE.Mesh(sphereGeo, whiteMaterial);
-                whiteEnd.rotation.x = Math.PI / 2;
-                whiteEnd.position.y = -length / 4;
-                pillGroup.add(whiteEnd);
-
-                // Cylinder Body (Split)
-                const cylBlue = new THREE.Mesh(new THREE.CylinderGeometry(radius, radius, length / 2, 32), blueMaterial);
-                cylBlue.position.y = length / 8;
-                pillGroup.add(cylBlue);
-
-                const cylWhite = new THREE.Mesh(new THREE.CylinderGeometry(radius, radius, length / 2, 32), whiteMaterial);
-                cylWhite.position.y = -length / 8;
-                pillGroup.add(cylWhite);
-
-                // Animation Loop
-                const clock = new THREE.Clock();
-
-                function animate() {
-                    requestAnimationFrame(animate);
-                    const t = clock.getElapsedTime();
-
-                    // Floating
-                    pillGroup.position.y = Math.sin(t * 1.5) * 0.1;
-
-                    // Rotation (Complex Tumble)
-                    pillGroup.rotation.z = Math.PI / 4 + Math.sin(t * 0.5) * 0.2;
-                    pillGroup.rotation.x = t * 0.5;
-                    pillGroup.rotation.y = t * 0.8;
-
-                    renderer.render(scene, camera);
-                }
-
-                animate();
-            </script>
         </section>
     </div>
 
-    <div class="marquee-section">
-        <div class="marquee-content">
-            <span class="step-item">1. UPLOAD SCAN</span>
-            <span class="step-item">2. SELECT LANGUAGE</span>
-            <span class="step-item">3. GET INSIGHTS</span>
-            <span class="step-item">1. UPLOAD SCAN</span>
-            <span class="step-item">2. SELECT LANGUAGE</span>
-            <span class="step-item">3. GET INSIGHTS</span>
-        </div>
-    </div>
+
 
     <!-- Hidden Upload Form Overlay -->
     <div id="upload-form" onclick="closeForm(event)">
         <div class="form-content">
-            <h2>UPLOAD DOCUMENT</h2>
+            <h2>{{ texts.upload_title }}</h2>
             <form method="POST" enctype="multipart/form-data" onsubmit="showLoading()">
-                <label class="label">LANGUAGE</label>
+                <label class="label">{{ texts.lang_label }}</label>
                 <select name="language">
-                    <option value="English">English</option>
-                    <option value="Hindi">हिन्दी</option>
-                    <option value="Kannada">ಕನ್ನಡ</option>
-                    <option value="Tamil">தமிழ்</option>
-                    <option value="Telugu">తెలుగు</option>
-                    <option value="Malayalam">മലയാളം</option>
+                    <option value="English" {% if language=='English' %}selected{% endif %}>English</option>
+                    <option value="Hindi" {% if language=='Hindi' %}selected{% endif %}>हिन्दी</option>
+                    <option value="Kannada" {% if language=='Kannada' %}selected{% endif %}>ಕನ್ನಡ</option>
+                    <option value="Tamil" {% if language=='Tamil' %}selected{% endif %}>தமிழ்</option>
+                    <option value="Telugu" {% if language=='Telugu' %}selected{% endif %}>తెలుగు</option>
+                    <option value="Malayalam" {% if language=='Malayalam' %}selected{% endif %}>മലയാളം</option>
                 </select>
 
-                <label class="label">FILE</label>
+                <label class="label">{{ texts.file_label }}</label>
                 <input type="file" name="image" required accept="image/*">
 
-                <button type="submit" class="upload-trigger" style="width:100%">PROCESS</button>
+                <button type="submit" class="upload-trigger" style="width:100%">{{ texts.process_btn }}</button>
             </form>
         </div>
     </div>
 
-    <!-- Results Section -->
+    <!-- Results Section (Wizard/Card Stack) -->
     {% if translated or english %}
-    <div class="container" id="results">
-        <div style="margin-bottom: 40px;">
-            <h2>ANALYSIS REPORT</h2>
-            <p>Generated for {{ language }}</p>
+    <div class="container" id="results" style="max-width: 600px; padding-bottom: 120px;">
+
+        <!-- Header / Audio Control -->
+        <div style="text-align: center; margin-bottom: 30px;">
+            <h2 style="font-size: 1.5rem; color: var(--text); margin-bottom: 10px; border:none; display:block;">
+                {{ texts.report_title }}</h2>
+
             {% if audio_path %}
-            <div style="margin-top: 20px;">
-                <audio controls style="width: 100%; filter: invert(1);">
+            <div class="audio-control-box">
+                <button onclick="document.getElementById('main-audio').play()" class="play-btn">
+                    {{ texts.listen_btn }}
+                </button>
+                <audio id="main-audio" style="display:none">
                     <source src="{{ url_for('static', filename=audio_path) }}" type="audio/mpeg">
                 </audio>
             </div>
             {% endif %}
         </div>
 
-        <div class="results-grid">
+        <!-- Card Stack -->
+        <div class="card-stack">
             {% for med in (translated if translated else english) %}
-            <div class="med-card">
-                <div class="med-header">
-                    <div class="med-icon"></div>
-                    <div class="med-name">{{ med.name }}</div>
+            <div class="med-card safe-card">
+                <div class="med-header" style="background: var(--accent); color: white; padding: 15px;">
+                    <div style="font-size: 0.9rem; opacity: 0.9;">{{ texts.medicine_label }} {{ loop.index }}</div>
+                    <div class="med-name" style="color: white; font-size: 1.5rem; font-weight: 700;">{{
+                        med.medicine_name }}</div>
                 </div>
 
                 <div class="med-details-grid">
-                    <div class="detail-item">
-                        <span class="label">PURPOSE</span>
-                        <div class="value">{{ med.purpose }}</div>
-                    </div>
-                    <div class="detail-item">
-                        <span class="label">DOSAGE</span>
-                        <div class="value" style="font-size: 1.4rem;">
-                            {{ med.visual_timing | default(med.dosage) }}
+                    <!-- Dosage (Big & Visual) -->
+                    <div class="full-width" style="text-align: center; padding: 20px 0; border-bottom: 1px solid #eee;">
+                        <div class="label" style="font-size: 1rem; color: #666;">{{ texts.dosage_label }}</div>
+                        <div class="value" style="font-size: 2.5rem; color: var(--text); font-weight: 900;">
+                            {{ med.dosage }}
                         </div>
                     </div>
-                    <div class="detail-item">
-                        <span class="label">TIMING</span>
-                        <div class="value">{{ med.timing }}</div>
+
+                    <!-- Frequency (Visual Icons) -->
+                    <div class="full-width" style="padding: 10px 0;">
+                        <div class="label">{{ texts.frequency_label }}</div>
+                        <div class="value" style="font-size: 1.2rem; display: flex; align-items: center; gap: 10px;">
+                            🕒 {{ med.frequency }}
+                        </div>
                     </div>
-                    <div class="detail-item full-width">
-                        <span class="label" style="color: var(--accent)">WARNING</span>
-                        <div class="value">{{ med.warnings }}</div>
+
+                    <!-- Purpose -->
+                    <div class="full-width">
+                        <div class="label">{{ texts.purpose_label }}</div>
+                        <div class="value">{{ med.purpose }}</div>
                     </div>
+
+                    <!-- Warning (Amber Safety) -->
+                    {% if med.precautions %}
+                    <div class="full-width warning-box">
+                        <div style="font-weight: 700; display: flex; align-items: center; gap: 10px;">
+                            {{ texts.caution_label }}
+                        </div>
+                        <div>{{ med.precautions }}</div>
+                    </div>
+                    {% endif %}
                 </div>
             </div>
             {% endfor %}
         </div>
+
+        <!-- WhatsApp Share (Sticky Footer) -->
+        <div class="sticky-footer">
+            <a href="https://wa.me/?text=Here is my prescription analysis: {{ request.url }}" target="_blank"
+                class="whatsapp-btn">
+                <span style="font-size: 1.5rem; margin-right: 10px;">📱</span> {{ texts.share_btn }}
+            </a>
+            <button class="restart-btn" onclick="window.location.href='/'">{{ texts.scan_btn }}</button>
+        </div>
+
     </div>
     {% endif %}
+
+    <style>
+        /* Safety UI Overrides */
+        .audio-control-box {
+            background: #e0f2fe;
+            padding: 20px;
+            border-radius: 12px;
+            border: 2px solid var(--secondary);
+        }
+
+        .play-btn {
+            background: var(--secondary);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            font-size: 1.1rem;
+            font-weight: 800;
+            border-radius: 50px;
+            cursor: pointer;
+            width: 100%;
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+            animation: pulse-blue 2s infinite;
+        }
+
+        @keyframes pulse-blue {
+            0% {
+                box-shadow: 0 0 0 0 rgba(59, 130, 246, 0.7);
+            }
+
+            70% {
+                box-shadow: 0 0 0 10px rgba(59, 130, 246, 0);
+            }
+
+            100% {
+                box-shadow: 0 0 0 0 rgba(59, 130, 246, 0);
+            }
+        }
+
+        .safe-card {
+            margin-bottom: 40px;
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08) !important;
+            border: none !important;
+        }
+
+        .warning-box {
+            background: #fffbeb;
+            border: 1px solid #fcd34d;
+            border-radius: 8px;
+            padding: 15px;
+            color: #92400e;
+        }
+
+        .sticky-footer {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: white;
+            padding: 20px;
+            box-shadow: 0 -5px 20px rgba(0, 0, 0, 0.05);
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            z-index: 100;
+        }
+
+        .whatsapp-btn {
+            flex: 2;
+            background: #25D366;
+            color: white;
+            text-decoration: none;
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+            font-weight: 800;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .restart-btn {
+            flex: 1;
+            background: #f3f4f6;
+            color: var(--text);
+            border: none;
+            border-radius: 8px;
+            font-weight: 700;
+            cursor: pointer;
+        }
+    </style>
 
 </body>
 

@@ -6,3 +6,5 @@ venv/
 .DS_Store
 .vscode/
 key.json
+uploads/
+static/audio/
