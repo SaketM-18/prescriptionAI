@@ -425,7 +425,10 @@
             <div class="hero-text">
                 <h1>{{ texts.hero_title|safe }}</h1>
                 <p>{{ texts.hero_desc }}</p>
-                <button class="upload-trigger" onclick="showForm()">{{ texts.start_btn }}</button>
+                <div style="display: flex; gap: 15px; flex-wrap: wrap;">
+                    <button class="upload-trigger" onclick="showForm()">{{ texts.start_btn }}</button>
+                    <button class="history-btn" onclick="showHistory()">{{ texts.my_medicines }}</button>
+                </div>
             </div>
             <div id="pill-canvas"></div>
 
@@ -463,6 +466,34 @@
 
                 <button type="submit" class="upload-trigger" style="width:100%">{{ texts.process_btn }}</button>
             </form>
+        </div>
+    </div>
+
+    <!-- History Overlay -->
+    <div id="history-overlay" onclick="closeHistory(event)">
+        <div class="history-content">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                <h2 style="margin: 0; font-size: 1.3rem;">{{ texts.history_title }}</h2>
+                <button onclick="document.getElementById('history-overlay').style.display='none'"
+                    style="background:none; border:none; font-size:1.5rem; cursor:pointer;">✕</button>
+            </div>
+            <div id="history-list">
+                <!-- Populated by JS -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Saved Result Viewer Overlay -->
+    <div id="saved-result-overlay" onclick="closeSavedResult(event)">
+        <div class="history-content" style="max-height: 85vh; overflow-y: auto;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                <h2 style="margin: 0; font-size: 1.3rem;" id="saved-result-title"></h2>
+                <button onclick="document.getElementById('saved-result-overlay').style.display='none'"
+                    style="background:none; border:none; font-size:1.5rem; cursor:pointer;">✕</button>
+            </div>
+            <div id="saved-result-content">
+                <!-- Populated by JS -->
+            </div>
         </div>
     </div>
 
@@ -636,7 +667,249 @@
             font-weight: 700;
             cursor: pointer;
         }
+
+        /* History Button */
+        .history-btn {
+            background: transparent;
+            color: var(--accent);
+            border: 2px solid var(--accent);
+            padding: 15px 30px;
+            font-size: 1rem;
+            font-weight: 800;
+            letter-spacing: 1px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .history-btn:hover {
+            background: var(--accent);
+            color: white;
+        }
+
+        /* History Overlay */
+        #history-overlay,
+        #saved-result-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .history-content {
+            background: white;
+            border-radius: 16px;
+            padding: 30px;
+            max-width: 500px;
+            width: 100%;
+            max-height: 70vh;
+            overflow-y: auto;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
+        }
+
+        .history-card {
+            background: #f8f9fa;
+            border-radius: 12px;
+            padding: 15px;
+            margin-bottom: 12px;
+            border-left: 4px solid var(--accent);
+        }
+
+        .history-card-date {
+            font-size: 0.8rem;
+            color: #999;
+            margin-bottom: 5px;
+        }
+
+        .history-card-meds {
+            font-weight: 700;
+            color: var(--text);
+            margin-bottom: 10px;
+        }
+
+        .history-card-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .history-card-actions button {
+            padding: 6px 16px;
+            border-radius: 6px;
+            border: none;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.85rem;
+        }
+
+        .view-history-btn {
+            background: var(--accent);
+            color: white;
+        }
+
+        .delete-history-btn {
+            background: #fee2e2;
+            color: #dc2626;
+        }
+
+        .no-history-msg {
+            text-align: center;
+            color: #999;
+            padding: 40px 20px;
+            font-size: 1rem;
+        }
+
+        /* Saved Result Card */
+        .saved-med-card {
+            background: #f8f9fa;
+            border-radius: 12px;
+            padding: 15px;
+            margin-bottom: 12px;
+        }
+
+        .saved-med-name {
+            font-size: 1.2rem;
+            font-weight: 800;
+            color: var(--accent);
+            margin-bottom: 8px;
+        }
+
+        .saved-med-detail {
+            display: flex;
+            justify-content: space-between;
+            padding: 5px 0;
+            border-bottom: 1px solid #eee;
+        }
+
+        .saved-med-detail .label {
+            color: #999;
+            font-size: 0.85rem;
+        }
+
+        .saved-med-detail .value {
+            font-weight: 600;
+        }
     </style>
+
+    <script>
+        // ===== localStorage History Functions =====
+        const STORAGE_KEY = 'clearscript_history';
+
+        function getHistory() {
+            try {
+                return JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
+            } catch (e) {
+                return [];
+            }
+        }
+
+        function saveToHistory(entry) {
+            const history = getHistory();
+            // Add to beginning (newest first)
+            history.unshift(entry);
+            // Keep max 20 entries
+            if (history.length > 20) history.pop();
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(history));
+        }
+
+        function deleteFromHistory(index) {
+            const history = getHistory();
+            history.splice(index, 1);
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(history));
+            renderHistory(); // Re-render
+        }
+
+        function showHistory() {
+            renderHistory();
+            document.getElementById('history-overlay').style.display = 'flex';
+        }
+
+        function closeHistory(e) {
+            if (e.target.id === 'history-overlay') {
+                document.getElementById('history-overlay').style.display = 'none';
+            }
+        }
+
+        function closeSavedResult(e) {
+            if (e.target.id === 'saved-result-overlay') {
+                document.getElementById('saved-result-overlay').style.display = 'none';
+            }
+        }
+
+        function renderHistory() {
+            const history = getHistory();
+            const container = document.getElementById('history-list');
+
+            if (history.length === 0) {
+                container.innerHTML = '<div class="no-history-msg">{{ texts.no_history }}</div>';
+                return;
+            }
+
+            let html = '';
+            history.forEach((entry, index) => {
+                const medNames = entry.medicines.slice(0, 3).map(m => m.name || m.medicine_name || 'Medicine').join(', ');
+                const extra = entry.medicines.length > 3 ? ` +${entry.medicines.length - 3}` : '';
+                html += `
+                    <div class="history-card">
+                        <div class="history-card-date">${entry.date} · ${entry.language || ''}</div>
+                        <div class="history-card-meds">${medNames}${extra}</div>
+                        <div class="history-card-actions">
+                            <button class="view-history-btn" onclick="viewSavedResult(${index})">{{ texts.view_btn }}</button>
+                            <button class="delete-history-btn" onclick="deleteFromHistory(${index})">{{ texts.delete_btn }}</button>
+                        </div>
+                    </div>
+                `;
+            });
+            container.innerHTML = html;
+        }
+
+        function viewSavedResult(index) {
+            const history = getHistory();
+            const entry = history[index];
+            if (!entry) return;
+
+            document.getElementById('saved-result-title').textContent = entry.date;
+
+            let html = '';
+            entry.medicines.forEach(med => {
+                html += `
+                    <div class="saved-med-card">
+                        <div class="saved-med-name">${med.name || med.medicine_name || 'Medicine'}</div>
+                        <div class="saved-med-detail"><span class="label">{{ texts.dosage_label }}</span><span class="value">${med.dosage || '-'}</span></div>
+                        <div class="saved-med-detail"><span class="label">{{ texts.frequency_label }}</span><span class="value">${med.frequency || med.timing || '-'}</span></div>
+                        <div class="saved-med-detail"><span class="label">{{ texts.purpose_label }}</span><span class="value">${med.purpose || '-'}</span></div>
+                        ${med.precautions ? '<div style="background:#fffbeb; border:1px solid #fcd34d; border-radius:6px; padding:10px; margin-top:8px; color:#92400e; font-size:0.85rem;">⚠️ ' + med.precautions + '</div>' : ''}
+                    </div>
+                `;
+            });
+            document.getElementById('saved-result-content').innerHTML = html;
+
+            // Close history, open result viewer
+            document.getElementById('history-overlay').style.display = 'none';
+            document.getElementById('saved-result-overlay').style.display = 'flex';
+        }
+
+        // ===== Auto-Save Results =====
+        document.addEventListener('DOMContentLoaded', function () {
+            {% if translated or english %}
+            // Results exist, auto-save them
+            const medicines = {{ (translated if translated else english) | tojson }};
+        const today = new Date();
+        const dateStr = today.toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' });
+
+        saveToHistory({
+            date: dateStr,
+            language: '{{ language }}',
+            medicines: medicines
+        });
+        {% endif %}
+        });
+    </script>
 
 </body>
 
