@@ -1,9 +1,10 @@
-from flask import Flask, render_template, request, make_response, redirect, url_for
+from flask import Flask, render_template, request, make_response, redirect, url_for, session
 from pipeline import run_pipeline
 from gtts import gTTS
 import json, os, uuid
 
 app = Flask(__name__)
+app.secret_key = os.urandom(24) # Generates new key on every restart -> Invalidates all old sessions
 
 UPLOAD_FOLDER = "uploads"
 AUDIO_FOLDER = "static/audio"
@@ -30,7 +31,10 @@ TRANSLATIONS = {
         "caution_label": "⚠️ CAUTION",
         "share_btn": "SHARE ON WHATSAPP",
         "scan_btn": "SCAN ANOTHER",
-        "brand_tagline": "AI POWERED PRECISION"
+        "brand_tagline": "AI POWERED PRECISION",
+        "no_file": "No file chosen",
+        "choose_file": "Choose File",
+        "change_file": "Change File"
     },
     "Hindi": {
         "hero_title": "अपनी सेहत<br><span>को समझें</span>",
@@ -50,7 +54,10 @@ TRANSLATIONS = {
         "caution_label": "⚠️ सावधानी",
         "share_btn": "व्हाट्सएप पर भेजें",
         "scan_btn": "दूसरा स्कैन करें",
-        "brand_tagline": "एआई आधारित सटीकता"
+        "brand_tagline": "एआई आधारित सटीकता",
+        "no_file": "कोई फाइल नहीं चुनी गई",
+        "choose_file": "फाइल चुनें",
+        "change_file": "फाइल बदलें"
     },
     "Kannada": {
         "hero_title": "ನಿಮ್ಮ ಆರೋಗ್ಯವನ್ನು<br><span>ಅರ್ಥಮಾಡಿಕೊಳ್ಳಿ</span>",
@@ -70,7 +77,10 @@ TRANSLATIONS = {
         "caution_label": "⚠️ ಎಚ್ಚರಿಕೆ",
         "share_btn": "ವಾಟ್ಸಾಪ್‌ನಲ್ಲಿ ಹಂಚಿಕೊಳ್ಳಿ",
         "scan_btn": "ಮತ್ತೊಂದು ಸ್ಕ್ಯಾನ್ ಮಾಡಿ",
-        "brand_tagline": "AI ಚಾಲಿತ ನಿಖರತೆ"
+        "brand_tagline": "AI ಚಾಲಿತ ನಿಖರತೆ",
+        "no_file": "ಯಾವುದೇ ಫೈಲ್ ಆಯ್ಕೆ ಮಾಡಿಲ್ಲ",
+        "choose_file": "ಫೈಲ್ ಆಯ್ಕೆಮಾಡಿ",
+        "change_file": "ಫೈಲ್ ಬದಲಾಯಿಸಿ"
     },
     "Tamil": {
         "hero_title": "உங்கள் ஆரோக்கியத்தைப்<br><span>புரிந்துகொள்ளுங்கள்</span>",
@@ -90,7 +100,10 @@ TRANSLATIONS = {
         "caution_label": "⚠️ எச்சரிக்கை",
         "share_btn": "வாட்ஸ்அப்பில் பகிரவும்",
         "scan_btn": "மற்றொன்றை ஸ்கேன் செய்",
-        "brand_tagline": "AI துல்லியம்"
+        "brand_tagline": "AI துல்லியம்",
+        "no_file": "கோப்பு தேர்ந்தெடுக்கப்படவில்லை",
+        "choose_file": "கோப்பைத் தேர்ந்தெடுக்கவும்",
+        "change_file": "கோப்பை மாற்றவும்"
     },
     "Telugu": {
         "hero_title": "మీ ఆరోగ్యాన్ని<br><span>అర్థం చేసుకోండి</span>",
@@ -110,7 +123,10 @@ TRANSLATIONS = {
         "caution_label": "⚠️ హెచ్చరిక",
         "share_btn": "వాట్సాప్‌లో షేర్ చేయండి",
         "scan_btn": "మరొకటి స్కాన్ చేయండి",
-        "brand_tagline": "AI ఆధారిత ఖచ్చితత్వం"
+        "brand_tagline": "AI ఆధారిత ఖచ్చితత్వం",
+        "no_file": "ఏ ఫైల్ ఎంపిక చేయబడలేదు",
+        "choose_file": "ఫైల్ ఎంచుకోండి",
+        "change_file": "ఫైల్ మార్చండి"
     },
     "Malayalam": {
         "hero_title": "നിങ്ങളുടെ ആരോഗ്യം<br><span>മനസ്സിലാക്കുക</span>",
@@ -130,19 +146,23 @@ TRANSLATIONS = {
         "caution_label": "⚠️ മുന്നറിയിപ്പ്",
         "share_btn": "വാട്ട്‌സ്ആപ്പിൽ പങ്കിടുക",
         "scan_btn": "മറ്റൊന്ന് സ്കാൻ ചെയ്യുക",
-        "brand_tagline": "AI പവർഡ്"
+        "brand_tagline": "AI പവർഡ്",
+        "no_file": "ഫയലുകളൊന്നും തിരഞ്ഞെടുത്തിട്ടില്ല",
+        "choose_file": "ഫയൽ തിരഞ്ഞെടുക്കുക",
+        "change_file": "ഫയൽ മാറ്റുക"
     }
 }
 
 @app.route("/", methods=["GET", "POST"])
 def index():
-    user_lang = request.cookies.get("user_lang")
+    # Use session instead of cookies for stricter lifecycle
+    user_lang = session.get("user_lang")
     
     # If no language is set, render the Language Wall
     if not user_lang:
         return render_template("language.html")
     
-    # Default to English if cookie is invalid
+    # Default to English if session data is invalid
     if user_lang not in TRANSLATIONS:
         user_lang = "English"
         
@@ -218,9 +238,8 @@ def index():
 @app.route("/set_language/<lang>")
 def set_language(lang):
     if lang in TRANSLATIONS:
-        resp = make_response(redirect(url_for("index")))
-        resp.set_cookie("user_lang", lang, max_age=60*60*24*365) # 1 year
-        return resp
+        session["user_lang"] = lang
+        return redirect(url_for("index"))
     return redirect(url_for("index"))
 
 @app.route("/reset_language")

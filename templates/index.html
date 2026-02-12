@@ -362,6 +362,22 @@
                 height: 300px;
             }
         }
+
+        .custom-file-upload {
+            border: 2px solid var(--border);
+            display: inline-block;
+            padding: 10px 20px;
+            cursor: pointer;
+            border-radius: 4px;
+            background: #fdfdfd;
+            font-weight: 500;
+            transition: all 0.2s;
+        }
+
+        .custom-file-upload:hover {
+            border-color: var(--secondary);
+            color: var(--secondary);
+        }
     </style>
     <script>
         function showForm() {
@@ -374,6 +390,18 @@
         }
         function showLoading() {
             document.getElementById('loading').style.display = 'flex';
+        }
+        function updateFileName(input) {
+            const fileNameSpan = document.getElementById('file-name');
+            if (input.files && input.files.length > 0) {
+                fileNameSpan.textContent = input.files[0].name;
+                fileNameSpan.style.color = 'var(--text)';
+                fileNameSpan.style.fontWeight = 'bold';
+            } else {
+                fileNameSpan.textContent = "{{ texts.no_file }}";
+                fileNameSpan.style.color = '#666';
+                fileNameSpan.style.fontWeight = 'normal';
+            }
         }
     </script>
 </head>
@@ -421,8 +449,17 @@
                     <option value="Malayalam" {% if language=='Malayalam' %}selected{% endif %}>മലയാളം</option>
                 </select>
 
-                <label class="label">{{ texts.file_label }}</label>
-                <input type="file" name="image" required accept="image/*">
+                <div class="file-input-wrapper" style="margin-bottom: 25px;">
+                    <label class="label">{{ texts.file_label }}</label>
+                    <div class="custom-file-container" style="display: flex; gap: 10px; align-items: center;">
+                        <label for="file-upload" class="custom-file-upload">
+                            {{ texts.choose_file }}
+                        </label>
+                        <span id="file-name" style="color: #666; font-size: 0.9rem;">{{ texts.no_file }}</span>
+                    </div>
+                    <input id="file-upload" type="file" name="image" required accept="image/*" style="display:none;"
+                        onchange="updateFileName(this)">
+                </div>
 
                 <button type="submit" class="upload-trigger" style="width:100%">{{ texts.process_btn }}</button>
             </form>
