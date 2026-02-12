@@ -567,11 +567,25 @@
 
         <!-- WhatsApp Share (Sticky Footer) -->
         <div class="sticky-footer">
-            <a href="https://wa.me/?text=Here is my prescription analysis: {{ request.url }}" target="_blank"
-                class="whatsapp-btn">
+            <button onclick="showSharePicker()" class="whatsapp-btn" style="border:none; cursor:pointer;">
                 <span style="font-size: 1.5rem; margin-right: 10px;">📱</span> {{ texts.share_btn }}
-            </a>
+            </button>
             <button class="restart-btn" onclick="window.location.href='/'">{{ texts.scan_btn }}</button>
+        </div>
+
+        <!-- Share Language Picker Modal -->
+        <div id="share-picker" onclick="closeSharePicker(event)">
+            <div class="history-content" style="max-width: 400px;">
+                <h2 style="margin: 0 0 20px 0; font-size: 1.2rem; text-align: center;">{{ texts.share_lang_title }}</h2>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                    <button class="share-lang-btn" onclick="shareOnWhatsApp('English')">English</button>
+                    <button class="share-lang-btn" onclick="shareOnWhatsApp('Hindi')">हिन्दी</button>
+                    <button class="share-lang-btn" onclick="shareOnWhatsApp('Kannada')">ಕನ್ನಡ</button>
+                    <button class="share-lang-btn" onclick="shareOnWhatsApp('Tamil')">தமிழ்</button>
+                    <button class="share-lang-btn" onclick="shareOnWhatsApp('Telugu')">తెలుగు</button>
+                    <button class="share-lang-btn" onclick="shareOnWhatsApp('Malayalam')">മലയാളം</button>
+                </div>
+            </div>
         </div>
 
     </div>
@@ -656,6 +670,38 @@
             display: flex;
             align-items: center;
             justify-content: center;
+        }
+
+        /* Share Picker */
+        #share-picker {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1001;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .share-lang-btn {
+            background: #f3f4f6;
+            border: 2px solid #e5e7eb;
+            border-radius: 10px;
+            padding: 15px;
+            font-size: 1.1rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .share-lang-btn:hover {
+            background: #25D366;
+            color: white;
+            border-color: #25D366;
         }
 
         .restart-btn {
@@ -892,6 +938,64 @@
             // Close history, open result viewer
             document.getElementById('history-overlay').style.display = 'none';
             document.getElementById('saved-result-overlay').style.display = 'flex';
+        }
+
+        // ===== WhatsApp Share Functions =====
+        const ALL_TRANSLATIONS = {{ all_translations | tojson }};
+
+        // Store medicine data for sharing
+        {% if translated or english %}
+        const SHARE_MEDICINES = {{ (translated if translated else english) | tojson }};
+        const SHARE_ENGLISH = {{ english | tojson }};
+        {% else %}
+        const SHARE_MEDICINES = [];
+        const SHARE_ENGLISH = [];
+        {% endif %}
+
+        function showSharePicker() {
+            document.getElementById('share-picker').style.display = 'flex';
+        }
+
+        function closeSharePicker(e) {
+            if (e.target.id === 'share-picker') {
+                document.getElementById('share-picker').style.display = 'none';
+            }
+        }
+
+        function shareOnWhatsApp(lang) {
+            document.getElementById('share-picker').style.display = 'none';
+
+            const t = ALL_TRANSLATIONS[lang] || ALL_TRANSLATIONS['English'];
+
+            // Build the text summary
+            let text = `💊 *${t.report_title}*\n`;
+            text += `━━━━━━━━━━━━━━━\n\n`;
+
+            const meds = SHARE_MEDICINES.length > 0 ? SHARE_MEDICINES : SHARE_ENGLISH;
+
+            meds.forEach((med, i) => {
+                const name = med.medicine_name || med.name || 'Medicine';
+                const dosage = med.dosage || '-';
+                const frequency = med.frequency || med.timing || '-';
+                const purpose = med.purpose || '-';
+                const precautions = med.precautions || '';
+
+                text += `*${t.medicine_label} ${i + 1}: ${name}*\n`;
+                text += `📋 ${t.dosage_label}: ${dosage}\n`;
+                text += `🕒 ${t.frequency_label}: ${frequency}\n`;
+                text += `🎯 ${t.purpose_label}: ${purpose}\n`;
+                if (precautions) {
+                    text += `⚠️ ${t.caution_label}: ${precautions}\n`;
+                }
+                text += `\n`;
+            });
+
+            text += `━━━━━━━━━━━━━━━\n`;
+            text += `_Shared via ClearScript AI_`;
+
+            // Open WhatsApp with the text
+            const encoded = encodeURIComponent(text);
+            window.open(`https://wa.me/?text=${encoded}`, '_blank');
         }
 
         // ===== Auto-Save Results =====

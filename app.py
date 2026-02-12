@@ -41,7 +41,8 @@ TRANSLATIONS = {
         "date_label": "Date",
         "history_title": "SAVED PRESCRIPTIONS",
         "view_btn": "View",
-        "close_btn": "Close"
+        "close_btn": "Close",
+        "share_lang_title": "Share in which language?"
     },
     "Hindi": {
         "hero_title": "अपनी सेहत<br><span>को समझें</span>",
@@ -71,7 +72,8 @@ TRANSLATIONS = {
         "date_label": "तारीख",
         "history_title": "सहेजे गए नुस्खे",
         "view_btn": "देखें",
-        "close_btn": "बंद करें"
+        "close_btn": "बंद करें",
+        "share_lang_title": "किस भाषा में भेजें?"
     },
     "Kannada": {
         "hero_title": "ನಿಮ್ಮ ಆರೋಗ್ಯವನ್ನು<br><span>ಅರ್ಥಮಾಡಿಕೊಳ್ಳಿ</span>",
@@ -101,7 +103,8 @@ TRANSLATIONS = {
         "date_label": "ದಿನಾಂಕ",
         "history_title": "ಉಳಿಸಿದ ಪ್ರಿಸ್ಕ್ರಿಪ್ಷನ್‌ಗಳು",
         "view_btn": "ನೋಡಿ",
-        "close_btn": "ಮುಚ್ಚಿ"
+        "close_btn": "ಮುಚ್ಚಿ",
+        "share_lang_title": "ಯಾವ ಭಾಷೆಯಲ್ಲಿ ಹಂಚಿಕೊಳ್ಳಬೇಕು?"
     },
     "Tamil": {
         "hero_title": "உங்கள் ஆரோக்கியத்தைப்<br><span>புரிந்துகொள்ளுங்கள்</span>",
@@ -131,7 +134,8 @@ TRANSLATIONS = {
         "date_label": "தேதி",
         "history_title": "சேமித்த மருந்துச் சீட்டுகள்",
         "view_btn": "பார்க்க",
-        "close_btn": "மூடு"
+        "close_btn": "மூடு",
+        "share_lang_title": "எந்த மொழியில் பகிர வேண்டும்?"
     },
     "Telugu": {
         "hero_title": "మీ ఆరోగ్యాన్ని<br><span>అర్థం చేసుకోండి</span>",
@@ -161,7 +165,8 @@ TRANSLATIONS = {
         "date_label": "తేదీ",
         "history_title": "సేవ్ చేసిన ప్రిస్క్రిప్షన్లు",
         "view_btn": "చూడండి",
-        "close_btn": "మూసివేయండి"
+        "close_btn": "మూసివేయండి",
+        "share_lang_title": "ఏ భాషలో షేర్ చేయాలి?"
     },
     "Malayalam": {
         "hero_title": "നിങ്ങളുടെ ആരോഗ്യം<br><span>മനസ്സിലാക്കുക</span>",
@@ -191,7 +196,8 @@ TRANSLATIONS = {
         "date_label": "തീയതി",
         "history_title": "സേവ് ചെയ്ത കുറിപ്പടികൾ",
         "view_btn": "കാണുക",
-        "close_btn": "അടയ്ക്കുക"
+        "close_btn": "അടയ്ക്കുക",
+        "share_lang_title": "ഏത് ഭാഷയിൽ പങ്കിടണം?"
     }
 }
 
@@ -274,7 +280,8 @@ def index():
         translated=translated,
         language=user_lang,
         audio_path=audio_path,
-        texts=texts
+        texts=texts,
+        all_translations=TRANSLATIONS
     )
 
 @app.route("/set_language/<lang>")
