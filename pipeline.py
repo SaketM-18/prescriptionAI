@@ -1,6 +1,6 @@
 import pytesseract
 from PIL import Image
-import json, os
+import json, os, time
 from google import genai
 
 with open("key.json") as f:
@@ -69,9 +69,18 @@ OCR Text:
 {ocr}
 """
 
-    response = client.models.generate_content(
-        model="models/gemini-flash-latest",
-        contents=prompt
-    )
-
-    return clean_json(response.text)
+    # Retry with fallback models on 503 errors
+    models = ["models/gemini-flash-latest", "gemini-2.0-flash", "gemini-2.0-flash-lite"]
+    for i, model in enumerate(models):
+        try:
+            response = client.models.generate_content(
+                model=model,
+                contents=prompt
+            )
+            return clean_json(response.text)
+        except Exception as e:
+            if ("503" in str(e) or "429" in str(e)) and i < len(models) - 1:
+                print(f"Model {model} unavailable, trying {models[i+1]}...")
+                time.sleep(2)
+                continue
+            raise

@@ -12,16 +12,12 @@
         rel="stylesheet">
     <style>
         :root {
-            --bg: #f9f9f9;
-            /* Paper White */
-            --text: #2d2d2d;
-            /* Charcoal */
-            --accent: #1a3c5e;
-            /* Trust Blue (Deep) */
-            --secondary: #3b82f6;
-            /* Action Blue (Bright) */
+            --bg: #faf8f5;
+            --text: #1a1a1a;
+            --accent: #8b1a2b;
+            --secondary: #a52a2a;
             --card-bg: #ffffff;
-            --border: #e5e7eb;
+            --border: #d4c5b9;
             --font-heading: 'Merriweather', serif;
             --font-body: 'Manrope', sans-serif;
         }
@@ -31,10 +27,11 @@
             background-color: var(--bg);
             color: var(--text);
             margin: 0;
-            padding: 0;
+            padding: 0 0 70px 0;
             min-height: 100vh;
-            line-height: 1.6;
+            line-height: 1.7;
             -webkit-font-smoothing: antialiased;
+            font-size: 1rem;
         }
 
         /* Typography */
@@ -45,45 +42,42 @@
             font-family: var(--font-heading);
             font-weight: 900;
             color: var(--accent);
-            text-transform: none;
-            /* Sentence case is more journalistic */
             letter-spacing: -0.01em;
             margin: 0;
         }
 
         h1 {
-            font-size: 4rem;
-            line-height: 1.2;
-            margin-bottom: 25px;
+            font-size: 1.6rem;
+            line-height: 1.3;
+            margin-bottom: 10px;
         }
 
         h2 {
-            font-size: 2rem;
-            margin-bottom: 20px;
+            font-size: 1.3rem;
+            margin-bottom: 15px;
             border-bottom: 3px solid var(--secondary);
             display: inline-block;
-            padding-bottom: 5px;
+            padding-bottom: 4px;
         }
 
         p {
-            font-size: 1.15rem;
+            font-size: 1rem;
             color: #4b5563;
-            max-width: 650px;
-            margin-bottom: 30px;
+            margin-bottom: 15px;
         }
 
-        /* Layout */
+        /* Mobile-first Layout */
         .container {
-            max-width: 1200px;
+            max-width: 600px;
             margin: 0 auto;
-            padding: 0 20px;
+            padding: 0 16px;
         }
 
         header {
             background: var(--card-bg);
-            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
-            padding: 20px 0;
-            margin-bottom: 60px;
+            border-bottom: 2px solid var(--border);
+            padding: 12px 0;
+            margin-bottom: 20px;
         }
 
         .header-content {
@@ -93,90 +87,62 @@
         }
 
         .brand {
-            font-size: 1.5rem;
+            font-size: 1.3rem;
             color: var(--accent);
         }
 
-        /* Hero */
-        .hero {
-            display: flex;
-            flex-direction: row;
-            align-items: center;
-            justify-content: space-between;
-            gap: 50px;
-            padding-bottom: 60px;
-            border-bottom: 1px solid var(--border);
-            margin-bottom: 60px;
-        }
 
-        .hero-text {
-            flex: 1;
-        }
 
+        /* Big tappable buttons — 48px+ height (WCAG) */
         .upload-trigger {
-            display: inline-block;
-            background: var(--secondary);
+            display: block;
+            width: 100%;
+            background: var(--accent);
             color: white;
-            padding: 16px 32px;
+            padding: 16px 24px;
             font-size: 1.1rem;
             font-weight: 700;
             border: none;
             cursor: pointer;
-            border-radius: 4px;
-            transition: background 0.2s;
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
+            border-radius: 8px;
+            min-height: 52px;
+            letter-spacing: 0.02em;
         }
 
-        .upload-trigger:hover {
-            background: var(--accent);
-        }
-
-        /* Form Overlay */
-        #upload-form {
-            display: none;
-            position: fixed;
-            inset: 0;
-            background: rgba(255, 255, 255, 0.95);
-            /* Light overlay */
-            z-index: 999;
-            justify-content: center;
-            align-items: center;
-        }
-
-        .form-content {
-            background: white;
-            padding: 40px;
-            width: 100%;
-            max-width: 500px;
-            border: 1px solid var(--border);
-            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.1);
+        /* Upload Section — INLINE, not a modal */
+        .upload-section {
+            background: var(--card-bg);
+            border: 2px solid var(--border);
+            border-radius: 12px;
+            padding: 24px 20px;
+            margin-bottom: 20px;
         }
 
         .label {
             display: block;
             font-family: var(--font-heading);
             font-weight: 700;
-            margin-bottom: 10px;
+            margin-bottom: 8px;
             color: var(--accent);
-            font-size: 0.9rem;
-            text-transform: uppercase;
+            font-size: 1rem;
         }
 
         select,
         input[type="file"] {
             width: 100%;
-            padding: 12px;
+            padding: 14px;
             border: 2px solid var(--border);
-            border-radius: 4px;
+            border-radius: 8px;
             font-family: var(--font-body);
-            margin-bottom: 25px;
+            font-size: 1rem;
+            margin-bottom: 20px;
             background: #fdfdfd;
+            min-height: 48px;
         }
 
         select:focus,
         input:focus {
-            border-color: var(--secondary);
+            border-color: var(--accent);
             outline: none;
         }
 
@@ -190,43 +156,38 @@
 
         .med-card {
             background: white;
-            border: 1px solid var(--border);
-            border-top: 4px solid var(--accent);
+            border: 2px solid var(--border);
+            border-radius: 12px;
             padding: 0;
-            transition: transform 0.2s, box-shadow 0.2s;
-        }
-
-        .med-card:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.05);
+            overflow: hidden;
+            margin-bottom: 16px;
         }
 
         .med-header {
-            padding: 20px;
+            padding: 16px 20px;
             border-bottom: 1px solid var(--border);
-            background: #f8fafc;
         }
 
         .med-name {
-            font-size: 1.25rem;
+            font-size: 1.3rem;
             color: var(--text);
         }
 
         .med-details-grid {
-            padding: 20px;
+            padding: 16px 20px;
             display: grid;
-            gap: 15px;
+            gap: 12px;
         }
 
         .detail-item .label {
-            font-size: 0.75rem;
+            font-size: 1rem;
             color: #6b7280;
             margin-bottom: 4px;
         }
 
         .detail-item .value {
-            font-size: 1rem;
-            font-weight: 500;
+            font-size: 1.05rem;
+            font-weight: 600;
         }
 
         /* Loading */
@@ -257,19 +218,10 @@
             }
         }
 
+        /* Already mobile-first, minimal overrides needed */
         @media (max-width: 768px) {
-            h1 {
-                font-size: 2.5rem;
-            }
-
-            .hero {
-                flex-direction: column;
-                align-items: flex-start;
-            }
-
-            .header-content {
-                flex-direction: column;
-                gap: 20px;
+            body {
+                font-size: 1rem;
             }
         }
 
@@ -319,73 +271,156 @@
             color: #ffffff;
         }
 
-        /* Toggle Button */
-        .theme-toggle {
-            position: fixed;
-            bottom: 30px;
-            right: 30px;
-            background: var(--black);
-            color: var(--white);
-            border: 2px solid var(--white);
-            width: 50px;
-            height: 50px;
-            border-radius: 50%;
-            font-size: 1.5rem;
-            cursor: pointer;
-            z-index: 2000;
+        /* Big tappable file buttons */
+        .custom-file-upload {
+            border: 2px solid var(--border);
             display: flex;
             align-items: center;
             justify-content: center;
-            transition: transform 0.3s;
-        }
-
-        body.dark-mode .theme-toggle {
-            background: var(--white);
-            color: var(--black);
-            border-color: var(--black);
-        }
-
-        .theme-toggle:hover {
-            transform: scale(1.1);
-        }
-
-        @media (max-width: 768px) {
-            h1 {
-                font-size: 15vw;
-            }
-
-            .hero {
-                grid-template-columns: 1fr;
-            }
-
-            .hero-visual {
-                height: 300px;
-            }
-        }
-
-        .custom-file-upload {
-            border: 2px solid var(--border);
-            display: inline-block;
-            padding: 10px 20px;
+            gap: 10px;
+            padding: 16px 20px;
             cursor: pointer;
-            border-radius: 4px;
-            background: #fdfdfd;
-            font-weight: 500;
-            transition: all 0.2s;
+            border-radius: 8px;
+            background: var(--card-bg);
+            font-weight: 700;
+            font-size: 1rem;
+            text-align: center;
+            min-height: 52px;
         }
 
-        .custom-file-upload:hover {
-            border-color: var(--secondary);
-            color: var(--secondary);
+
+
+        /* Icon + Text button pattern (research-proven for low-literacy) */
+        .icon-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .icon-btn svg {
+            width: 20px;
+            height: 20px;
+            flex-shrink: 0;
+        }
+
+        /* Prominent voice bar (not a hidden FAB) */
+        .voice-bar {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            width: 100%;
+            background: var(--accent);
+            color: white;
+            border: none;
+            padding: 16px 24px;
+            font-size: 1.1rem;
+            font-weight: 700;
+            cursor: pointer;
+            border-radius: 8px;
+            min-height: 56px;
+            margin-top: 16px;
+            font-family: var(--font-body);
+        }
+
+        .voice-bar svg {
+            width: 24px;
+            height: 24px;
+        }
+
+        /* Tab Bar */
+        .tab-bar {
+            display: flex;
+            gap: 0;
+            margin-bottom: 20px;
+            border-bottom: 3px solid var(--border);
+        }
+
+        .tab-btn {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 14px 10px;
+            font-size: 1rem;
+            font-weight: 700;
+            font-family: var(--font-body);
+            background: none;
+            border: none;
+            border-bottom: 3px solid transparent;
+            margin-bottom: -3px;
+            cursor: pointer;
+            color: #888;
+            min-height: 52px;
+            transition: color 0.2s, border-color 0.2s;
+        }
+
+        .tab-btn.active {
+            color: var(--accent);
+            border-bottom-color: var(--accent);
+        }
+
+        .tab-btn svg {
+            width: 20px;
+            height: 20px;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        /* Contextual action buttons row */
+        .action-row {
+            display: flex;
+            gap: 10px;
+            margin-top: 16px;
+        }
+
+        .action-row button {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 14px 10px;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 700;
+            font-family: var(--font-body);
+            cursor: pointer;
+            min-height: 52px;
+            border: 2px solid;
+        }
+
+        .btn-whatsapp {
+            background: #25D366;
+            color: white;
+            border-color: #25D366 !important;
+        }
+
+        .btn-ask-ai {
+            background: transparent;
+            color: var(--accent);
+            border-color: var(--accent) !important;
         }
     </style>
     <script>
-        function showForm() {
-            document.getElementById('upload-form').style.display = 'flex';
-        }
-        function closeForm(e) {
-            if (e.target.id === 'upload-form') {
-                document.getElementById('upload-form').style.display = 'none';
+        function switchTab(tab) {
+            // Toggle tab buttons
+            document.getElementById('tab-btn-scan').classList.toggle('active', tab === 'scan');
+            document.getElementById('tab-btn-history').classList.toggle('active', tab === 'history');
+            // Toggle tab content
+            document.getElementById('tab-scan').classList.toggle('active', tab === 'scan');
+            document.getElementById('tab-history').classList.toggle('active', tab === 'history');
+            // Render history when switching to history tab
+            if (tab === 'history') {
+                if (typeof renderHistoryInline === 'function') renderHistoryInline();
             }
         }
         function showLoading() {
@@ -415,100 +450,154 @@
         </div>
     </div>
 
-    <div class="container">
+    <div class="container" style="padding-top: 16px;">
         <header>
             <div class="brand">CLEARSCRIPT.</div>
-            <div>{{ texts.brand_tagline }}</div>
+            <div style="font-size: 0.9rem; color: #666;">{{ texts.brand_tagline }}</div>
         </header>
 
-        <section class="hero">
-            <div class="hero-text">
-                <h1>{{ texts.hero_title|safe }}</h1>
-                <p>{{ texts.hero_desc }}</p>
-                <div style="display: flex; gap: 15px; flex-wrap: wrap;">
-                    <button class="upload-trigger" onclick="showForm()">{{ texts.start_btn }}</button>
-                    <button class="history-btn" onclick="showHistory()">{{ texts.my_medicines }}</button>
-                </div>
-            </div>
-            <div id="pill-canvas"></div>
+        <!-- Tab Bar -->
+        <div class="tab-bar">
+            <button class="tab-btn active" onclick="switchTab('scan')" id="tab-btn-scan">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                    stroke-linejoin="round">
+                    <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z" />
+                    <circle cx="12" cy="13" r="4" />
+                </svg>
+                {{ texts.scan_btn or 'New Scan' }}
+            </button>
+            <button class="tab-btn" onclick="switchTab('history')" id="tab-btn-history">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                    stroke-linejoin="round">
+                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+                    <polyline points="14 2 14 8 20 8" />
+                    <line x1="16" y1="13" x2="8" y2="13" />
+                    <line x1="16" y1="17" x2="8" y2="17" />
+                </svg>
+                {{ texts.my_medicines or 'My History' }}
+            </button>
+        </div>
 
-        </section>
-    </div>
+        <!-- TAB 1: New Scan -->
+        <div class="tab-content active" id="tab-scan">
+            <div class="upload-section">
+                <form method="POST" enctype="multipart/form-data" onsubmit="showLoading()">
+                    <label class="label">{{ texts.lang_label }}</label>
+                    <select name="language" style="margin-bottom: 16px;">
+                        <option value="English" {% if language=='English' %}selected{% endif %}>English</option>
+                        <option value="Hindi" {% if language=='Hindi' %}selected{% endif %}>हिन्दी</option>
+                        <option value="Kannada" {% if language=='Kannada' %}selected{% endif %}>ಕನ್ನಡ</option>
+                        <option value="Tamil" {% if language=='Tamil' %}selected{% endif %}>தமிழ்</option>
+                        <option value="Telugu" {% if language=='Telugu' %}selected{% endif %}>తెలుగు</option>
+                        <option value="Malayalam" {% if language=='Malayalam' %}selected{% endif %}>മലയാളം</option>
+                    </select>
 
-
-
-    <!-- Hidden Upload Form Overlay -->
-    <div id="upload-form" onclick="closeForm(event)">
-        <div class="form-content">
-            <h2>{{ texts.upload_title }}</h2>
-            <form method="POST" enctype="multipart/form-data" onsubmit="showLoading()">
-                <label class="label">{{ texts.lang_label }}</label>
-                <select name="language">
-                    <option value="English" {% if language=='English' %}selected{% endif %}>English</option>
-                    <option value="Hindi" {% if language=='Hindi' %}selected{% endif %}>हिन्दी</option>
-                    <option value="Kannada" {% if language=='Kannada' %}selected{% endif %}>ಕನ್ನಡ</option>
-                    <option value="Tamil" {% if language=='Tamil' %}selected{% endif %}>தமிழ்</option>
-                    <option value="Telugu" {% if language=='Telugu' %}selected{% endif %}>తెలుగు</option>
-                    <option value="Malayalam" {% if language=='Malayalam' %}selected{% endif %}>മലയാളം</option>
-                </select>
-
-                <div class="file-input-wrapper" style="margin-bottom: 25px;">
                     <label class="label">{{ texts.file_label }}</label>
-                    <div class="custom-file-container"
-                        style="display: flex; gap: 10px; align-items: center; justify-content: center; flex-wrap: wrap;">
-                        <!-- Gallery Upload -->
-                        <label for="file-upload" class="custom-file-upload"
-                            style="flex: 1; min-width: 140px; text-align: center;">
-                            📁 {{ texts.choose_file }}
+                    <div style="display: flex; flex-direction: column; gap: 10px; margin-bottom: 16px;">
+                        <label for="file-upload" class="custom-file-upload icon-btn">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                                stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z" />
+                            </svg>
+                            {{ texts.choose_file }}
                         </label>
-
-                        <!-- Camera Capture -->
-                        <label for="camera-upload" class="custom-file-upload"
-                            style="flex: 1; min-width: 140px; text-align: center; background: linear-gradient(135deg, #10b981 0%, #059669 100%); border-color: #10b981;">
-                            📷 {{ texts.camera_btn or 'Take Photo' }}
+                        <label for="camera-upload" class="custom-file-upload icon-btn"
+                            style="background: var(--accent); color: white; border-color: var(--accent);">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                                stroke-linecap="round" stroke-linejoin="round">
+                                <path
+                                    d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z" />
+                                <circle cx="12" cy="13" r="4" />
+                            </svg>
+                            {{ texts.camera_btn or 'Take Photo' }}
                         </label>
                     </div>
-
-                    <div style="text-align: center; margin-top: 10px;">
-                        <span id="file-name" style="color: #666; font-size: 0.9rem;">{{ texts.no_file }}</span>
+                    <div style="text-align: center; margin-bottom: 16px;">
+                        <span id="file-name" style="color: #666; font-size: 0.95rem;">{{ texts.no_file }}</span>
                     </div>
-
-                    <!-- Hidden Inputs -->
                     <input id="file-upload" type="file" name="image" accept="image/*" style="display:none;"
                         onchange="updateFileName(this)">
                     <input id="camera-upload" type="file" name="image_camera" accept="image/*" capture="environment"
                         style="display:none;" onchange="updateFileName(this)">
-                </div>
-
-                <button type="submit" class="upload-trigger" style="width:100%">{{ texts.process_btn }}</button>
-            </form>
-        </div>
-    </div>
-
-    <!-- History Overlay -->
-    <div id="history-overlay" onclick="closeHistory(event)">
-        <div class="history-content">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-                <h2 style="margin: 0; font-size: 1.3rem;">{{ texts.history_title }}</h2>
-                <button onclick="document.getElementById('history-overlay').style.display='none'"
-                    style="background:none; border:none; font-size:1.5rem; cursor:pointer;">✕</button>
+                    <button type="submit" class="upload-trigger icon-btn"
+                        style="justify-content: center; display: flex;">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                            stroke-linecap="round" stroke-linejoin="round">
+                            <polyline points="16 16 12 12 8 16" />
+                            <line x1="12" y1="12" x2="12" y2="21" />
+                            <path d="M20.39 18.39A5 5 0 0 0 18 9h-1.26A8 8 0 1 0 3 16.3" />
+                        </svg>
+                        {{ texts.process_btn }}
+                    </button>
+                </form>
             </div>
-            <div id="history-list">
+        </div>
+
+        <!-- TAB 2: My History -->
+        <div class="tab-content" id="tab-history">
+            <div id="history-list-inline">
                 <!-- Populated by JS -->
             </div>
         </div>
     </div>
+
 
     <!-- Saved Result Viewer Overlay -->
     <div id="saved-result-overlay" onclick="closeSavedResult(event)">
         <div class="history-content" style="max-height: 85vh; overflow-y: auto;">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
                 <h2 style="margin: 0; font-size: 1.3rem;" id="saved-result-title"></h2>
-                <button onclick="document.getElementById('saved-result-overlay').style.display='none'"
+                <button onclick="stopSpeech(); document.getElementById('saved-result-overlay').style.display='none'"
                     style="background:none; border:none; font-size:1.5rem; cursor:pointer;">✕</button>
             </div>
+
+            <!-- Action Buttons -->
+            <div id="saved-action-buttons" style="display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap;">
+                <button onclick="speakSavedResult()"
+                    style="flex:1; min-width:100px; padding:12px; border-radius:8px; border:2px solid var(--accent); background:transparent; color:var(--accent); font-weight:700; cursor:pointer; min-height:48px; display:flex; align-items:center; justify-content:center; gap:8px;">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                        stroke-linecap="round" stroke-linejoin="round">
+                        <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5" />
+                        <path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07" />
+                    </svg>
+                    {{ texts.listen_btn or 'Listen' }}
+                </button>
+                <button onclick="shareSavedResult()"
+                    style="flex:1; min-width:100px; padding:12px; border-radius:8px; border:2px solid #25D366; background:transparent; color:#25D366; font-weight:700; cursor:pointer; min-height:48px; display:flex; align-items:center; justify-content:center; gap:8px;">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                        stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="18" cy="5" r="3" />
+                        <circle cx="6" cy="12" r="3" />
+                        <circle cx="18" cy="19" r="3" />
+                        <line x1="8.59" y1="13.51" x2="15.42" y2="17.49" />
+                        <line x1="15.41" y1="6.51" x2="8.59" y2="10.49" />
+                    </svg>
+                    {{ texts.share_btn or 'Share' }}
+                </button>
+            </div>
+
             <div id="saved-result-content">
                 <!-- Populated by JS -->
+            </div>
+
+            <!-- Saved Schedule Section -->
+            <div id="saved-schedule-section" style="margin-top: 20px; display: none;">
+                <div style="background: #eef2ff; border-radius: 12px; padding: 15px;">
+                    <h3 style="text-align: center; color: var(--primary); margin-bottom: 15px;">{{ texts.schedule_title
+                        }}</h3>
+                    <div id="saved-schedule-morning" class="time-slot-card morning-slot" style="display:none">
+                        <div class="slot-header"><span>{{ texts.morning }}</span></div>
+                        <div class="slot-content"></div>
+                    </div>
+                    <div id="saved-schedule-afternoon" class="time-slot-card afternoon-slot" style="display:none">
+                        <div class="slot-header"><span>{{ texts.afternoon }}</span></div>
+                        <div class="slot-content"></div>
+                    </div>
+                    <div id="saved-schedule-night" class="time-slot-card night-slot" style="display:none">
+                        <div class="slot-header"><span>{{ texts.night }}</span></div>
+                        <div class="slot-content"></div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -524,7 +613,13 @@
 
             {% if audio_path %}
             <div class="audio-control-box">
-                <button onclick="document.getElementById('main-audio').play()" class="play-btn">
+                <button onclick="document.getElementById('main-audio').play()" class="play-btn icon-btn"
+                    style="display:inline-flex;">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                        stroke-linecap="round" stroke-linejoin="round">
+                        <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5" />
+                        <path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07" />
+                    </svg>
                     {{ texts.listen_btn }}
                 </button>
                 <audio id="main-audio" style="display:none">
@@ -540,11 +635,22 @@
             <div class="med-card safe-card">
                 <div class="med-header" style="background: var(--accent); color: white; padding: 15px;">
                     <div style="font-size: 0.9rem; opacity: 0.9;">{{ texts.medicine_label }} {{ loop.index }}</div>
-                    <div class="med-name" style="color: white; font-size: 1.5rem; font-weight: 700;">{{
-                        med.medicine_name }}</div>
+                    <div class="med-name" style="color: white; font-size: 1.5rem; font-weight: 700;">{{ med.name or
+                        med.medicine_name or 'Medicine' }}</div>
                 </div>
 
                 <div class="med-details-grid">
+                    <!-- Generic Alternative (Cost Savings) -->
+                    {% if med.generic_alternative %}
+                    <div class="full-width"
+                        style="padding: 15px; background-color: #f0fdf4; border-bottom: 1px solid #eee;">
+                        <div class="label" style="color: #166534;">{{ texts.generic_label }}</div>
+                        <div class="value" style="font-size: 1.2rem; color: #15803d; font-weight: 700;">
+                            {{ med.generic_alternative }}
+                        </div>
+                    </div>
+                    {% endif %}
+
                     <!-- Dosage (Big & Visual) -->
                     <div class="full-width" style="text-align: center; padding: 20px 0; border-bottom: 1px solid #eee;">
                         <div class="label" style="font-size: 1rem; color: #666;">{{ texts.dosage_label }}</div>
@@ -557,7 +663,12 @@
                     <div class="full-width" style="padding: 10px 0;">
                         <div class="label">{{ texts.frequency_label }}</div>
                         <div class="value" style="font-size: 1.2rem; display: flex; align-items: center; gap: 10px;">
-                            🕒 {{ med.frequency }}
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <circle cx="12" cy="12" r="10" />
+                                <polyline points="12 6 12 12 16 14" />
+                            </svg>
+                            {{ med.frequency }}
                         </div>
                     </div>
 
@@ -584,13 +695,13 @@
         <!-- Medicine Schedule Section -->
         <div id="schedule-section" style="margin-top: 40px; display: none;">
             <div style="background: #eef2ff; border-radius: 16px; padding: 25px;">
-                <h2 style="text-align: center; margin-bottom: 25px; color: var(--primary);">{{ texts.schedule_title }}
+                <h2 style="text-align: center; margin-bottom: 25px; color: var(--accent);">{{ texts.schedule_title }}
                 </h2>
 
                 <div id="schedule-morning" class="time-slot-card morning-slot" style="display:none">
                     <div class="slot-header">
                         <span>{{ texts.morning }}</span>
-                        <a href="#" onclick="setAlarm('morning')" class="alarm-link">🔔 {{ texts.set_alarm }}</a>
+                        <a href="#" onclick="setAlarm('morning')" class="alarm-link">{{ texts.set_alarm }}</a>
                     </div>
                     <div class="slot-content"></div>
                 </div>
@@ -598,7 +709,7 @@
                 <div id="schedule-afternoon" class="time-slot-card afternoon-slot" style="display:none">
                     <div class="slot-header">
                         <span>{{ texts.afternoon }}</span>
-                        <a href="#" onclick="setAlarm('afternoon')" class="alarm-link">🔔 {{ texts.set_alarm }}</a>
+                        <a href="#" onclick="setAlarm('afternoon')" class="alarm-link">{{ texts.set_alarm }}</a>
                     </div>
                     <div class="slot-content"></div>
                 </div>
@@ -606,26 +717,43 @@
                 <div id="schedule-night" class="time-slot-card night-slot" style="display:none">
                     <div class="slot-header">
                         <span>{{ texts.night }}</span>
-                        <a href="#" onclick="setAlarm('night')" class="alarm-link">🔔 {{ texts.set_alarm }}</a>
+                        <a href="#" onclick="setAlarm('night')" class="alarm-link">{{ texts.set_alarm }}</a>
                     </div>
                     <div class="slot-content"></div>
                 </div>
 
                 <div style="text-align: center; margin-top: 20px;">
                     <button onclick="showSharePicker('schedule')"
-                        style="background:transparent; border:2px solid var(--primary); color:var(--primary); padding:10px 20px; border-radius:20px; font-weight:700; cursor:pointer;">
-                        📱 Share Schedule
+                        style="background:transparent; border:2px solid var(--accent); color:var(--accent); padding:10px 20px; border-radius:20px; font-weight:700; cursor:pointer;">
+                        Share Schedule
                     </button>
                 </div>
             </div>
         </div>
 
-        <!-- WhatsApp Share (Sticky Footer) -->
-        <div class="sticky-footer">
-            <button onclick="showSharePicker()" class="whatsapp-btn" style="border:none; cursor:pointer;">
-                <span style="font-size: 1.5rem; margin-right: 10px;">📱</span> {{ texts.share_btn }}
+        <!-- Contextual Actions (WhatsApp Share + Ask AI) -->
+        <div class="action-row" style="margin-bottom: 20px;">
+            <button class="btn-whatsapp" onclick="showSharePicker()">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                    stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="18" cy="5" r="3" />
+                    <circle cx="6" cy="12" r="3" />
+                    <circle cx="18" cy="19" r="3" />
+                    <line x1="8.59" y1="13.51" x2="15.42" y2="17.49" />
+                    <line x1="15.41" y1="6.51" x2="8.59" y2="10.49" />
+                </svg>
+                {{ texts.share_btn }}
             </button>
-            <button class="restart-btn" onclick="window.location.href='/'">{{ texts.scan_btn }}</button>
+            <button class="btn-ask-ai" onclick="openVoiceChat()">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                    stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z" />
+                    <path d="M19 10v2a7 7 0 0 1-14 0v-2" />
+                    <line x1="12" y1="19" x2="12" y2="23" />
+                    <line x1="8" y1="23" x2="16" y2="23" />
+                </svg>
+                {{ texts.chat_title or 'Ask AI' }}
+            </button>
         </div>
 
         <!-- Share Language Picker Modal -->
@@ -699,33 +827,7 @@
             color: #92400e;
         }
 
-        .sticky-footer {
-            position: fixed;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            background: white;
-            padding: 20px;
-            box-shadow: 0 -5px 20px rgba(0, 0, 0, 0.05);
-            display: flex;
-            gap: 10px;
-            justify-content: center;
-            z-index: 100;
-        }
 
-        .whatsapp-btn {
-            flex: 2;
-            background: #25D366;
-            color: white;
-            text-decoration: none;
-            padding: 15px;
-            border-radius: 8px;
-            text-align: center;
-            font-weight: 800;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
 
         /* Share Picker */
         #share-picker {
@@ -753,7 +855,7 @@
             transition: all 0.2s;
         }
 
-        .share-lang-btn:hover {
+        .share-lang-btn:active {
             background: #25D366;
             color: white;
             border-color: #25D366;
@@ -818,40 +920,11 @@
             border-radius: 20px;
         }
 
-        .alarm-link:hover {
+        .alarm-link:active {
             background: rgba(255, 255, 255, 0.4);
         }
 
-        .restart-btn {
-            flex: 1;
-            background: #f3f4f6;
-            color: var(--text);
-            border: none;
-            border-radius: 8px;
-            font-weight: 700;
-            cursor: pointer;
-        }
-
-        /* History Button */
-        .history-btn {
-            background: transparent;
-            color: var(--accent);
-            border: 2px solid var(--accent);
-            padding: 15px 30px;
-            font-size: 1rem;
-            font-weight: 800;
-            letter-spacing: 1px;
-            cursor: pointer;
-            transition: all 0.3s;
-        }
-
-        .history-btn:hover {
-            background: var(--accent);
-            color: white;
-        }
-
-        /* History Overlay */
-        #history-overlay,
+        /* Saved Result Overlay */
         #saved-result-overlay {
             display: none;
             position: fixed;
@@ -985,18 +1058,15 @@
             const history = getHistory();
             history.splice(index, 1);
             localStorage.setItem(STORAGE_KEY, JSON.stringify(history));
-            renderHistory(); // Re-render
+            renderHistoryInline(); // Re-render
         }
 
         function showHistory() {
-            renderHistory();
-            document.getElementById('history-overlay').style.display = 'flex';
+            switchTab('history');
         }
 
         function closeHistory(e) {
-            if (e.target.id === 'history-overlay') {
-                document.getElementById('history-overlay').style.display = 'none';
-            }
+            // No-op: history is now inline in a tab
         }
 
         function closeSavedResult(e) {
@@ -1005,9 +1075,10 @@
             }
         }
 
-        function renderHistory() {
+        function renderHistoryInline() {
             const history = getHistory();
-            const container = document.getElementById('history-list');
+            const container = document.getElementById('history-list-inline');
+            if (!container) return;
 
             if (history.length === 0) {
                 container.innerHTML = '<div class="no-history-msg">{{ texts.no_history }}</div>';
@@ -1024,6 +1095,7 @@
                         <div class="history-card-meds">${medNames}${extra}</div>
                         <div class="history-card-actions">
                             <button class="view-history-btn" onclick="viewSavedResult(${index})">{{ texts.view_btn }}</button>
+                            <button style="padding:8px 16px; border-radius:6px; border:none; cursor:pointer; font-weight:600; font-size:0.85rem; background:#25D366; color:white;" onclick="shareHistoryItem(${index})">{{ texts.share_btn or 'Share' }}</button>
                             <button class="delete-history-btn" onclick="deleteFromHistory(${index})">{{ texts.delete_btn }}</button>
                         </div>
                     </div>
@@ -1032,10 +1104,24 @@
             container.innerHTML = html;
         }
 
+        // Share a specific history item
+        function shareHistoryItem(index) {
+            const history = getHistory();
+            const entry = history[index];
+            if (!entry) return;
+            window._origShareMeds = SHARE_MEDICINES;
+            SHARE_MEDICINES = entry.medicines;
+            showSharePicker('report');
+            setTimeout(() => { SHARE_MEDICINES = window._origShareMeds || []; }, 5000);
+        }
+
         function viewSavedResult(index) {
             const history = getHistory();
             const entry = history[index];
             if (!entry) return;
+
+            // Store for sharing
+            window._savedViewMeds = entry.medicines;
 
             document.getElementById('saved-result-title').textContent = entry.date;
 
@@ -1044,18 +1130,105 @@
                 html += `
                     <div class="saved-med-card">
                         <div class="saved-med-name">${med.name || med.medicine_name || 'Medicine'}</div>
+                        ${med.generic_alternative ? `
+                        <div class="saved-med-detail" style="background:#f0fdf4; padding:8px; border-radius:4px; border:1px solid #bbf7d0; margin-top:5px;">
+                            <span class="label" style="color:#166534;">{{ texts.generic_label }}</span>
+                            <span class="value" style="color:#15803d; font-weight:700;">${med.generic_alternative}</span>
+                        </div>` : ''}
                         <div class="saved-med-detail"><span class="label">{{ texts.dosage_label }}</span><span class="value">${med.dosage || '-'}</span></div>
                         <div class="saved-med-detail"><span class="label">{{ texts.frequency_label }}</span><span class="value">${med.frequency || med.timing || '-'}</span></div>
                         <div class="saved-med-detail"><span class="label">{{ texts.purpose_label }}</span><span class="value">${med.purpose || '-'}</span></div>
-                        ${med.precautions ? '<div style="background:#fffbeb; border:1px solid #fcd34d; border-radius:6px; padding:10px; margin-top:8px; color:#92400e; font-size:0.85rem;">⚠️ ' + med.precautions + '</div>' : ''}
+                        ${med.precautions ? '<div style="background:#fffbeb; border:1px solid #fcd34d; border-radius:6px; padding:10px; margin-top:8px; color:#92400e; font-size:0.85rem;">' + med.precautions + '</div>' : ''}
                     </div>
                 `;
             });
             document.getElementById('saved-result-content').innerHTML = html;
 
-            // Close history, open result viewer
-            document.getElementById('history-overlay').style.display = 'none';
+            // Render schedule for saved result
+            renderSavedSchedule(entry.medicines);
+
+            // Open result viewer (history is inline, no need to close it)
             document.getElementById('saved-result-overlay').style.display = 'flex';
+        }
+
+        // ===== Web Speech API for Saved Results =====
+        let currentUtterance = null;
+
+        function speakSavedResult() {
+            if (!window._savedViewMeds || window._savedViewMeds.length === 0) return;
+
+            // Stop any ongoing speech
+            stopSpeech();
+
+            let text = 'Prescription Guide. ';
+            window._savedViewMeds.forEach(med => {
+                const name = med.name || med.medicine_name || 'Medicine';
+                const purpose = med.purpose || 'As prescribed';
+                const dosage = med.dosage || 'As directed';
+                const timing = med.frequency || med.timing || '';
+                text += `${name}. ${purpose}. Dosage: ${dosage}. ${timing}. `;
+                if (med.precautions) text += `Warning: ${med.precautions}. `;
+            });
+
+            currentUtterance = new SpeechSynthesisUtterance(text);
+            currentUtterance.rate = 0.9;
+            currentUtterance.pitch = 1;
+            speechSynthesis.speak(currentUtterance);
+        }
+
+        function stopSpeech() {
+            if (speechSynthesis.speaking) speechSynthesis.cancel();
+        }
+
+        function shareSavedResult() {
+            if (!window._savedViewMeds) return;
+            // Temporarily override share data
+            window._origShareMeds = SHARE_MEDICINES;
+            SHARE_MEDICINES = window._savedViewMeds;
+            showSharePicker('report');
+            // Restore after a delay
+            setTimeout(() => { SHARE_MEDICINES = window._origShareMeds || []; }, 5000);
+        }
+
+        function renderSavedSchedule(medicines) {
+            if (!medicines || medicines.length === 0) return;
+
+            const morningList = [], afternoonList = [], nightList = [];
+            medicines.forEach(med => {
+                const dosage = med.dosage || '';
+                const [isM, isA, isN] = parseDosage(dosage);
+                const name = med.medicine_name || med.name || 'Medicine';
+                const timing = med.timing || med.frequency || '';
+
+                if (isM) morningList.push({ name, timing });
+                if (isA) afternoonList.push({ name, timing });
+                if (isN) nightList.push({ name, timing });
+            });
+
+            const fillSlot = (id, list) => {
+                const el = document.getElementById(id);
+                if (list.length > 0) {
+                    el.style.display = 'block';
+                    el.querySelector('.slot-content').innerHTML = list.map(item => `
+                        <div class="schedule-item">
+                            <div style="font-weight:700; color:var(--text)">${item.name}</div>
+                            <div style="font-size:0.85rem; color:#666">${item.timing}</div>
+                        </div>
+                    `).join('');
+                } else {
+                    el.style.display = 'none';
+                }
+            };
+
+            fillSlot('saved-schedule-morning', morningList);
+            fillSlot('saved-schedule-afternoon', afternoonList);
+            fillSlot('saved-schedule-night', nightList);
+
+            if (morningList.length > 0 || afternoonList.length > 0 || nightList.length > 0) {
+                document.getElementById('saved-schedule-section').style.display = 'block';
+            } else {
+                document.getElementById('saved-schedule-section').style.display = 'none';
+            }
         }
 
         // ===== WhatsApp Share Functions =====
@@ -1064,11 +1237,11 @@
 
         // Store medicine data for sharing
         {% if translated or english %}
-        const SHARE_MEDICINES = {{ (translated if translated else english) | tojson }};
-        const SHARE_ENGLISH = {{ english | tojson }};
+        let SHARE_MEDICINES = {{ (translated if translated else english) | tojson }};
+        let SHARE_ENGLISH = {{ english | tojson }};
         {% else %}
-        const SHARE_MEDICINES = [];
-        const SHARE_ENGLISH = [];
+        let SHARE_MEDICINES = [];
+        let SHARE_ENGLISH = [];
         {% endif %}
 
         function showSharePicker(mode = 'report') {
@@ -1090,7 +1263,7 @@
 
             if (currentShareMode === 'schedule') {
                 // SCHEDULE SHARE
-                text = `📅 *${t.schedule_title}*\n━━━━━━━━━━━━━━━\n\n`;
+                text = `*${t.schedule_title}*\n━━━━━━━━━━━━━━━\n\n`;
                 const meds = SHARE_MEDICINES.length > 0 ? SHARE_MEDICINES : SHARE_ENGLISH;
 
                 const timeSlots = [
@@ -1118,7 +1291,7 @@
 
             } else {
                 // REPORT SHARE
-                text = `💊 *${t.report_title}*\n━━━━━━━━━━━━━━━\n\n`;
+                text = `*${t.report_title}*\n━━━━━━━━━━━━━━━\n\n`;
 
                 const meds = SHARE_MEDICINES.length > 0 ? SHARE_MEDICINES : SHARE_ENGLISH;
 
@@ -1128,13 +1301,15 @@
                     const frequency = med.frequency || med.timing || '-';
                     const purpose = med.purpose || '-';
                     const precautions = med.precautions || '';
+                    const generic = med.generic_alternative || '';
 
                     text += `*${t.medicine_label} ${i + 1}: ${name}*\n`;
-                    text += `📋 ${t.dosage_label}: ${dosage}\n`;
+                    if (generic) text += `${t.generic_label}${generic}\n`;
+                    text += `${t.dosage_label}: ${dosage}\n`;
                     text += `🕒 ${t.frequency_label}: ${frequency}\n`;
-                    text += `🎯 ${t.purpose_label}: ${purpose}\n`;
+                    text += `${t.purpose_label}: ${purpose}\n`;
                     if (precautions) {
-                        text += `⚠️ ${t.caution_label}: ${precautions}\n`;
+                        text += `${t.caution_label}: ${precautions}\n`;
                     }
                     text += `\n`;
                 });
@@ -1243,6 +1418,342 @@
         renderSchedule(medicines);
         {% endif %}
         });
+    </script>
+
+    <!-- ===== VOICE COPILOT ===== -->
+
+    <!-- Prominent Voice Bar (research says voice must be prominent for rural users) -->
+    <button id="voice-fab" onclick="openVoiceChat()" class="voice-bar" style="
+        position: fixed; bottom: 0; left: 0; right: 0; z-index: 9999;
+        border-radius: 0; margin: 0;
+    ">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+            stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z" />
+            <path d="M19 10v2a7 7 0 0 1-14 0v-2" />
+            <line x1="12" y1="19" x2="12" y2="23" />
+            <line x1="8" y1="23" x2="16" y2="23" />
+        </svg>
+        {{ texts.chat_title or 'Ask about your medicines' }}
+    </button>
+
+    <!-- Chat Overlay -->
+    <div id="voice-chat-overlay" style="
+        display: none; position: fixed; bottom: 0; left: 0; right: 0; top: 0;
+        z-index: 10000; background: rgba(0,0,0,0.5);
+        justify-content: center; align-items: flex-end;
+    " onclick="if(event.target===this) closeVoiceChat()">
+        <div id="voice-chat-panel" style="
+            width: 100%; max-width: 500px; max-height: 85vh;
+            background: white; border-radius: 20px 20px 0 0;
+            display: flex; flex-direction: column;
+            box-shadow: 0 -5px 40px rgba(0,0,0,0.2);
+            overflow: hidden;
+        ">
+            <!-- Chat Header -->
+            <div style="
+                background: var(--accent);
+                color: white; padding: 18px 20px;
+                display: flex; justify-content: space-between; align-items: center;
+            ">
+                <div>
+                    <div style="font-weight: 800; font-size: 1.1rem;">{{ texts.chat_title or 'Medicine Assistant' }}
+                    </div>
+                    <div style="font-size: 0.8rem; opacity: 0.8;">{{ texts.chat_subtitle or 'Ask about your medicines'
+                        }}</div>
+                </div>
+                <button onclick="closeVoiceChat()" style="
+                    background: none; border: none; color: white;
+                    font-size: 1.5rem; cursor: pointer;
+                ">✕</button>
+            </div>
+
+            <!-- Chat Messages -->
+            <div id="voice-chat-messages" style="
+                flex: 1; overflow-y: auto; padding: 20px;
+                display: flex; flex-direction: column; gap: 12px;
+                min-height: 200px; max-height: 50vh;
+                background: #f8f9fa;
+            ">
+                <!-- Welcome Message -->
+                <div class="chat-bubble ai-bubble">
+                    {{ texts.chat_welcome or 'Hello! 👋 Ask me anything about your medicines. Tap the mic to speak!' }}
+                </div>
+            </div>
+
+            <!-- Input Area -->
+            <div style="
+                padding: 15px 20px; border-top: 1px solid #eee;
+                display: flex; gap: 10px; align-items: center;
+                background: white;
+            ">
+                <input id="voice-text-input" type="text"
+                    placeholder="{{ texts.chat_placeholder or 'Type or tap mic...' }}" style="
+                        flex: 1; padding: 12px 16px; border: 2px solid #e5e7eb;
+                        border-radius: 25px; font-size: 1rem; outline: none;
+                        transition: border-color 0.2s;
+                    " onkeydown="if(event.key==='Enter') sendTextQuestion()"
+                    onfocus="this.style.borderColor='var(--accent)'" onblur="this.style.borderColor='#e5e7eb'">
+                <!-- Mic Button -->
+                <button id="voice-mic-btn" onclick="toggleListening()" style="
+                    width: 48px; height: 48px; border-radius: 50%;
+                    background: var(--accent);
+                    border: none; color: white;
+                    cursor: pointer; flex-shrink: 0;
+                    transition: transform 0.2s, background 0.2s;
+                    display: flex; align-items: center; justify-content: center;
+                "><svg id="mic-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                        stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z" />
+                        <path d="M19 10v2a7 7 0 0 1-14 0v-2" />
+                        <line x1="12" y1="19" x2="12" y2="23" />
+                        <line x1="8" y1="23" x2="16" y2="23" />
+                    </svg></button>
+                <!-- Send Button -->
+                <button onclick="sendTextQuestion()" style="
+                    width: 48px; height: 48px; border-radius: 50%;
+                    background: var(--secondary); border: none; color: white;
+                    cursor: pointer; flex-shrink: 0;
+                    display: flex; align-items: center; justify-content: center;
+                "><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                        stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="22" y1="2" x2="11" y2="13" />
+                        <polygon points="22 2 15 22 11 13 2 9 22 2" />
+                    </svg></button>
+            </div>
+        </div>
+    </div>
+
+    <style>
+        .chat-bubble {
+            max-width: 85%;
+            padding: 12px 16px;
+            border-radius: 18px;
+            font-size: 0.95rem;
+            line-height: 1.5;
+            word-wrap: break-word;
+        }
+
+        .ai-bubble {
+            background: white;
+            color: #1f2937;
+            align-self: flex-start;
+            border: 1px solid #e5e7eb;
+            border-bottom-left-radius: 4px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+        }
+
+        .user-bubble {
+            background: linear-gradient(135deg, #6366f1, #8b5cf6);
+            color: white;
+            align-self: flex-end;
+            border-bottom-right-radius: 4px;
+        }
+
+        .thinking-bubble {
+            background: white;
+            color: #9ca3af;
+            align-self: flex-start;
+            border: 1px solid #e5e7eb;
+            border-bottom-left-radius: 4px;
+            animation: pulse 1.5s infinite;
+        }
+
+        @keyframes pulse {
+
+            0%,
+            100% {
+                opacity: 1;
+            }
+
+            50% {
+                opacity: 0.5;
+            }
+        }
+
+        #voice-mic-btn.listening {
+            background: linear-gradient(135deg, #ef4444, #dc2626) !important;
+            animation: pulse-mic 1s infinite;
+        }
+
+        @keyframes pulse-mic {
+
+            0%,
+            100% {
+                transform: scale(1);
+            }
+
+            50% {
+                transform: scale(1.15);
+            }
+        }
+
+        #voice-fab {
+            /* already styled via .voice-bar class */
+        }
+    </style>
+
+    <script>
+        // ===== VOICE COPILOT LOGIC =====
+
+        // Language codes for Web Speech API
+        const SPEECH_LANG_MAP = {
+            'English': 'en-IN',
+            'Hindi': 'hi-IN',
+            'Tamil': 'ta-IN',
+            'Telugu': 'te-IN',
+            'Kannada': 'kn-IN',
+            'Malayalam': 'ml-IN'
+        };
+
+        let recognition = null;
+        let isListening = false;
+        const USER_LANG = '{{ language or "English" }}';
+
+        // Show the FAB when results or history exists
+        document.addEventListener('DOMContentLoaded', () => {
+            // Auto-render history in tab
+            if (typeof renderHistoryInline === 'function') renderHistoryInline();
+        });
+
+        function openVoiceChat() {
+            document.getElementById('voice-chat-overlay').style.display = 'flex';
+        }
+
+        function closeVoiceChat() {
+            document.getElementById('voice-chat-overlay').style.display = 'none';
+            stopSpeech();
+            if (isListening && recognition) recognition.stop();
+        }
+
+        function addChatBubble(text, type) {
+            const container = document.getElementById('voice-chat-messages');
+            const bubble = document.createElement('div');
+            bubble.className = `chat-bubble ${type}-bubble`;
+            bubble.textContent = text;
+            container.appendChild(bubble);
+            container.scrollTop = container.scrollHeight;
+            return bubble;
+        }
+
+        function removeBubble(bubble) {
+            if (bubble && bubble.parentNode) bubble.parentNode.removeChild(bubble);
+        }
+
+        function toggleListening() {
+            if (isListening) {
+                if (recognition) recognition.stop();
+                return;
+            }
+
+            if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
+                addChatBubble('Speech recognition is not supported in your browser. Please use Chrome.', 'ai');
+                return;
+            }
+
+            const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+            recognition = new SpeechRecognition();
+            recognition.lang = SPEECH_LANG_MAP[USER_LANG] || 'en-IN';
+            recognition.interimResults = false;
+            recognition.maxAlternatives = 1;
+
+            const micBtn = document.getElementById('voice-mic-btn');
+            micBtn.classList.add('listening');
+            micBtn.innerHTML = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="4" width="12" height="16" rx="2" ry="2"/></svg>';
+            isListening = true;
+
+            // Add listening indicator
+            const listeningBubble = addChatBubble('Listening...', 'thinking');
+
+            recognition.onresult = (event) => {
+                const transcript = event.results[0][0].transcript;
+                removeBubble(listeningBubble);
+                processQuestion(transcript);
+            };
+
+            recognition.onerror = (event) => {
+                removeBubble(listeningBubble);
+                if (event.error !== 'aborted') {
+                    addChatBubble('Could not hear you clearly. Please try again.', 'ai');
+                }
+            };
+
+            recognition.onend = () => {
+                micBtn.classList.remove('listening');
+                micBtn.innerHTML = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg>';
+                isListening = false;
+            };
+
+            recognition.start();
+        }
+
+        function sendTextQuestion() {
+            const input = document.getElementById('voice-text-input');
+            const text = input.value.trim();
+            if (!text) return;
+            input.value = '';
+            processQuestion(text);
+        }
+
+        function getMedicineContext() {
+            // Try current results first
+            {% if translated or english %}
+            const currentMeds = {{ (translated or english) | tojson
+        }};
+        if (currentMeds && currentMeds.length > 0) return currentMeds;
+        {% endif %}
+
+        // Fall back to saved view or latest history
+        if (window._savedViewMeds && window._savedViewMeds.length > 0) return window._savedViewMeds;
+
+        const history = JSON.parse(localStorage.getItem('prescription_history') || '[]');
+        if (history.length > 0) return history[0].medicines;
+
+        return [];
+        }
+
+        async function processQuestion(questionText) {
+            // Show user bubble
+            addChatBubble(questionText, 'user');
+
+            // Show thinking
+            const thinkingBubble = addChatBubble('🤔 Thinking...', 'thinking');
+
+            const medicines = getMedicineContext();
+
+            try {
+                const resp = await fetch('/ask', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        question: questionText,
+                        medicines: medicines,
+                        language: USER_LANG
+                    })
+                });
+
+                const data = await resp.json();
+                removeBubble(thinkingBubble);
+
+                // Show AI answer
+                addChatBubble(data.answer, 'ai');
+
+                // Read it aloud
+                speakText(data.answer);
+            } catch (err) {
+                removeBubble(thinkingBubble);
+                addChatBubble('Sorry, something went wrong. Please try again.', 'ai');
+            }
+        }
+
+        function speakText(text) {
+            stopSpeech();
+            const utterance = new SpeechSynthesisUtterance(text);
+            utterance.lang = SPEECH_LANG_MAP[USER_LANG] || 'en-IN';
+            utterance.rate = 0.9;
+            utterance.pitch = 1;
+            speechSynthesis.speak(utterance);
+        }
     </script>
 
 </body>

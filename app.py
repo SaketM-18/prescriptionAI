@@ -1,5 +1,6 @@
-from flask import Flask, render_template, request, make_response, redirect, url_for, session
-from pipeline import run_pipeline
+from flask import Flask, render_template, request, make_response, redirect, url_for, session, jsonify
+from pipeline import run_pipeline, client
+import time
 from gtts import gTTS
 import json, os, uuid
 
@@ -44,6 +45,11 @@ TRANSLATIONS = {
         "close_btn": "Close",
         "share_lang_title": "Share in which language?",
         "camera_btn": "Take Photo",
+        "generic_label": "Cheaper Option: ",
+        "chat_title": "Medicine Assistant",
+        "chat_subtitle": "Ask about your medicines",
+        "chat_welcome": "Hello! 👋 Ask me anything about your medicines. Tap the mic to speak!",
+        "chat_placeholder": "Type or tap mic...",
         "schedule_title": "📅 DAILY SCHEDULE",
         "morning": "☀️ MORNING",
         "afternoon": "🌤️ AFTERNOON",
@@ -82,6 +88,11 @@ TRANSLATIONS = {
         "close_btn": "बंद करें",
         "share_lang_title": "किस भाषा में भेजें?",
         "camera_btn": "फोटो लें",
+        "generic_label": "सस्ता विकल्प: ",
+        "chat_title": "दवाई सहायक",
+        "chat_subtitle": "अपनी दवाइयों के बारे में पूछें",
+        "chat_welcome": "नमस्ते! 👋 अपनी दवाइयों के बारे में कुछ भी पूछें। माइक दबाकर बोलें!",
+        "chat_placeholder": "टाइप करें या माइक दबाएं...",
         "schedule_title": "📅 दैनिक समय सारिणी",
         "morning": "☀️ सुबह",
         "afternoon": "🌤️ दोपहर",
@@ -125,7 +136,12 @@ TRANSLATIONS = {
         "night": "🌙 ರಾತ್ರಿ",
         "set_alarm": "ಅಲಾರಾಂ ಹೊಂದಿಸಿ",
         "tablet": "ಮಾತ್ರೆ",
-        "camera_btn": "ಫೋಟೋ ತೆಗೆದುಕೊಳ್ಳಿ"
+        "camera_btn": "ಫೋಟೋ ತೆಗೆದುಕೊಳ್ಳಿ",
+        "generic_label": "ಅಗ್ಗದ ಪರ್ಯಾಯ: ",
+        "chat_title": "ಔಷಧ ಸಹಾಯಕ",
+        "chat_subtitle": "ನಿಮ್ಮ ಔಷಧಗಳ ಬಗ್ಗೆ ಕೇಳಿ",
+        "chat_welcome": "ನಮಸ್ಕಾರ! 👋 ನಿಮ್ಮ ಔಷಧಗಳ ಬಗ್ಗೆ ಏನಾದರೂ ಕೇಳಿ. ಮೈಕ್ ಒತ್ತಿ ಮಾತನಾಡಿ!",
+        "chat_placeholder": "ಟೈಪ್ ಮಾಡಿ ಅಥವಾ ಮೈಕ್ ಒತ್ತಿ...",
     },
     "Tamil": {
         "hero_title": "உங்கள் ஆரோக்கியத்தைப்<br><span>புரிந்துகொள்ளுங்கள்</span>",
@@ -163,7 +179,12 @@ TRANSLATIONS = {
         "night": "🌙 இரவு",
         "set_alarm": "அலாரம் அமைக்கவும்",
         "tablet": "மாத்திரை",
-        "camera_btn": "புகைப்படம் எடு"
+        "camera_btn": "புகைப்படம் எடு",
+        "generic_label": "மலிவான மாற்று: ",
+        "chat_title": "மருந்து உதவியாளர்",
+        "chat_subtitle": "உங்கள் மருந்துகள் பற்றி கேளுங்கள்",
+        "chat_welcome": "வணக்கம்! 👋 உங்கள் மருந்துகள் பற்றி எது வேண்டுமானாலும் கேளுங்கள். மைக் தட்டி பேசுங்கள்!",
+        "chat_placeholder": "டைப் செய்யவும் அல்லது மைக் தட்டவும்...",
     },
     "Telugu": {
         "hero_title": "మీ ఆరోగ్యాన్ని<br><span>అర్థం చేసుకోండి</span>",
@@ -201,7 +222,12 @@ TRANSLATIONS = {
         "night": "🌙 రాత్రి",
         "set_alarm": "అలారం సెట్ చేయండి",
         "tablet": "టాబ్లెట్",
-        "camera_btn": "ఫోటో తీయండి"
+        "camera_btn": "ఫోటో తీయండి",
+        "generic_label": "తక్కువ ధర ప్రత్యామ్నాయం: ",
+        "chat_title": "మందు సహాయకుడు",
+        "chat_subtitle": "మీ మందుల గురించి అడగండి",
+        "chat_welcome": "నమస్కారం! 👋 మీ మందుల గురించి ఏదైనా అడగండి. మైక్ నొక్కి మాట్లాడండి!",
+        "chat_placeholder": "టైప్ చేయండి లేదా మైక్ నొక్కండి...",
     },
     "Malayalam": {
         "hero_title": "നിങ്ങളുടെ ആരോഗ്യം<br><span>മനസ്സിലാക്കുക</span>",
@@ -239,8 +265,13 @@ TRANSLATIONS = {
         "night": "🌙 രാത്രി",
         "set_alarm": "അലാറം വെക്കുക",
         "tablet": "ഗുളിക",
-        "camera_btn": "ഫോട്ടോ എടുക്കൂ"
-    }
+        "camera_btn": "ഫോട്ടോ എടുക്കൂ",
+        "generic_label": "വിലകുറഞ്ഞ ബദൽ: ",
+        "chat_title": "മരുന്ന് സഹായി",
+        "chat_subtitle": "നിങ്ങളുടെ മരുന്നുകളെക്കുറിച്ച് ചോദിക്കൂ",
+        "chat_welcome": "നമസ്കാരം! 👋 നിങ്ങളുടെ മരുന്നുകളെക്കുറിച്ച് എന്തും ചോദിക്കൂ. മൈക് അമർത്തി സംസാരിക്കൂ!",
+        "chat_placeholder": "ടൈപ്പ് ചെയ്യൂ അല്ലെങ്കിൽ മൈക് അമർത്തൂ...",
+    },
 }
 
 @app.route("/", methods=["GET", "POST"])
@@ -338,6 +369,62 @@ def reset_language():
     resp = make_response(redirect(url_for("index")))
     resp.set_cookie("user_lang", "", expires=0)
     return resp
+
+@app.route("/ask", methods=["POST"])
+def ask_question():
+    data = request.get_json()
+    question = data.get("question", "")
+    medicines = data.get("medicines", [])
+    language = data.get("language", "English")
+
+    if not question:
+        return jsonify({"answer": "Please ask a question."})
+
+    # Build medicine context
+    med_context = ""
+    for med in medicines:
+        name = med.get("medicine_name") or med.get("name") or "Medicine"
+        dosage = med.get("dosage", "")
+        purpose = med.get("purpose", "")
+        timing = med.get("frequency") or med.get("timing", "")
+        precautions = med.get("precautions", "")
+        generic = med.get("generic_alternative", "")
+        med_context += f"- {name}: Dosage={dosage}, Purpose={purpose}, Timing={timing}, Precautions={precautions}, Generic={generic}\n"
+
+    prompt = f"""You are a friendly, helpful medical assistant for rural villagers.
+The patient has these medicines prescribed:
+{med_context}
+
+The patient asks (in {language}): "{question}"
+
+Rules:
+1. Answer in {language} language, using very simple words a villager can understand.
+2. Keep the answer short (2-3 sentences max).
+3. DO NOT diagnose or prescribe new medicines.
+4. If the question is unrelated to their medicines, politely say you can only help with their prescribed medicines.
+5. Be warm and reassuring.
+
+Answer:"""
+
+    models = ["gemini-2.0-flash", "models/gemini-flash-latest", "gemini-2.0-flash-lite"]
+    answer = "Sorry, all models are busy. Please try again in a minute."
+    for i, model in enumerate(models):
+        try:
+            response = client.models.generate_content(
+                model=model,
+                contents=prompt
+            )
+            answer = response.text.strip()
+            break
+        except Exception as e:
+            if ("503" in str(e) or "429" in str(e)) and i < len(models) - 1:
+                print(f"Chat model {model} unavailable, trying {models[i+1]}...")
+                time.sleep(2)
+                continue
+            answer = f"Sorry, I could not process your question. ({str(e)})"
+            break
+
+    return jsonify({"answer": answer})
 
 if __name__ == "__main__":
     app.run(debug=True)
