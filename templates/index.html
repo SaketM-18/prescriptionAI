@@ -454,14 +454,30 @@
 
                 <div class="file-input-wrapper" style="margin-bottom: 25px;">
                     <label class="label">{{ texts.file_label }}</label>
-                    <div class="custom-file-container" style="display: flex; gap: 10px; align-items: center;">
-                        <label for="file-upload" class="custom-file-upload">
-                            {{ texts.choose_file }}
+                    <div class="custom-file-container"
+                        style="display: flex; gap: 10px; align-items: center; justify-content: center; flex-wrap: wrap;">
+                        <!-- Gallery Upload -->
+                        <label for="file-upload" class="custom-file-upload"
+                            style="flex: 1; min-width: 140px; text-align: center;">
+                            📁 {{ texts.choose_file }}
                         </label>
+
+                        <!-- Camera Capture -->
+                        <label for="camera-upload" class="custom-file-upload"
+                            style="flex: 1; min-width: 140px; text-align: center; background: linear-gradient(135deg, #10b981 0%, #059669 100%); border-color: #10b981;">
+                            📷 {{ texts.camera_btn or 'Take Photo' }}
+                        </label>
+                    </div>
+
+                    <div style="text-align: center; margin-top: 10px;">
                         <span id="file-name" style="color: #666; font-size: 0.9rem;">{{ texts.no_file }}</span>
                     </div>
-                    <input id="file-upload" type="file" name="image" required accept="image/*" style="display:none;"
+
+                    <!-- Hidden Inputs -->
+                    <input id="file-upload" type="file" name="image" accept="image/*" style="display:none;"
                         onchange="updateFileName(this)">
+                    <input id="camera-upload" type="file" name="image_camera" accept="image/*" capture="environment"
+                        style="display:none;" onchange="updateFileName(this)">
                 </div>
 
                 <button type="submit" class="upload-trigger" style="width:100%">{{ texts.process_btn }}</button>
