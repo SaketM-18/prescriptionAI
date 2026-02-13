@@ -594,6 +594,13 @@
                     </div>
                     <div class="slot-content"></div>
                 </div>
+
+                <div style="text-align: center; margin-top: 20px;">
+                    <button onclick="showSharePicker('schedule')"
+                        style="background:transparent; border:2px solid var(--primary); color:var(--primary); padding:10px 20px; border-radius:20px; font-weight:700; cursor:pointer;">
+                        📱 Share Schedule
+                    </button>
+                </div>
             </div>
         </div>
 
@@ -1037,6 +1044,7 @@
 
         // ===== WhatsApp Share Functions =====
         const ALL_TRANSLATIONS = {{ all_translations | tojson }};
+        let currentShareMode = 'report'; // 'report' or 'schedule'
 
         // Store medicine data for sharing
         {% if translated or english %}
@@ -1047,7 +1055,8 @@
         const SHARE_ENGLISH = [];
         {% endif %}
 
-        function showSharePicker() {
+        function showSharePicker(mode = 'report') {
+            currentShareMode = mode;
             document.getElementById('share-picker').style.display = 'flex';
         }
 
@@ -1061,32 +1070,62 @@
             document.getElementById('share-picker').style.display = 'none';
 
             const t = ALL_TRANSLATIONS[lang] || ALL_TRANSLATIONS['English'];
+            let text = '';
 
-            // Build the text summary
-            let text = `💊 *${t.report_title}*\n`;
-            text += `━━━━━━━━━━━━━━━\n\n`;
+            if (currentShareMode === 'schedule') {
+                // SCHEDULE SHARE
+                text = `📅 *${t.schedule_title}*\n━━━━━━━━━━━━━━━\n\n`;
+                const meds = SHARE_MEDICINES.length > 0 ? SHARE_MEDICINES : SHARE_ENGLISH;
 
-            const meds = SHARE_MEDICINES.length > 0 ? SHARE_MEDICINES : SHARE_ENGLISH;
+                const timeSlots = [
+                    { name: t.morning, check: (d) => parseDosage(d)[0] },
+                    { name: t.afternoon, check: (d) => parseDosage(d)[1] },
+                    { name: t.night, check: (d) => parseDosage(d)[2] }
+                ];
 
-            meds.forEach((med, i) => {
-                const name = med.medicine_name || med.name || 'Medicine';
-                const dosage = med.dosage || '-';
-                const frequency = med.frequency || med.timing || '-';
-                const purpose = med.purpose || '-';
-                const precautions = med.precautions || '';
+                let hasMeds = false;
+                timeSlots.forEach(slot => {
+                    const slotMeds = meds.filter(m => slot.check(m.dosage || ''));
+                    if (slotMeds.length > 0) {
+                        hasMeds = true;
+                        text += `*${slot.name}*\n`;
+                        slotMeds.forEach(m => {
+                            text += `• ${m.name || m.medicine_name || 'Medicine'}\n`;
+                            text += `  _${m.timing || m.frequency || ''}_\n`;
+                        });
+                        text += `\n`;
+                    }
+                });
 
-                text += `*${t.medicine_label} ${i + 1}: ${name}*\n`;
-                text += `📋 ${t.dosage_label}: ${dosage}\n`;
-                text += `🕒 ${t.frequency_label}: ${frequency}\n`;
-                text += `🎯 ${t.purpose_label}: ${purpose}\n`;
-                if (precautions) {
-                    text += `⚠️ ${t.caution_label}: ${precautions}\n`;
-                }
-                text += `\n`;
-            });
+                if (!hasMeds) text += `No medicines scheduled.\n\n`;
+                text += `━━━━━━━━━━━━━━━\n_Shared via ClearScript AI_`;
 
-            text += `━━━━━━━━━━━━━━━\n`;
-            text += `_Shared via ClearScript AI_`;
+            } else {
+                // REPORT SHARE
+                text = `💊 *${t.report_title}*\n━━━━━━━━━━━━━━━\n\n`;
+
+                const meds = SHARE_MEDICINES.length > 0 ? SHARE_MEDICINES : SHARE_ENGLISH;
+
+                meds.forEach((med, i) => {
+                    const name = med.medicine_name || med.name || 'Medicine';
+                    const dosage = med.dosage || '-';
+                    const frequency = med.frequency || med.timing || '-';
+                    const purpose = med.purpose || '-';
+                    const precautions = med.precautions || '';
+
+                    text += `*${t.medicine_label} ${i + 1}: ${name}*\n`;
+                    text += `📋 ${t.dosage_label}: ${dosage}\n`;
+                    text += `🕒 ${t.frequency_label}: ${frequency}\n`;
+                    text += `🎯 ${t.purpose_label}: ${purpose}\n`;
+                    if (precautions) {
+                        text += `⚠️ ${t.caution_label}: ${precautions}\n`;
+                    }
+                    text += `\n`;
+                });
+
+                text += `━━━━━━━━━━━━━━━\n`;
+                text += `_Shared via ClearScript AI_`;
+            }
 
             // Open WhatsApp with the text
             const encoded = encodeURIComponent(text);
