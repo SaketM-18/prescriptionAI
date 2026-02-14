@@ -409,8 +409,253 @@
             color: var(--accent);
             border-color: var(--accent) !important;
         }
+
+        /* Profile Selector */
+        .profile-selector {
+            display: flex;
+            gap: 10px;
+            overflow-x: auto;
+            padding-bottom: 5px;
+            margin-bottom: 20px;
+            scrollbar-width: none;
+        }
+
+        /* Profile Selector */
+        .profile-selector {
+            display: flex;
+            gap: 10px;
+            overflow-x: auto;
+            flex-wrap: wrap;
+            /* Allow wrapping to see all profiles */
+            padding-bottom: 5px;
+            margin-bottom: 20px;
+            scrollbar-width: thin;
+        }
+
+        .profile-btn {
+            flex: 0 0 auto;
+            background: #f3f4f6;
+            border: 2px solid #e5e7eb;
+            border-radius: 12px;
+            padding: 8px 12px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: #4b5563;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            min-width: 80px;
+            position: relative;
+        }
+
+        .profile-delete-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 20px;
+            height: 20px;
+            background: #ef444415;
+            color: #ef4444;
+            border-radius: 50%;
+            font-size: 14px;
+            margin-left: 4px;
+            opacity: 0.8;
+            transition: all 0.2s;
+        }
+
+        .profile-delete-btn:hover {
+            background: #ef4444;
+            color: white;
+            opacity: 1;
+        }
+
+        .profile-btn.selected {
+            background: #e0f2fe;
+            border-color: var(--accent);
+            color: var(--accent);
+        }
+
+        .profile-filter-chip {
+            background: white;
+            border: 1px solid #e5e7eb;
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: #666;
+            cursor: pointer;
+        }
+
+        .profile-filter-chip.active {
+            background: var(--text);
+            color: white;
+            border-color: var(--text);
+        }
+
+        /* Add Profile Form */
+        #add-profile-form {
+            display: none;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 20px;
+            background: #f9fafb;
+            padding: 10px;
+            border-radius: 12px;
+            border: 1px dashed #d1d5db;
+        }
     </style>
     <script>
+        // Profile Management
+        let PROFILES = JSON.parse(localStorage.getItem('clearscript_profiles')) || ['Myself', 'Father', 'Mother'];
+        let CURRENT_PROFILE = localStorage.getItem('selected_profile') || 'Myself';
+
+        // Translation Map for Standard Roles
+        const PROFILE_TRANSLATIONS = {
+            'Myself': '{{ texts.role_myself }}',
+            'Father': '{{ texts.role_father }}',
+            'Mother': '{{ texts.role_mother }}',
+            'Child': '{{ texts.role_child }}',
+            'Elder': '{{ texts.role_elder }}',
+            'Other': '{{ texts.role_other }}'
+        };
+
+        // Ensure current profile exists in list (if deleted or legacy)
+        if (!PROFILES.includes(CURRENT_PROFILE)) {
+            CURRENT_PROFILE = PROFILES[0] || 'Myself';
+        }
+
+        function renderProfiles() {
+            const container = document.getElementById('profile-list');
+            if (!container) return;
+
+            let html = '';
+            PROFILES.forEach(p => {
+                const isSelected = p === CURRENT_PROFILE ? 'selected' : '';
+                const color = stringToColor(p);
+                const style = isSelected ?
+                    `background:${color}20; border-color:${color}; color:${color};` :
+                    `border-left: 4px solid ${color};`;
+
+                // Use translation if available, else use raw name
+                const displayName = PROFILE_TRANSLATIONS[p] || p;
+                const initial = displayName.charAt(0).toUpperCase();
+
+                // Delete button (only if NOT Myself)
+                // We check if the raw profile name is 'Myself' OR if the displayed name matches 'Myself' translation
+                const isMyself = p === 'Myself' || displayName === '{{ texts.role_myself }}';
+                const deleteHtml = isMyself ? '' :
+                    `<div class="profile-delete-btn" onclick="deleteProfile(event, '${p}')">✕</div>`;
+
+                html += `
+                    <div class="profile-btn ${isSelected}" onclick="selectProfile('${p}')" style="${style}">
+                        <span style="font-size: 1rem;">${initial}</span>
+                        <span>${displayName}</span>
+                        ${deleteHtml}
+                    </div>
+                `;
+            });
+
+            // Add '+' Button
+            html += `
+                <div class="profile-btn" onclick="toggleAddProfile()" style="border-style: dashed; opacity: 0.7;">
+                    <span>{{ texts.role_add }}</span>
+                </div>
+            `;
+
+            container.innerHTML = html;
+        }
+
+        function selectProfile(profile) {
+            CURRENT_PROFILE = profile;
+            localStorage.setItem('selected_profile', profile);
+            renderProfiles();
+        }
+
+        function deleteProfile(event, profile) {
+            event.stopPropagation(); // Don't select when deleting
+
+            if (confirm(`{{ texts.role_delete_confirm }} '${profile}'?`)) {
+                // Remove from array
+                PROFILES = PROFILES.filter(p => p !== profile);
+                localStorage.setItem('clearscript_profiles', JSON.stringify(PROFILES));
+
+                // If deleted profile was selected, switch to Myself
+                if (CURRENT_PROFILE === profile) {
+                    selectProfile('Myself');
+                } else {
+                    renderProfiles();
+                }
+            }
+        }
+
+        function toggleAddProfile() {
+            const form = document.getElementById('add-profile-form');
+            if (form.style.display === 'flex') {
+                form.style.display = 'none';
+            } else {
+                form.style.display = 'flex';
+                document.getElementById('new-profile-name').focus();
+            }
+        }
+
+        function saveNewProfile() {
+            const input = document.getElementById('new-profile-name');
+            const name = input.value.trim();
+            if (!name) return;
+
+            if (!PROFILES.includes(name)) {
+                PROFILES.push(name);
+                localStorage.setItem('clearscript_profiles', JSON.stringify(PROFILES));
+                selectProfile(name); // Select new profile
+                input.value = '';
+                toggleAddProfile();
+            }
+        }
+
+        function startProfileVoice() {
+            if (!('webkitSpeechRecognition' in window)) {
+                alert('Voice input not supported on this browser.');
+                return;
+            }
+            const recognition = new webkitSpeechRecognition();
+            recognition.lang = '{{ language }}' === 'English' ? 'en-US' :
+                ('{{ language }}' === 'Hindi' ? 'hi-IN' : 'en-IN');
+
+            const btn = document.getElementById('profile-mic-btn');
+            btn.style.background = '#ef4444'; // Red to indicate recording
+
+            recognition.onresult = function (event) {
+                const transcript = event.results[0][0].transcript;
+                // Capitalize first letter
+                const formatted = transcript.charAt(0).toUpperCase() + transcript.slice(1);
+                document.getElementById('new-profile-name').value = formatted;
+                btn.style.background = 'var(--accent)';
+                saveNewProfile(); // Auto-save on voice
+            };
+
+            recognition.onerror = function () {
+                btn.style.background = 'var(--accent)';
+            };
+
+            recognition.onend = function () {
+                btn.style.background = 'var(--accent)';
+            };
+
+            recognition.start();
+        }
+
+        // Consistent color generator
+        function stringToColor(str) {
+            let hash = 0;
+            for (let i = 0; i < str.length; i++) {
+                hash = str.charCodeAt(i) + ((hash << 5) - hash);
+            }
+            const c = (hash & 0x00FFFFFF).toString(16).toUpperCase();
+            return '#' + "00000".substring(0, 6 - c.length) + c;
+        }
+
         function switchTab(tab) {
             // Toggle tab buttons
             document.getElementById('tab-btn-scan').classList.toggle('active', tab === 'scan');
@@ -565,6 +810,32 @@
         <div class="tab-content active" id="tab-scan">
             <div class="upload-section">
                 <form method="POST" enctype="multipart/form-data" onsubmit="return checkImageAndSubmit(this)">
+
+                    <label class="label" style="margin-top: 0;">{{ texts.role_title }}</label>
+                    <div class="profile-selector" id="profile-list">
+                        <!-- Populated by JS -->
+                    </div>
+
+                    <!-- Hidden Add Profile Form -->
+                    <div id="add-profile-form">
+                        <input type="text" id="new-profile-name" placeholder="{{ texts.role_new_placeholder }}" style="
+                            flex: 1; padding: 10px; border: 1px solid #d1d5db; border-radius: 8px; outline: none;
+                        ">
+                        <button type="button" id="profile-mic-btn" onclick="startProfileVoice()" style="
+                            background: var(--accent); color: white; border: none; width: 40px; height: 40px; 
+                            border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center;
+                        ">🎤</button>
+                        <button type="button" onclick="saveNewProfile()" style="
+                            background: #10b981; color: white; border: none; padding: 0 16px; height: 40px; 
+                            border-radius: 8px; cursor: pointer; font-weight: 600;
+                        ">{{ texts.role_save }}</button>
+                    </div>
+
+                    <script>
+                        // Init selection
+                        document.addEventListener('DOMContentLoaded', renderProfiles);
+                    </script>
+
                     <label class="label">{{ texts.lang_label }}</label>
                     <select name="language" style="margin-bottom: 16px;">
                         <option value="English" {% if language=='English' %}selected{% endif %}>English</option>
@@ -646,6 +917,12 @@
 
         <!-- TAB 2: My History -->
         <div class="tab-content" id="tab-history">
+            <!-- Filter Chips -->
+            <div style="display: flex; gap: 8px; padding-bottom: 16px; overflow-x: auto; scrollbar-width: none;"
+                id="history-filters">
+                <!-- Populated by JS -->
+            </div>
+
             <div id="history-list-inline">
                 <!-- Populated by JS -->
             </div>
@@ -1305,28 +1582,74 @@
             }
         }
 
+        let currentHistoryFilter = 'All';
+
+        function filterHistory(profile) {
+            currentHistoryFilter = profile;
+            renderHistoryInline(); // Re-render logic handles chips
+        }
+
         function renderHistoryInline() {
             const history = getHistory();
             const container = document.getElementById('history-list-inline');
+            const filterContainer = document.getElementById('history-filters');
+
             if (!container) return;
+
+            // 1. Render Filters
+            if (filterContainer) {
+                // Collect all unique profiles from history + active profiles
+                const usedProfiles = new Set(PROFILES); // Start with saved profiles
+                history.forEach(h => usedProfiles.add(h.profile || 'Myself'));
+
+                let filterHtml = `<div class="profile-filter-chip ${currentHistoryFilter === 'All' ? 'active' : ''}" onclick="filterHistory('All')">{{ texts.filter_all }}</div>`;
+
+                Array.from(usedProfiles).sort().forEach(p => {
+                    const isActive = currentHistoryFilter === p ? 'active' : '';
+                    const displayName = PROFILE_TRANSLATIONS[p] || p;
+                    filterHtml += `<div class="profile-filter-chip ${isActive}" onclick="filterHistory('${p}')">${displayName}</div>`;
+                });
+                filterContainer.innerHTML = filterHtml;
+            }
 
             if (history.length === 0) {
                 container.innerHTML = '<div class="no-history-msg">{{ texts.no_history }}</div>';
                 return;
             }
 
+            // 2. Filter history
+            const filtered = currentHistoryFilter === 'All'
+                ? history
+                : history.filter(h => (h.profile || 'Myself') === currentHistoryFilter);
+
+            if (filtered.length === 0) {
+                container.innerHTML = '<div class="no-history-msg" style="padding:20px;">No records found for this profile.</div>';
+                return;
+            }
+
             let html = '';
-            history.forEach((entry, index) => {
+            filtered.forEach((entry, index) => {
+                // Determine original index in full history for actions
+                const originalIndex = history.indexOf(entry);
+
                 const medNames = entry.medicines.slice(0, 3).map(m => m.name || m.medicine_name || 'Medicine').join(', ');
                 const extra = entry.medicines.length > 3 ? ` +${entry.medicines.length - 3}` : '';
+
+                const profileKey = entry.profile || 'Myself';
+                const profileDisplay = PROFILE_TRANSLATIONS[profileKey] || profileKey;
+                const color = stringToColor(profileKey);
+
                 html += `
-                    <div class="history-card">
-                        <div class="history-card-date">${entry.date} · ${entry.language || ''}</div>
+                    <div class="history-card" style="border-left-color: ${color};">
+                        <div style="display:flex; justify-content:space-between; margin-bottom:6px;">
+                            <div class="history-card-date">${entry.date} · ${entry.language || ''}</div>
+                            <div style="font-size:0.75rem; background:${color}20; color:${color}; padding:2px 8px; border-radius:10px; font-weight:700;">${profileDisplay}</div>
+                        </div>
                         <div class="history-card-meds">${medNames}${extra}</div>
                         <div class="history-card-actions">
-                            <button class="view-history-btn" onclick="viewSavedResult(${index})">{{ texts.view_btn }}</button>
-                            <button style="padding:8px 16px; border-radius:6px; border:none; cursor:pointer; font-weight:600; font-size:0.85rem; background:#25D366; color:white;" onclick="shareHistoryItem(${index})">{{ texts.share_btn or 'Share' }}</button>
-                            <button class="delete-history-btn" onclick="deleteFromHistory(${index})">{{ texts.delete_btn }}</button>
+                            <button class="view-history-btn" onclick="viewSavedResult(${originalIndex})">{{ texts.view_btn }}</button>
+                            <button style="padding:8px 16px; border-radius:6px; border:none; cursor:pointer; font-weight:600; font-size:0.85rem; background:#25D366; color:white;" onclick="shareHistoryItem(${originalIndex})">{{ texts.share_btn or 'Share' }}</button>
+                            <button class="delete-history-btn" onclick="deleteFromHistory(${originalIndex})">{{ texts.delete_btn }}</button>
                         </div>
                     </div>
                 `;
@@ -1641,7 +1964,8 @@
         saveToHistory({
             date: dateStr,
             language: '{{ language }}',
-            medicines: medicines
+            medicines: medicines,
+            profile: localStorage.getItem('selected_profile') || 'Myself'
         });
 
         // ALSO RENDER SCHEDULE
