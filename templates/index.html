@@ -3,12 +3,18 @@
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ClearScript AI</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Prescription AI</title>
+
+    <!-- PWA Support -->
+    <link rel="manifest" href="/manifest.json">
+    <meta name="theme-color" content="#991b1b">
+    <link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/3063/3063176.png">
+
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link
-        href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;700&family=Merriweather:wght@300;400;700;900&display=swap"
+        href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Space+Grotesk:wght@300;400;500;600;700&display=swap"
         rel="stylesheet">
     <style>
         :root {
@@ -1790,11 +1796,11 @@
 
         // Store medicine data for sharing
         {% if translated or english %}
-        let SHARE_MEDICINES = {{ (translated if translated else english) | tojson }};
-        let SHARE_ENGLISH = {{ english | tojson }};
+        var SHARE_MEDICINES = {{ (translated if translated else english) | tojson }};
+        var SHARE_ENGLISH = {{ english | tojson }};
         {% else %}
-        let SHARE_MEDICINES = [];
-        let SHARE_ENGLISH = [];
+        var SHARE_MEDICINES = [];
+        var SHARE_ENGLISH = [];
         {% endif %}
 
         function showSharePicker(mode = 'report') {
@@ -1937,20 +1943,98 @@
             }
         }
 
-        function setAlarm(timeOfDay) {
-            // Android Intent for Clock App
-            // Morning: 8 AM, Afternoon: 2 PM, Night: 9 PM
-            let hour = 8;
-            if (timeOfDay === 'afternoon') hour = 14;
-            if (timeOfDay === 'night') hour = 21;
 
-            const intentUrl = `intent://com.android.deskclock.action.SET_ALARM?HOUR=${hour}&MINUTES=00&SKIP_UI=true#Intent;scheme=android-app;package=com.google.android.deskclock;end`;
 
-            // Try opening intent (works on Android)
-            window.location.href = intentUrl;
 
-            // Fallback for visual confirmation
-            // alert(`🔔 Setting alarm for ${timeOfDay.toUpperCase()}... \n(This works best on Android phones)`);
+
+        function setAlarm(type) {
+            // Request permission
+            if (!("Notification" in window)) {
+                alert("This browser does not support desktop notifications");
+                return;
+            }
+
+            Notification.requestPermission().then(permission => {
+                if (permission === "granted") {
+                    // Schedule notification (Demo: 5 seconds for testing, real app would use target time)
+                    // In a real app, calculate milliseconds until 8am/1pm/9pm
+
+                    const now = new Date();
+                    let targetTime = new Date();
+                    let message = "";
+
+                    if (type === 'morning') {
+                        targetTime.setHours(8, 0, 0, 0);
+                        message = "Time for your morning medications! ☀️";
+                    } else if (type === 'afternoon') {
+                        targetTime.setHours(13, 0, 0, 0);
+                        message = "Don't forget your afternoon meds. 🌤️";
+                    } else if (type === 'night') {
+                        targetTime.setHours(21, 0, 0, 0);
+                        message = "Night time medications. Sleep well! 🌙";
+                    }
+
+                    // If time passed, Schedule for tomorrow
+                    if (targetTime < now) {
+                        targetTime.setDate(targetTime.getDate() + 1);
+                    }
+
+                    const timeDiff = targetTime - now;
+
+                    // Show immediate toast confirmation
+                    const formattedTime = targetTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+                    showToast(`Alarm set for ${formattedTime}`);
+
+                    // Create the actual system notification timer
+                    setTimeout(() => {
+                        // Play sound
+                        playNotificationSound();
+
+                        // Show notification
+                        if (navigator.serviceWorker && navigator.serviceWorker.ready) {
+                            navigator.serviceWorker.ready.then(registration => {
+                                registration.showNotification("Medication Reminder", {
+                                    body: message,
+                                    icon: "https://cdn-icons-png.flaticon.com/512/3063/3063176.png",
+                                    vibrate: [200, 100, 200]
+                                });
+                            });
+                        } else {
+                            new Notification("Medication Reminder", {
+                                body: message,
+                                icon: "https://cdn-icons-png.flaticon.com/512/3063/3063176.png"
+                            });
+                        }
+                    }, timeDiff);
+
+                    // Also fire a test one in 3 seconds for immediate verification
+                    setTimeout(() => {
+                        playNotificationSound();
+                        new Notification("Test Reminder", { body: `Verifying alarms work for ${type}` });
+                    }, 3000);
+
+                } else {
+                    alert("Please allow notifications to set alarms.");
+                }
+            });
+        }
+
+        function playNotificationSound() {
+            const audio = new Audio('https://actions.google.com/sounds/v1/alarms/beep_short.ogg');
+            audio.play().catch(e => console.log("Audio play failed", e));
+        }
+
+        // Simple Toast Notification
+        function showToast(message) {
+            let toast = document.createElement('div');
+            toast.className = 'toast-notification';
+            toast.innerText = message;
+            document.body.appendChild(toast);
+            setTimeout(() => { toast.classList.add('show'); }, 100);
+            setTimeout(() => {
+                toast.classList.remove('show');
+                setTimeout(() => toast.remove(), 300);
+            }, 3000);
         }
 
         // ===== Auto-Save Results =====
