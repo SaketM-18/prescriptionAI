@@ -58,7 +58,12 @@ TRANSLATIONS = {
         "set_alarm": "Set Alarm",
         "tablet": "tablet(s)",
         "interaction_title": "⚠️ Dangerous Combinations",
-        "interaction_advice": "👨‍⚕️ Please consult your doctor about these combinations"
+        "interaction_advice": "👨‍⚕️ Please consult your doctor about these combinations",
+        "error_blurry": "📸 Photo is blurry. Please hold steady and try again.",
+        "error_dark": "📸 Photo is too dark. Try in better light.",
+        "error_read_fail": "🔄 Could not read the prescription. Please try again.",
+        "error_retry": "Try Again",
+        "error_manual_fallback": "Can't scan? Type medicine name and ask AI"
     },
     "Hindi": {
         "hero_title": "अपनी सेहत<br><span>को समझें</span>",
@@ -104,7 +109,12 @@ TRANSLATIONS = {
         "set_alarm": "अलार्म सेट करें",
         "tablet": "गोली",
         "interaction_title": "⚠️ खतरनाक संयोजन",
-        "interaction_advice": "👨‍⚕️ कृपया इन संयोजनों के बारे में अपने डॉक्टर से सलाह लें"
+        "interaction_advice": "👨‍⚕️ कृपया इन संयोजनों के बारे में अपने डॉक्टर से सलाह लें",
+        "error_blurry": "📸 फोटो धुंधली है। कृपया स्थिर रखें और फिर से कोशिश करें।",
+        "error_dark": "📸 फोटो बहुत अंधेरी है। बेहतर रोशनी में कोशिश करें।",
+        "error_read_fail": "🔄 दवाई पढ़ नहीं पाई। कृपया फिर से कोशिश करें।",
+        "error_retry": "फिर से कोशिश करें",
+        "error_manual_fallback": "स्कैन नहीं हो रहा? दवाई का नाम लिखें और AI से पूछें"
     },
     "Kannada": {
         "hero_title": "ನಿಮ್ಮ ಆರೋಗ್ಯವನ್ನು<br><span>ಅರ್ಥಮಾಡಿಕೊಳ್ಳಿ</span>",
@@ -150,7 +160,12 @@ TRANSLATIONS = {
         "chat_welcome": "ನಮಸ್ಕಾರ! 👋 ನಿಮ್ಮ ಔಷಧಗಳ ಬಗ್ಗೆ ಏನಾದರೂ ಕೇಳಿ. ಮೈಕ್ ಒತ್ತಿ ಮಾತನಾಡಿ!",
         "chat_placeholder": "ಟೈಪ್ ಮಾಡಿ ಅಥವಾ ಮೈಕ್ ಒತ್ತಿ...",
         "interaction_title": "⚠️ ಅಪಾಯಕಾರಿ ಸಂಯೋಜನೆಗಳು",
-        "interaction_advice": "👨‍⚕️ ದಯವಿಟ್ಟು ಈ ಸಂಯೋಜನೆಗಳ ಬಗ್ಗೆ ನಿಮ್ಮ ವೈದ್ಯರನ್ನು ಸಂಪರ್ಕಿಸಿ"
+        "interaction_advice": "👨‍⚕️ ದಯವಿಟ್ಟು ಈ ಸಂಯೋಜನೆಗಳ ಬಗ್ಗೆ ನಿಮ್ಮ ವೈದ್ಯರನ್ನು ಸಂಪರ್ಕಿಸಿ",
+        "error_blurry": "📸 ಫೋಟೋ ಮಸುಕಾಗಿದೆ. ಸ್ಥಿರವಾಗಿ ಹಿಡಿದು ಮತ್ತೊಮ್ಮೆ ಪ್ರಯತ್ನಿಸಿ.",
+        "error_dark": "📸 ಫೋಟೋ ತುಂಬಾ ಕತ್ತಲೆಯಾಗಿದೆ. ಉತ್ತಮ ಬೆಳಕಿನಲ್ಲಿ ಪ್ರಯತ್ನಿಸಿ.",
+        "error_read_fail": "🔄 ಪ್ರಿಸ್ಕ್ರಿಪ್ಷನ್ ಓದಲಾಗಲಿಲ್ಲ. ದಯವಿಟ್ಟು ಮತ್ತೊಮ್ಮೆ ಪ್ರಯತ್ನಿಸಿ.",
+        "error_retry": "ಮತ್ತೊಮ್ಮೆ ಪ್ರಯತ್ನಿಸಿ",
+        "error_manual_fallback": "ಸ್ಕ್ಯಾನ್ ಆಗುತ್ತಿಲ್ಲ? ಔಷಧಿ ಹೆಸರು ಟೈಪ್ ಮಾಡಿ AI ಗೆ ಕೇಳಿ"
     },
     "Tamil": {
         "hero_title": "உங்கள் ஆரோக்கியத்தைப்<br><span>புரிந்துகொள்ளுங்கள்</span>",
@@ -196,7 +211,12 @@ TRANSLATIONS = {
         "chat_welcome": "வணக்கம்! 👋 உங்கள் மருந்துகள் பற்றி எது வேண்டுமானாலும் கேளுங்கள். மைக் தட்டி பேசுங்கள்!",
         "chat_placeholder": "டைப் செய்யவும் அல்லது மைக் தட்டவும்...",
         "interaction_title": "⚠️ ஆபத்தான சேர்க்கைகள்",
-        "interaction_advice": "👨‍⚕️ இந்த சேர்க்கைகள் பற்றி உங்கள் மருத்துவரிடம் ஆலோசிக்கவும்"
+        "interaction_advice": "👨‍⚕️ இந்த சேர்க்கைகள் பற்றி உங்கள் மருத்துவரிடம் ஆலோசிக்கவும்",
+        "error_blurry": "📸 புகைப்படம் மங்கலாக உள்ளது. நிலையாக பிடித்து மீண்டும் முயற்சிக்கவும்.",
+        "error_dark": "📸 புகைப்படம் மிகவும் இருட்டாக உள்ளது. நல்ல வெளிச்சத்தில் முயற்சிக்கவும்.",
+        "error_read_fail": "🔄 மருந்து சீட்டை படிக்க முடியவில்லை. மீண்டும் முயற்சிக்கவும்.",
+        "error_retry": "மீண்டும் முயற்சிக்கவும்",
+        "error_manual_fallback": "ஸ்கேன் ஆகவில்லையா? மருந்து பெயரை டைப் செய்து AI யிடம் கேளுங்கள்"
     },
     "Telugu": {
         "hero_title": "మీ ఆరోగ్యాన్ని<br><span>అర్థం చేసుకోండి</span>",
@@ -242,7 +262,12 @@ TRANSLATIONS = {
         "chat_welcome": "నమస్కారం! 👋 మీ మందుల గురించి ఏదైనా అడగండి. మైక్ నొక్కి మాట్లాడండి!",
         "chat_placeholder": "టైప్ చేయండి లేదా మైక్ నొక్కండి...",
         "interaction_title": "⚠️ ప్రమాదకరమైన కలయికలు",
-        "interaction_advice": "👨‍⚕️ దయచేసి ఈ కలయికల గురించి మీ వైద్యుడిని సంప్రదించండి"
+        "interaction_advice": "👨‍⚕️ దయచేసి ఈ కలయికల గురించి మీ వైద్యుడిని సంప్రదించండి",
+        "error_blurry": "📸 ఫోటో అస్పష్టంగా ఉంది. స్థిరంగా పట్టుకుని మళ్లీ ప్రయత్నించండి.",
+        "error_dark": "📸 ఫోటో చాలా చీకటిగా ఉంది. మంచి వెలుతురులో ప్రయత్నించండి.",
+        "error_read_fail": "🔄 ప్రిస్క్రిప్షన్ చదవలేకపోయాము. దయచేసి మళ్లీ ప్రయత్నించండి.",
+        "error_retry": "మళ్లీ ప్రయత్నించండి",
+        "error_manual_fallback": "స్కాన్ కావడం లేదా? మందు పేరు టైప్ చేసి AI ని అడగండి"
     },
     "Malayalam": {
         "hero_title": "നിങ്ങളുടെ ആരോഗ്യം<br><span>മനസ്സിലാക്കുക</span>",
@@ -288,7 +313,12 @@ TRANSLATIONS = {
         "chat_welcome": "നമസ്കാരം! 👋 നിങ്ങളുടെ മരുന്നുകളെക്കുറിച്ച് എന്തും ചോദിക്കൂ. മൈക് അമർത്തി സംസാരിക്കൂ!",
         "chat_placeholder": "ടൈപ്പ് ചെയ്യൂ അല്ലെങ്കിൽ മൈക് അമർത്തൂ...",
         "interaction_title": "⚠️ അപകടകരമായ സംയോജനങ്ങൾ",
-        "interaction_advice": "👨‍⚕️ ദയവായി ഈ സംയോജനങ്ങളെ കുറിച്ച് നിങ്ങളുടെ ഡോക്ടറോട് ചോദിക്കൂ"
+        "interaction_advice": "👨‍⚕️ ദയവായി ഈ സംയോജനങ്ങളെ കുറിച്ച് നിങ്ങളുടെ ഡോക്ടറോട് ചോദിക്കൂ",
+        "error_blurry": "📸 ഫോട്ടോ മങ്ങിയതാണ്. സ്ഥിരമായി പിടിച്ച് വീണ്ടും ശ്രമിക്കുക.",
+        "error_dark": "📸 ഫോട്ടോ വളരെ ഇരുട്ടാണ്. നല്ല വെളിച്ചത്തിൽ ശ്രമിക്കുക.",
+        "error_read_fail": "🔄 പ്രിസ്ക്രിപ്ഷൻ വായിക്കാൻ കഴിഞ്ഞില്ല. ദയവായി വീണ്ടും ശ്രമിക്കുക.",
+        "error_retry": "വീണ്ടും ശ്രമിക്കുക",
+        "error_manual_fallback": "സ്കാൻ ആവുന്നില്ലേ? മരുന്നിന്റെ പേര് ടൈപ്പ് ചെയ്ത് AI യോട് ചോദിക്കൂ"
     },
 }
 
@@ -310,6 +340,7 @@ def index():
     translated = None
     dangerous_combinations = []
     audio_path = None
+    error_type = None
 
     if request.method == "POST":
         language = request.form.get("language")
@@ -323,56 +354,64 @@ def index():
             save_path = os.path.join(UPLOAD_FOLDER, filename)
             image.save(save_path)
             
-            # 1. Run Pipeline (Returns JSON String)
-            raw_response = run_pipeline(save_path, language)
-            
             try:
-                data = json.loads(raw_response)
-                english = data.get("english", [])
-                translated = data.get("translated", [])
-                dangerous_combinations = data.get("dangerous_combinations", [])
-
-                # 3. Generate Audio
-                audio_text = f"Prescription Guide in {language}. "
+                # 1. Run Pipeline (Returns JSON String)
+                raw_response = run_pipeline(save_path, language)
                 
-                # Determine which list to read (translated if available, else english)
-                med_list = translated if translated else english
+                try:
+                    data = json.loads(raw_response)
+                    english = data.get("english", [])
+                    translated = data.get("translated", [])
+                    dangerous_combinations = data.get("dangerous_combinations", [])
+
+                    if not english and not translated:
+                        error_type = "no_medicines"
+                    else:
+                        # 3. Generate Audio
+                        audio_text = f"Prescription Guide in {language}. "
+                        
+                        # Determine which list to read (translated if available, else english)
+                        med_list = translated if translated else english
+                        
+                        for med in med_list:
+                            # Robust extraction with defaults
+                            name = med.get('medicine_name') or med.get('name') or "Medicine"
+                            purpose = med.get('purpose') or "As prescribed"
+                            dosage = med.get('dosage') or "As directed"
+                            timing = med.get('frequency') or med.get('timing') or ""
+                            
+                            audio_text += f"{name}. {purpose}. Dosage: {dosage}. {timing}. "
+
+                        # Add interaction warnings to audio
+                        if dangerous_combinations:
+                            audio_text += "Warning! "
+                            for combo in dangerous_combinations:
+                                risk_text = combo.get('risk_translated') or combo.get('risk', '')
+                                meds = combo.get('medicines', '')
+                                audio_text += f"{meds}: {risk_text}. "
+
+                        # Map Language to GTTS Code
+                        lang_code_map = {
+                            "Hindi": "hi",
+                            "Tamil": "ta",
+                            "Telugu": "te",
+                            "Kannada": "kn",
+                            "Malayalam": "ml",
+                            "English": "en"
+                        }
+
+                        tts = gTTS(text=audio_text, lang=lang_code_map.get(language, "en"))
+                        audio_filename = f"{uuid.uuid4()}.mp3"
+                        tts.save(os.path.join(AUDIO_FOLDER, audio_filename))
+                        audio_path = f"audio/{audio_filename}"
                 
-                for med in med_list:
-                    # Robust extraction with defaults
-                    name = med.get('medicine_name') or med.get('name') or "Medicine"
-                    purpose = med.get('purpose') or "As prescribed"
-                    dosage = med.get('dosage') or "As directed"
-                    timing = med.get('frequency') or med.get('timing') or ""
-                    
-                    audio_text += f"{name}. {purpose}. Dosage: {dosage}. {timing}. "
+                except (json.JSONDecodeError, ValueError) as e:
+                    print(f"Error parsing AI response: {e}")
+                    error_type = "parse_error"
 
-                # Add interaction warnings to audio
-                if dangerous_combinations:
-                    audio_text += "Warning! "
-                    for combo in dangerous_combinations:
-                        risk_text = combo.get('risk_translated') or combo.get('risk', '')
-                        meds = combo.get('medicines', '')
-                        audio_text += f"{meds}: {risk_text}. "
-
-                # Map Language to GTTS Code
-                lang_code_map = {
-                    "Hindi": "hi",
-                    "Tamil": "ta",
-                    "Telugu": "te",
-                    "Kannada": "kn",
-                    "Malayalam": "ml",
-                    "English": "en"
-                }
-
-                tts = gTTS(text=audio_text, lang=lang_code_map.get(language, "en"))
-                audio_filename = f"{uuid.uuid4()}.mp3"
-                tts.save(os.path.join(AUDIO_FOLDER, audio_filename))
-                audio_path = f"audio/{audio_filename}"
-            
             except Exception as e:
-                print(f"Error parsing AI response: {e}")
-                # Fallback: maintain None for english/translated to show error or empty
+                print(f"Pipeline/API error: {e}")
+                error_type = "api_error"
 
     return render_template(
         "index.html",
@@ -382,7 +421,8 @@ def index():
         language=user_lang,
         audio_path=audio_path,
         texts=texts,
-        all_translations=TRANSLATIONS
+        all_translations=TRANSLATIONS,
+        error_type=error_type
     )
 
 @app.route("/set_language/<lang>")

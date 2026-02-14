@@ -426,8 +426,91 @@
         function showLoading() {
             document.getElementById('loading').style.display = 'flex';
         }
+
+        // Image quality check before upload
+        function checkImageAndSubmit(form) {
+            const fileInput = form.querySelector('input[name="image"]');
+            const cameraInput = form.querySelector('input[name="image_camera"]');
+            const activeInput = (cameraInput && cameraInput.files.length > 0) ? cameraInput : fileInput;
+
+            if (!activeInput || !activeInput.files || activeInput.files.length === 0) {
+                // No file selected — let server handle it
+                showLoading();
+                return true;
+            }
+
+            const file = activeInput.files[0];
+            const warningEl = document.getElementById('image-quality-warning');
+
+            // Read file and check on canvas
+            const reader = new FileReader();
+            reader.onload = function (e) {
+                const img = new Image();
+                img.onload = function () {
+                    const canvas = document.createElement('canvas');
+                    const ctx = canvas.getContext('2d');
+                    // Use small sample for speed
+                    const sampleW = Math.min(img.width, 300);
+                    const sampleH = Math.min(img.height, 300);
+                    canvas.width = sampleW;
+                    canvas.height = sampleH;
+                    ctx.drawImage(img, 0, 0, sampleW, sampleH);
+
+                    const imageData = ctx.getImageData(0, 0, sampleW, sampleH);
+                    const pixels = imageData.data;
+
+                    // Calculate brightness
+                    let totalBrightness = 0;
+                    let pixelCount = pixels.length / 4;
+                    for (let i = 0; i < pixels.length; i += 4) {
+                        totalBrightness += (pixels[i] * 0.299 + pixels[i + 1] * 0.587 + pixels[i + 2] * 0.114);
+                    }
+                    const avgBrightness = totalBrightness / pixelCount;
+
+                    // Calculate blur (Laplacian variance)
+                    let grayPixels = [];
+                    for (let i = 0; i < pixels.length; i += 4) {
+                        grayPixels.push(pixels[i] * 0.299 + pixels[i + 1] * 0.587 + pixels[i + 2] * 0.114);
+                    }
+                    let laplacianVar = 0;
+                    for (let y = 1; y < sampleH - 1; y++) {
+                        for (let x = 1; x < sampleW - 1; x++) {
+                            const idx = y * sampleW + x;
+                            const lap = -4 * grayPixels[idx] + grayPixels[idx - 1] + grayPixels[idx + 1]
+                                + grayPixels[idx - sampleW] + grayPixels[idx + sampleW];
+                            laplacianVar += lap * lap;
+                        }
+                    }
+                    laplacianVar /= ((sampleW - 2) * (sampleH - 2));
+
+                    // Thresholds
+                    if (avgBrightness < 40) {
+                        warningEl.textContent = '{{ texts.error_dark }}';
+                        warningEl.style.display = 'block';
+                        return; // Don't submit
+                    }
+                    if (laplacianVar < 100) {
+                        warningEl.textContent = '{{ texts.error_blurry }}';
+                        warningEl.style.display = 'block';
+                        return; // Don't submit
+                    }
+
+                    // Quality OK — submit
+                    warningEl.style.display = 'none';
+                    showLoading();
+                    form.submit();
+                };
+                img.src = e.target.result;
+            };
+            reader.readAsDataURL(file);
+            return false; // Prevent default submit, we'll submit manually
+        }
+
         function updateFileName(input) {
             const fileNameSpan = document.getElementById('file-name');
+            // Hide quality warning when new file chosen
+            const warningEl = document.getElementById('image-quality-warning');
+            if (warningEl) warningEl.style.display = 'none';
             if (input.files && input.files.length > 0) {
                 fileNameSpan.textContent = input.files[0].name;
                 fileNameSpan.style.color = 'var(--text)';
@@ -481,7 +564,7 @@
         <!-- TAB 1: New Scan -->
         <div class="tab-content active" id="tab-scan">
             <div class="upload-section">
-                <form method="POST" enctype="multipart/form-data" onsubmit="showLoading()">
+                <form method="POST" enctype="multipart/form-data" onsubmit="return checkImageAndSubmit(this)">
                     <label class="label">{{ texts.lang_label }}</label>
                     <select name="language" style="margin-bottom: 16px;">
                         <option value="English" {% if language=='English' %}selected{% endif %}>English</option>
@@ -529,6 +612,34 @@
                         </svg>
                         {{ texts.process_btn }}
                     </button>
+
+                    <!-- Image quality warning -->
+                    <div id="image-quality-warning" style="
+                        display: none;
+                        background: #fff3cd;
+                        border: 2px solid #ffc107;
+                        border-radius: 12px;
+                        padding: 14px 18px;
+                        margin-top: 16px;
+                        text-align: center;
+                        font-size: 1.05rem;
+                        font-weight: 600;
+                        color: #856404;
+                    "></div>
+
+                    <!-- Manual fallback option -->
+                    <div style="text-align: center; margin-top: 14px;">
+                        <a href="#" onclick="event.preventDefault(); openVoiceChat();" style="
+                            color: var(--accent);
+                            font-size: 0.95rem;
+                            text-decoration: none;
+                            display: inline-flex;
+                            align-items: center;
+                            gap: 6px;
+                        ">
+                            💬 {{ texts.error_manual_fallback }}
+                        </a>
+                    </div>
                 </form>
             </div>
         </div>
@@ -601,6 +712,60 @@
             </div>
         </div>
     </div>
+
+    <!-- Error Recovery Section -->
+    {% if error_type %}
+    <div class="container" style="max-width: 600px; padding-bottom: 40px;">
+        <div style="
+            background: #fef2f2;
+            border: 2px solid #ef4444;
+            border-radius: 16px;
+            padding: 28px 24px;
+            text-align: center;
+            margin-top: 20px;
+        ">
+            <div style="font-size: 3rem; margin-bottom: 12px;">😔</div>
+            <div style="
+                font-family: var(--font-heading);
+                font-size: 1.15rem;
+                font-weight: 700;
+                color: #dc2626;
+                margin-bottom: 16px;
+                line-height: 1.5;
+            ">{{ texts.error_read_fail }}</div>
+
+            <!-- Retry Button -->
+            <button onclick="window.scrollTo({top: 0, behavior: 'smooth'}); switchTab('scan');" style="
+                background: var(--accent);
+                color: white;
+                border: none;
+                border-radius: 12px;
+                padding: 16px 32px;
+                font-size: 1.1rem;
+                font-weight: 700;
+                cursor: pointer;
+                display: inline-flex;
+                align-items: center;
+                gap: 8px;
+                margin-bottom: 16px;
+                min-height: 56px;
+                font-family: var(--font-heading);
+            ">🔄 {{ texts.error_retry }}</button>
+
+            <div style="margin-top: 8px;">
+                <a href="#" onclick="event.preventDefault(); openVoiceChat();" style="
+                    color: var(--accent);
+                    font-size: 1rem;
+                    text-decoration: none;
+                    font-weight: 600;
+                    display: inline-flex;
+                    align-items: center;
+                    gap: 6px;
+                ">💬 {{ texts.error_manual_fallback }}</a>
+            </div>
+        </div>
+    </div>
+    {% endif %}
 
     <!-- Results Section (Wizard/Card Stack) -->
     {% if translated or english %}
