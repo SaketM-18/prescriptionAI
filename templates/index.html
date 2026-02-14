@@ -629,6 +629,54 @@
             {% endif %}
         </div>
 
+        <!-- ⚠️ Dangerous Drug Interactions -->
+        {% if dangerous_combinations and dangerous_combinations|length > 0 %}
+        <div class="interaction-warnings" style="margin-bottom: 30px;">
+            <div style="
+                background: #fef2f2;
+                border: 2px solid #dc2626;
+                border-radius: 12px;
+                padding: 16px 20px;
+                margin-bottom: 12px;
+            ">
+                <div
+                    style="font-family: var(--font-heading); font-weight: 900; color: #dc2626; font-size: 1.15rem; margin-bottom: 12px; display: flex; align-items: center; gap: 8px;">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#dc2626" stroke-width="2.5"
+                        stroke-linecap="round" stroke-linejoin="round">
+                        <path
+                            d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z" />
+                        <line x1="12" y1="9" x2="12" y2="13" />
+                        <line x1="12" y1="17" x2="12.01" y2="17" />
+                    </svg>
+                    {{ texts.interaction_title or '⚠️ Dangerous Combinations' }}
+                </div>
+
+                {% for combo in dangerous_combinations %}
+                <div style="
+                    background: {{ '#fee2e2' if combo.severity == 'high' else '#fffbeb' }};
+                    border-left: 4px solid {{ '#dc2626' if combo.severity == 'high' else '#f59e0b' }};
+                    border-radius: 8px;
+                    padding: 14px 16px;
+                    margin-bottom: 10px;
+                ">
+                    <div
+                        style="font-weight: 800; font-size: 1.05rem; color: {{ '#991b1b' if combo.severity == 'high' else '#92400e' }}; margin-bottom: 6px;">
+                        {{ '🚨' if combo.severity == 'high' else '⚠️' }} {{ combo.medicines }}
+                    </div>
+                    <div
+                        style="font-size: 1rem; color: {{ '#991b1b' if combo.severity == 'high' else '#92400e' }}; line-height: 1.5;">
+                        {{ combo.risk_translated or combo.risk }}
+                    </div>
+                </div>
+                {% endfor %}
+
+                <div style="font-size: 0.9rem; color: #991b1b; font-weight: 600; margin-top: 8px; text-align: center;">
+                    {{ texts.interaction_advice or '👨‍⚕️ Please consult your doctor about these combinations' }}
+                </div>
+            </div>
+        </div>
+        {% endif %}
+
         <!-- Card Stack -->
         <div class="card-stack">
             {% for med in (translated if translated else english) %}
@@ -671,6 +719,23 @@
                             {{ med.frequency }}
                         </div>
                     </div>
+
+                    <!-- Duration -->
+                    {% if med.duration %}
+                    <div class="full-width" style="padding: 10px 0;">
+                        <div class="label">{{ texts.duration_label }}</div>
+                        <div class="value" style="font-size: 1.2rem; display: flex; align-items: center; gap: 10px;">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <rect x="3" y="4" width="18" height="18" rx="2" ry="2" />
+                                <line x1="16" y1="2" x2="16" y2="6" />
+                                <line x1="8" y1="2" x2="8" y2="6" />
+                                <line x1="3" y1="10" x2="21" y2="10" />
+                            </svg>
+                            {{ med.duration }}
+                        </div>
+                    </div>
+                    {% endif %}
 
                     <!-- Purpose -->
                     <div class="full-width">
@@ -1655,7 +1720,8 @@
             recognition = new SpeechRecognition();
             recognition.lang = SPEECH_LANG_MAP[USER_LANG] || 'en-IN';
             recognition.interimResults = false;
-            recognition.maxAlternatives = 1;
+            recognition.continuous = false;
+            recognition.maxAlternatives = 5;
 
             const micBtn = document.getElementById('voice-mic-btn');
             micBtn.classList.add('listening');
@@ -1666,9 +1732,18 @@
             const listeningBubble = addChatBubble('Listening...', 'thinking');
 
             recognition.onresult = (event) => {
-                const transcript = event.results[0][0].transcript;
+                // Pick the result with highest confidence
+                let bestTranscript = '';
+                let bestConfidence = 0;
+                for (let i = 0; i < event.results[0].length; i++) {
+                    if (event.results[0][i].confidence > bestConfidence) {
+                        bestConfidence = event.results[0][i].confidence;
+                        bestTranscript = event.results[0][i].transcript;
+                    }
+                }
+                if (!bestTranscript) bestTranscript = event.results[0][0].transcript;
                 removeBubble(listeningBubble);
-                processQuestion(transcript);
+                processQuestion(bestTranscript);
             };
 
             recognition.onerror = (event) => {
@@ -1746,13 +1821,40 @@
             }
         }
 
-        function speakText(text) {
+        let _chatAudio = null; // Track current chat audio playback
+
+        async function speakText(text) {
             stopSpeech();
-            const utterance = new SpeechSynthesisUtterance(text);
-            utterance.lang = SPEECH_LANG_MAP[USER_LANG] || 'en-IN';
-            utterance.rate = 0.9;
-            utterance.pitch = 1;
-            speechSynthesis.speak(utterance);
+            try {
+                const resp = await fetch('/speak', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ text: text, language: USER_LANG })
+                });
+                const data = await resp.json();
+                if (data.audio_url) {
+                    _chatAudio = new Audio(data.audio_url);
+                    _chatAudio.play();
+                }
+            } catch (err) {
+                console.log('TTS error, falling back to browser speech:', err);
+                // Fallback to browser speech if server fails
+                const utterance = new SpeechSynthesisUtterance(text);
+                utterance.lang = SPEECH_LANG_MAP[USER_LANG] || 'en-IN';
+                utterance.rate = 0.85;
+                speechSynthesis.speak(utterance);
+            }
+        }
+
+        function stopSpeech() {
+            // Stop server-side audio
+            if (_chatAudio) {
+                _chatAudio.pause();
+                _chatAudio.currentTime = 0;
+                _chatAudio = null;
+            }
+            // Also stop browser speech if any
+            if (speechSynthesis.speaking) speechSynthesis.cancel();
         }
     </script>
 

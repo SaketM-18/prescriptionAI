@@ -28,6 +28,7 @@ TRANSLATIONS = {
         "medicine_label": "MEDICINE",
         "dosage_label": "DOSAGE",
         "frequency_label": "WHEN TO TAKE",
+        "duration_label": "FOR HOW LONG",
         "purpose_label": "PURPOSE",
         "caution_label": "⚠️ CAUTION",
         "share_btn": "SHARE ON WHATSAPP",
@@ -55,7 +56,9 @@ TRANSLATIONS = {
         "afternoon": "🌤️ AFTERNOON",
         "night": "🌙 NIGHT",
         "set_alarm": "Set Alarm",
-        "tablet": "tablet(s)"
+        "tablet": "tablet(s)",
+        "interaction_title": "⚠️ Dangerous Combinations",
+        "interaction_advice": "👨‍⚕️ Please consult your doctor about these combinations"
     },
     "Hindi": {
         "hero_title": "अपनी सेहत<br><span>को समझें</span>",
@@ -71,6 +74,7 @@ TRANSLATIONS = {
         "medicine_label": "दवा",
         "dosage_label": "खुराक",
         "frequency_label": "कब लेनी है",
+        "duration_label": "कितने दिन",
         "purpose_label": "उद्देश्य",
         "caution_label": "⚠️ सावधानी",
         "share_btn": "व्हाट्सएप पर भेजें",
@@ -98,7 +102,9 @@ TRANSLATIONS = {
         "afternoon": "🌤️ दोपहर",
         "night": "🌙 रात",
         "set_alarm": "अलार्म सेट करें",
-        "tablet": "गोली"
+        "tablet": "गोली",
+        "interaction_title": "⚠️ खतरनाक संयोजन",
+        "interaction_advice": "👨‍⚕️ कृपया इन संयोजनों के बारे में अपने डॉक्टर से सलाह लें"
     },
     "Kannada": {
         "hero_title": "ನಿಮ್ಮ ಆರೋಗ್ಯವನ್ನು<br><span>ಅರ್ಥಮಾಡಿಕೊಳ್ಳಿ</span>",
@@ -114,6 +120,7 @@ TRANSLATIONS = {
         "medicine_label": "ಔಷಧಿ",
         "dosage_label": "ಡೋಸೇಜ್",
         "frequency_label": "ಯಾವಾಗ ತೆಗೆದುಕೊಳ್ಳಬೇಕು",
+        "duration_label": "ಎಷ್ಟು ದಿನಗಳು",
         "purpose_label": "ಉದ್ದೇಶ",
         "caution_label": "⚠️ ಎಚ್ಚರಿಕೆ",
         "share_btn": "ವಾಟ್ಸಾಪ್‌ನಲ್ಲಿ ಹಂಚಿಕೊಳ್ಳಿ",
@@ -142,6 +149,8 @@ TRANSLATIONS = {
         "chat_subtitle": "ನಿಮ್ಮ ಔಷಧಗಳ ಬಗ್ಗೆ ಕೇಳಿ",
         "chat_welcome": "ನಮಸ್ಕಾರ! 👋 ನಿಮ್ಮ ಔಷಧಗಳ ಬಗ್ಗೆ ಏನಾದರೂ ಕೇಳಿ. ಮೈಕ್ ಒತ್ತಿ ಮಾತನಾಡಿ!",
         "chat_placeholder": "ಟೈಪ್ ಮಾಡಿ ಅಥವಾ ಮೈಕ್ ಒತ್ತಿ...",
+        "interaction_title": "⚠️ ಅಪಾಯಕಾರಿ ಸಂಯೋಜನೆಗಳು",
+        "interaction_advice": "👨‍⚕️ ದಯವಿಟ್ಟು ಈ ಸಂಯೋಜನೆಗಳ ಬಗ್ಗೆ ನಿಮ್ಮ ವೈದ್ಯರನ್ನು ಸಂಪರ್ಕಿಸಿ"
     },
     "Tamil": {
         "hero_title": "உங்கள் ஆரோக்கியத்தைப்<br><span>புரிந்துகொள்ளுங்கள்</span>",
@@ -157,6 +166,7 @@ TRANSLATIONS = {
         "medicine_label": "மருந்து",
         "dosage_label": "அளவு",
         "frequency_label": "எப்போது எடுக்க வேண்டும்",
+        "duration_label": "எத்தனை நாட்கள்",
         "purpose_label": "நோக்கம்",
         "caution_label": "⚠️ எச்சரிக்கை",
         "share_btn": "வாட்ஸ்அப்பில் பகிரவும்",
@@ -185,6 +195,8 @@ TRANSLATIONS = {
         "chat_subtitle": "உங்கள் மருந்துகள் பற்றி கேளுங்கள்",
         "chat_welcome": "வணக்கம்! 👋 உங்கள் மருந்துகள் பற்றி எது வேண்டுமானாலும் கேளுங்கள். மைக் தட்டி பேசுங்கள்!",
         "chat_placeholder": "டைப் செய்யவும் அல்லது மைக் தட்டவும்...",
+        "interaction_title": "⚠️ ஆபத்தான சேர்க்கைகள்",
+        "interaction_advice": "👨‍⚕️ இந்த சேர்க்கைகள் பற்றி உங்கள் மருத்துவரிடம் ஆலோசிக்கவும்"
     },
     "Telugu": {
         "hero_title": "మీ ఆరోగ్యాన్ని<br><span>అర్థం చేసుకోండి</span>",
@@ -200,6 +212,7 @@ TRANSLATIONS = {
         "medicine_label": "మందు",
         "dosage_label": "మోతాదు",
         "frequency_label": "ఎప్పుడు తీసుకోవాలి",
+        "duration_label": "ఎన్ని రోజులు",
         "purpose_label": "ఉద్దేశ్యం",
         "caution_label": "⚠️ హెచ్చరిక",
         "share_btn": "వాట్సాప్‌లో షేర్ చేయండి",
@@ -228,6 +241,8 @@ TRANSLATIONS = {
         "chat_subtitle": "మీ మందుల గురించి అడగండి",
         "chat_welcome": "నమస్కారం! 👋 మీ మందుల గురించి ఏదైనా అడగండి. మైక్ నొక్కి మాట్లాడండి!",
         "chat_placeholder": "టైప్ చేయండి లేదా మైక్ నొక్కండి...",
+        "interaction_title": "⚠️ ప్రమాదకరమైన కలయికలు",
+        "interaction_advice": "👨‍⚕️ దయచేసి ఈ కలయికల గురించి మీ వైద్యుడిని సంప్రదించండి"
     },
     "Malayalam": {
         "hero_title": "നിങ്ങളുടെ ആരോഗ്യം<br><span>മനസ്സിലാക്കുക</span>",
@@ -243,6 +258,7 @@ TRANSLATIONS = {
         "medicine_label": "മരുന്ന്",
         "dosage_label": "അളവ്",
         "frequency_label": "എപ്പോൾ കഴിക്കണം",
+        "duration_label": "എത്ര ദിവസം",
         "purpose_label": "ഉദ്ദേശ്യം",
         "caution_label": "⚠️ മുന്നറിയിപ്പ്",
         "share_btn": "വാട്ട്‌സ്ആപ്പിൽ പങ്കിടുക",
@@ -271,6 +287,8 @@ TRANSLATIONS = {
         "chat_subtitle": "നിങ്ങളുടെ മരുന്നുകളെക്കുറിച്ച് ചോദിക്കൂ",
         "chat_welcome": "നമസ്കാരം! 👋 നിങ്ങളുടെ മരുന്നുകളെക്കുറിച്ച് എന്തും ചോദിക്കൂ. മൈക് അമർത്തി സംസാരിക്കൂ!",
         "chat_placeholder": "ടൈപ്പ് ചെയ്യൂ അല്ലെങ്കിൽ മൈക് അമർത്തൂ...",
+        "interaction_title": "⚠️ അപകടകരമായ സംയോജനങ്ങൾ",
+        "interaction_advice": "👨‍⚕️ ദയവായി ഈ സംയോജനങ്ങളെ കുറിച്ച് നിങ്ങളുടെ ഡോക്ടറോട് ചോദിക്കൂ"
     },
 }
 
@@ -290,6 +308,7 @@ def index():
     texts = TRANSLATIONS[user_lang]
     english = None
     translated = None
+    dangerous_combinations = []
     audio_path = None
 
     if request.method == "POST":
@@ -308,10 +327,10 @@ def index():
             raw_response = run_pipeline(save_path, language)
             
             try:
-                # 2. Parse JSON
                 data = json.loads(raw_response)
                 english = data.get("english", [])
                 translated = data.get("translated", [])
+                dangerous_combinations = data.get("dangerous_combinations", [])
 
                 # 3. Generate Audio
                 audio_text = f"Prescription Guide in {language}. "
@@ -327,6 +346,14 @@ def index():
                     timing = med.get('frequency') or med.get('timing') or ""
                     
                     audio_text += f"{name}. {purpose}. Dosage: {dosage}. {timing}. "
+
+                # Add interaction warnings to audio
+                if dangerous_combinations:
+                    audio_text += "Warning! "
+                    for combo in dangerous_combinations:
+                        risk_text = combo.get('risk_translated') or combo.get('risk', '')
+                        meds = combo.get('medicines', '')
+                        audio_text += f"{meds}: {risk_text}. "
 
                 # Map Language to GTTS Code
                 lang_code_map = {
@@ -351,6 +378,7 @@ def index():
         "index.html",
         english=english,
         translated=translated,
+        dangerous_combinations=dangerous_combinations,
         language=user_lang,
         audio_path=audio_path,
         texts=texts,
@@ -425,6 +453,34 @@ Answer:"""
             break
 
     return jsonify({"answer": answer})
+
+@app.route("/speak", methods=["POST"])
+def speak():
+    data = request.get_json()
+    text = data.get("text", "")
+    language = data.get("language", "English")
+
+    if not text:
+        return jsonify({"error": "No text provided"}), 400
+
+    lang_code_map = {
+        "Hindi": "hi",
+        "Tamil": "ta",
+        "Telugu": "te",
+        "Kannada": "kn",
+        "Malayalam": "ml",
+        "English": "en"
+    }
+
+    try:
+        tts = gTTS(text=text, lang=lang_code_map.get(language, "en"))
+        audio_filename = f"chat_{uuid.uuid4()}.mp3"
+        audio_path = os.path.join(AUDIO_FOLDER, audio_filename)
+        tts.save(audio_path)
+        return jsonify({"audio_url": url_for('static', filename=f"audio/{audio_filename}")})
+    except Exception as e:
+        print(f"TTS error: {e}")
+        return jsonify({"error": str(e)}), 500
 
 if __name__ == "__main__":
     app.run(debug=True)
