@@ -1,13 +1,7 @@
 from PIL import Image
 import json, os, time
-import google.generativeai as genai
 
-# Configure API Key globally
-api_key = os.environ.get("GOOGLE_API_KEY")
-if not api_key:
-    print("❌ GOOGLE_API_KEY not found in environment variables!")
-else:
-    genai.configure(api_key=api_key)
+# Removed top-level genai import and config to prevent startup blocking
 
 def clean_json(text):
     text = text.strip()
@@ -18,10 +12,18 @@ def clean_json(text):
     return text
 
 def run_pipeline(image_path, language):
-    # Load image for Gemini (Multimodal)
+    # Lazy Load SDK to prevent startup timeouts
     try:
+        import google.generativeai as genai
+        import logging
         from PIL import Image
         import io
+        
+        # Configure API Key (Lazy)
+        api_key = os.environ.get("GOOGLE_API_KEY")
+        if not api_key:
+            return json.dumps({"error": "GOOGLE_API_KEY not found in environment variables!"})
+        genai.configure(api_key=api_key)
 
         # Resize image to reduce memory usage and payload size
         img = Image.open(image_path)
@@ -33,7 +35,7 @@ def run_pipeline(image_path, language):
         # Re-open as PIL image for SDK
         pil_image = Image.open(io.BytesIO(image_data))
     except Exception as e:
-        return json.dumps({"error": f"Could not read image: {e}"})
+        return json.dumps({"error": f"Could not initialize AI or read image: {e}"})
 
     prompt = f"""
     You are a helpful medical assistant for rural villagers. 
@@ -55,7 +57,6 @@ def run_pipeline(image_path, language):
     }}
     """
     
-    import logging
     print("🚀 STARTING APP WITH STABLE SDK (google-generativeai) 🚀")
 
     # Models to try (standard names for google-generativeai SDK)

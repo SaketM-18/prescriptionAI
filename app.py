@@ -1,7 +1,7 @@
 from flask import Flask, render_template, request, make_response, redirect, url_for, session, jsonify
 from pipeline import run_pipeline
 import time
-from gtts import gTTS
+# from gtts import gTTS # Lazy load this!
 import json, os, uuid
 
 app = Flask(__name__)
@@ -348,7 +348,7 @@ TRANSLATIONS = {
         "role_save": "సేవ్",
         "filter_all": "అన్ని",
         "tts_morning": "ఉదయం",
-        "tts_afternoon": "మధ್ಯಾహ్నం",
+        "tts_afternoon": "మధ్యాహ్నం",
         "tts_night": "రాత్రి",
         "tts_tablet": "మాత్ర",
         "tts_take": "తీసుకోండి",
@@ -438,10 +438,10 @@ def index():
         return render_template("language.html")
     
     # Default to English if session data is invalid
-    if user_lang not in TRANSLATIONS:
+    if user_lang not in TRANSLATIONS and user_lang not in ["Hindi", "Kannada", "Tamil", "Telugu", "Malayalam"]:
         user_lang = "English"
         
-    texts = TRANSLATIONS[user_lang]
+    texts = TRANSLATIONS.get(user_lang, TRANSLATIONS["English"])
     english = None
     translated = None
     dangerous_combinations = []
@@ -506,6 +506,8 @@ def index():
                             "English": "en"
                         }
 
+                        # Lazy load gTTS
+                        from gtts import gTTS
                         tts = gTTS(text=audio_text, lang=lang_code_map.get(language, "en"))
                         audio_filename = f"{uuid.uuid4()}.mp3"
                         tts.save(os.path.join(AUDIO_FOLDER, audio_filename))
@@ -533,7 +535,7 @@ def index():
 
 @app.route("/set_language/<lang>")
 def set_language(lang):
-    if lang in TRANSLATIONS:
+    if lang in TRANSLATIONS or lang in ["Hindi", "Kannada", "Tamil", "Telugu", "Malayalam"]:
         session["user_lang"] = lang
         return redirect(url_for("index"))
     return redirect(url_for("index"))
@@ -544,7 +546,8 @@ def reset_language():
     resp.set_cookie("user_lang", "", expires=0)
     return resp
 
-import google.generativeai as genai
+# Lazy loaded in chat function now
+# import google.generativeai as genai
 
 # Models to try for chat/translation (lighter models)
 CHAT_MODELS = [
@@ -557,6 +560,15 @@ CHAT_MODELS = [
 
 @app.route("/ask", methods=["POST"])
 def ask_question():
+    # Lazy load genai
+    import google.generativeai as genai
+    import os
+    
+     # Configure API Key (Lazy)
+    api_key = os.environ.get("GOOGLE_API_KEY")
+    if api_key:
+        genai.configure(api_key=api_key)
+        
     data = request.get_json()
     question = data.get("question", "")
     medicines = data.get("medicines", [])
@@ -613,6 +625,12 @@ def translate_text(text, target_language):
         if not text or target_language == "English":
             return text
             
+        import google.generativeai as genai # Lazy Load
+        import os
+        api_key = os.environ.get("GOOGLE_API_KEY")
+        if api_key:
+            genai.configure(api_key=api_key)
+
         prompt = f"Translate the following medical text to {target_language}. Keep it simple and accurate for a patient. If it's a medicine name, keep it in English but transliterated if needed. Text: '{text}'"
         
         for model_name in CHAT_MODELS:
@@ -660,6 +678,7 @@ def speak():
     }
 
     try:
+        from gtts import gTTS # Lazy Load
         tts = gTTS(text=text, lang=lang_code_map.get(language, "en"))
         audio_filename = f"chat_{uuid.uuid4()}.mp3"
         audio_path = os.path.join(AUDIO_FOLDER, audio_filename)
