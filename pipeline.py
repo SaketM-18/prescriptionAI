@@ -102,6 +102,7 @@ def run_pipeline(image_path, language):
                 contents=[prompt, types.Part.from_bytes(data=image_data, mime_type="image/jpeg")]
             )
             
+            del image_data  # Free memory immediately
             return clean_json(response.text)
 
         except Exception as e:
