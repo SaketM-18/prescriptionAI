@@ -70,7 +70,14 @@ TRANSLATIONS = {
         "role_delete_confirm": "Are you sure you want to delete profile",
         "role_new_placeholder": "Name (or say it)",
         "role_save": "Save",
-        "filter_all": "All"
+        "filter_all": "All",
+        "tts_morning": "in the morning",
+        "tts_afternoon": "in the afternoon",
+        "tts_night": "at night",
+        "tts_tablet": "tablet",
+        "tts_take": "Take",
+        "find_pharmacy_btn": "Find Pharmacy",
+        "share_short": "Share"
     },
     "Hindi": {
         "hero_title": "अपनी सेहत<br><span>को समझें</span>",
@@ -128,7 +135,14 @@ TRANSLATIONS = {
         "role_delete_confirm": "क्या आप प्रोफ़ाइल हटाना चाहते हैं",
         "role_new_placeholder": "नाम लिखें (या बोलें)",
         "role_save": "सहेजें",
-        "filter_all": "सब"
+        "filter_all": "सब",
+        "tts_morning": "सुबह",
+        "tts_afternoon": "दोपहर को",
+        "tts_night": "रात को",
+        "tts_tablet": "गोली",
+        "tts_take": "लीजिए",
+        "find_pharmacy_btn": "फार्मेसी खोजें",
+        "share_short": "शेयर"
     },
     "Kannada": {
         "hero_title": "ನಿಮ್ಮ ಆರೋಗ್ಯವನ್ನು<br><span>ಅರ್ಥಮಾಡಿಕೊಳ್ಳಿ</span>",
@@ -186,7 +200,14 @@ TRANSLATIONS = {
         "role_delete_confirm": "ನೀವು ಪ್ರೊಫೈಲ್ ಅಳಿಸಲು ಖಚಿತವಾಗಿದ್ದೀರಾ",
         "role_new_placeholder": "ಹೆಸರು (ಅಥವಾ ಹೇಳಿ)",
         "role_save": "ಉಳಿಸಿ",
-        "filter_all": "ಎಲ್ಲಾ"
+        "filter_all": "ಎಲ್ಲಾ",
+        "tts_morning": "ಬೆಳಿಗ್ಗೆ",
+        "tts_afternoon": "ಮಧ್ಯಾಹ್ನ",
+        "tts_night": "ರಾತ್ರಿ",
+        "tts_tablet": "ಮಾತ್ರೆ",
+        "tts_take": "ತೆಗೆದುಕೊಳ್ಳಿ",
+        "find_pharmacy_btn": "ಔಷಧಾಲಯ ಹುಡುಕಿ",
+        "share_short": "ಹಂಚಿಕೊಳ್ಳಿ"
     },
     "Tamil": {
         "hero_title": "உங்கள் ஆரோக்கியத்தைப்<br><span>புரிந்துகொள்ளுங்கள்</span>",
@@ -244,7 +265,14 @@ TRANSLATIONS = {
         "role_delete_confirm": "சுயவிவரத்தை நிச்சயமாக நீக்க விரும்புகிறீர்களா",
         "role_new_placeholder": "பெயர் (அல்லது சொல்லுங்கள்)",
         "role_save": "சேமி",
-        "filter_all": "அனைத்தும்"
+        "filter_all": "அனைத்தும்",
+        "tts_morning": "காலை",
+        "tts_afternoon": "மதியம்",
+        "tts_night": "இரவு",
+        "tts_tablet": "மாத்திரை",
+        "tts_take": "எடுத்துக்கொள்ளுங்கள்",
+        "find_pharmacy_btn": "மருந்தகம் தேடு",
+        "share_short": "பகிர்"
     },
     "Telugu": {
         "hero_title": "మీ ఆరోగ్యాన్ని<br><span>అర్థం చేసుకోండి</span>",
@@ -302,7 +330,14 @@ TRANSLATIONS = {
         "role_delete_confirm": "మీరు ఖచ్చితంగా ప్రొఫైల్‌ను తొలగించాలనుకుంటున్నారా",
         "role_new_placeholder": "పేరు (లేదా చెప్పండి)",
         "role_save": "సేవ్",
-        "filter_all": "అన్ని"
+        "filter_all": "అన్ని",
+        "tts_morning": "ఉదయం",
+        "tts_afternoon": "మధ್ಯಾహ్నం",
+        "tts_night": "రాత్రి",
+        "tts_tablet": "మాత్ర",
+        "tts_take": "తీసుకోండి",
+        "find_pharmacy_btn": "ఫార్మసీ వెతకండి",
+        "share_short": "షేర్"
     },
     "Malayalam": {
         "hero_title": "നിങ്ങളുടെ ആരോഗ്യം<br><span>മനസ്സിലാക്കുക</span>",
@@ -360,7 +395,14 @@ TRANSLATIONS = {
         "role_delete_confirm": "പ്രൊഫൈൽ നീക്കം ചെയ്യുമെന്ന് ഉറപ്പാണോ",
         "role_new_placeholder": "പേര് (അല്ലെങ്കിൽ പറയൂ)",
         "role_save": "സേവ്",
-        "filter_all": "എല്ലാം"
+        "filter_all": "എല്ലാം",
+        "tts_morning": "രാവിലെ",
+        "tts_afternoon": "ഉച്ചയ്ക്ക്",
+        "tts_night": "രാത്രി",
+        "tts_tablet": "ഗുളിക",
+        "tts_take": "കഴിക്കുക",
+        "find_pharmacy_btn": "ഫാർമസി കണ്ടെത്തുക",
+        "share_short": "പങ്കിടുക"
     },
 }
 

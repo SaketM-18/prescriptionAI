@@ -514,6 +514,7 @@
     </style>
     <script>
         // Profile Management
+        const ALL_TRANSLATIONS = {{ all_translations | tojson }};
         let PROFILES = JSON.parse(localStorage.getItem('clearscript_profiles')) || ['Myself', 'Father', 'Mother'];
         let CURRENT_PROFILE = localStorage.getItem('selected_profile') || 'Myself';
 
@@ -918,6 +919,33 @@
                         </a>
                     </div>
                 </form>
+
+                <!-- Persistent Find Pharmacy Button -->
+                <div style="margin-top: 20px; text-align: center;">
+                    <a href="https://www.google.com/maps/search/pharmacy+near+me" target="_blank" style="
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                        gap: 8px;
+                        background: #e0f2fe;
+                        color: #0369a1;
+                        text-decoration: none;
+                        padding: 14px;
+                        border-radius: 12px;
+                        font-weight: 700;
+                        font-size: 1rem;
+                        border: 1px solid #bae6fd;
+                        box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+                        transition: all 0.2s;
+                    ">
+                        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor"
+                            stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+                            <circle cx="12" cy="10" r="3"></circle>
+                        </svg>
+                        {{ texts.find_pharmacy_btn }}
+                    </a>
+                </div>
             </div>
         </div>
 
@@ -1131,8 +1159,15 @@
             <div class="med-card safe-card">
                 <div class="med-header" style="background: var(--accent); color: white; padding: 15px;">
                     <div style="font-size: 0.9rem; opacity: 0.9;">{{ texts.medicine_label }} {{ loop.index }}</div>
-                    <div class="med-name" style="color: white; font-size: 1.5rem; font-weight: 700;">{{ med.name or
-                        med.medicine_name or 'Medicine' }}</div>
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <div class="med-name" style="color: white; font-size: 1.5rem; font-weight: 700;">{{ med.name or
+                            med.medicine_name or 'Medicine' }}</div>
+                        <button
+                            onclick="speakMedicine('{{ (med.name or med.medicine_name or 'Medicine') | replace('\'', '\\\'') }}', '{{ (med.dosage or '') | replace('\'', '\\\'') }}', '{{ (med.purpose or '') | replace('\'', '\\\'') }}', this)"
+                            style="background: rgba(255,255,255,0.2); border: none; color: white; width: 40px; height: 40px; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 1.2rem;">
+                            🔊
+                        </button>
+                    </div>
                 </div>
 
                 <div class="med-details-grid">
@@ -1211,35 +1246,56 @@
                 <h2 style="text-align: center; margin-bottom: 25px; color: var(--accent);">{{ texts.schedule_title }}
                 </h2>
 
-                <div id="schedule-morning" class="time-slot-card morning-slot" style="display:none">
-                    <div class="slot-header">
-                        <span>{{ texts.morning }}</span>
-                        <a href="#" onclick="setAlarm('morning')" class="alarm-link">{{ texts.set_alarm }}</a>
+                <div id="schedule-container"
+                    style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 15px;">
+                    <div id="schedule-morning" class="time-slot-card morning-slot" style="display:none">
+                        <div class="slot-header">
+                            <span>{{ texts.morning }}</span>
+                            <a href="#" onclick="setAlarm('morning')" class="alarm-link">🔔 {{ texts.set_alarm }}</a>
+                        </div>
+                        <div class="slot-content"></div>
                     </div>
-                    <div class="slot-content"></div>
+
+                    <div id="schedule-afternoon" class="time-slot-card afternoon-slot" style="display:none">
+                        <div class="slot-header">
+                            <span>{{ texts.afternoon }}</span>
+                            <a href="#" onclick="setAlarm('afternoon')" class="alarm-link">🔔 {{ texts.set_alarm }}</a>
+                        </div>
+                        <div class="slot-content"></div>
+                    </div>
+
+                    <div id="schedule-night" class="time-slot-card night-slot" style="display:none">
+                        <div class="slot-header">
+                            <span>{{ texts.night }}</span>
+                            <a href="#" onclick="setAlarm('night')" class="alarm-link">🔔 {{ texts.set_alarm }}</a>
+                        </div>
+                        <div class="slot-content"></div>
+                    </div>
                 </div>
 
-                <div id="schedule-afternoon" class="time-slot-card afternoon-slot" style="display:none">
-                    <div class="slot-header">
-                        <span>{{ texts.afternoon }}</span>
-                        <a href="#" onclick="setAlarm('afternoon')" class="alarm-link">{{ texts.set_alarm }}</a>
-                    </div>
-                    <div class="slot-content"></div>
-                </div>
-
-                <div id="schedule-night" class="time-slot-card night-slot" style="display:none">
-                    <div class="slot-header">
-                        <span>{{ texts.night }}</span>
-                        <a href="#" onclick="setAlarm('night')" class="alarm-link">{{ texts.set_alarm }}</a>
-                    </div>
-                    <div class="slot-content"></div>
-                </div>
-
-                <div style="text-align: center; margin-top: 20px;">
+                <div
+                    style="text-align: center; margin-top: 20px; display: flex; font-size: 0.9rem; flex-wrap: wrap; justify-content: center; gap: 10px;">
                     <button onclick="showSharePicker('schedule')"
-                        style="background:transparent; border:2px solid var(--accent); color:var(--accent); padding:10px 20px; border-radius:20px; font-weight:700; cursor:pointer;">
-                        Share Schedule
+                        style="background:white; border:1px solid var(--accent); color:var(--accent); padding:10px 20px; border-radius:30px; font-weight:700; cursor:pointer; display:flex; align-items:center; gap:6px;">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2">
+                            <circle cx="18" cy="5" r="3"></circle>
+                            <circle cx="6" cy="12" r="3"></circle>
+                            <circle cx="18" cy="19" r="3"></circle>
+                            <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line>
+                            <line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line>
+                        </svg>
+                        {{ texts.share_short }}
                     </button>
+                    <a href="https://www.google.com/maps/search/pharmacy+near+me" target="_blank"
+                        style="background:#059669; border:none; color:white; padding:10px 20px; border-radius:30px; font-weight:700; cursor:pointer; text-decoration:none; display:flex; align-items:center; gap:6px;">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2">
+                            <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+                            <circle cx="12" cy="10" r="3"></circle>
+                        </svg>
+                        {{ texts.find_pharmacy_btn }}
+                    </a>
                 </div>
             </div>
         </div>
@@ -1688,13 +1744,20 @@
             entry.medicines.forEach(med => {
                 html += `
                     <div class="saved-med-card">
-                        <div class="saved-med-name">${med.name || med.medicine_name || 'Medicine'}</div>
+                        <div class="saved-med-name" style="display:flex; justify-content:space-between; align-items:center;">
+                            <span>${med.name || med.medicine_name || 'Medicine'}</span>
+                            <button onclick="speakMedicine('${(med.name || '').replace(/'/g, "\\'")}', '${(med.dosage || '').replace(/'/g, "\\'")}', '${(med.purpose || '').replace(/'/g, "\\'")}')" style="background:none; border:none; cursor:pointer; font-size:1.2rem;">🔊</button>
+                        </div>
                         ${med.generic_alternative ? `
                         <div class="saved-med-detail" style="background:#f0fdf4; padding:8px; border-radius:4px; border:1px solid #bbf7d0; margin-top:5px;">
                             <span class="label" style="color:#166534;">{{ texts.generic_label }}</span>
                             <span class="value" style="color:#15803d; font-weight:700;">${med.generic_alternative}</span>
                         </div>` : ''}
-                        <div class="saved-med-detail"><span class="label">{{ texts.dosage_label }}</span><span class="value">${med.dosage || '-'}</span></div>
+                        <div class="saved-med-detail">
+                            <span class="label">{{ texts.dosage_label }}</span>
+                            <span class="value">${med.dosage || '-'}</span>
+                             ${renderDosageIcons(med.dosage)}
+                        </div>
                         <div class="saved-med-detail"><span class="label">{{ texts.frequency_label }}</span><span class="value">${med.frequency || med.timing || '-'}</span></div>
                         <div class="saved-med-detail"><span class="label">{{ texts.purpose_label }}</span><span class="value">${med.purpose || '-'}</span></div>
                         ${med.precautions ? '<div style="background:#fffbeb; border:1px solid #fcd34d; border-radius:6px; padding:10px; margin-top:8px; color:#92400e; font-size:0.85rem;">' + med.precautions + '</div>' : ''}
@@ -1719,19 +1782,35 @@
             // Stop any ongoing speech
             stopSpeech();
 
-            let text = 'Prescription Guide. ';
+            let text = '{{ texts.report_title }}. ';
             window._savedViewMeds.forEach(med => {
                 const name = med.name || med.medicine_name || 'Medicine';
-                const purpose = med.purpose || 'As prescribed';
-                const dosage = med.dosage || 'As directed';
+                const purpose = med.purpose || '';
+                const dosage = med.dosage || '';
                 const timing = med.frequency || med.timing || '';
-                text += `${name}. ${purpose}. Dosage: ${dosage}. ${timing}. `;
-                if (med.precautions) text += `Warning: ${med.precautions}. `;
+
+                const naturalDosage = naturalDosageText(dosage);
+
+                text += `${name}. `;
+                if (naturalDosage) text += `${naturalDosage}. `;
+                else if (dosage) text += `{{ texts.dosage_label }}: ${dosage}. `;
+
+                if (timing && !naturalDosage) text += `{{ texts.frequency_label }}: ${timing}. `;
+                if (purpose) text += `{{ texts.purpose_label }}: ${purpose}. `;
+                if (med.precautions) text += `{{ texts.caution_label }}: ${med.precautions}. `;
             });
 
             currentUtterance = new SpeechSynthesisUtterance(text);
             currentUtterance.rate = 0.9;
             currentUtterance.pitch = 1;
+
+            // Voice Selection Logic
+            const targetLang = SPEECH_LANG_MAP['{{ language }}'] || 'en-IN';
+            currentUtterance.lang = targetLang;
+
+            const preferredVoice = getVoiceForLang(targetLang);
+            if (preferredVoice) currentUtterance.voice = preferredVoice;
+
             speechSynthesis.speak(currentUtterance);
         }
 
@@ -1759,9 +1838,9 @@
                 const name = med.medicine_name || med.name || 'Medicine';
                 const timing = med.timing || med.frequency || '';
 
-                if (isM) morningList.push({ name, timing });
-                if (isA) afternoonList.push({ name, timing });
-                if (isN) nightList.push({ name, timing });
+                if (isM) morningList.push({ name, timing, dosage: med.dosage });
+                if (isA) afternoonList.push({ name, timing, dosage: med.dosage });
+                if (isN) nightList.push({ name, timing, dosage: med.dosage });
             });
 
             const fillSlot = (id, list) => {
@@ -1770,8 +1849,12 @@
                     el.style.display = 'block';
                     el.querySelector('.slot-content').innerHTML = list.map(item => `
                         <div class="schedule-item">
-                            <div style="font-weight:700; color:var(--text)">${item.name}</div>
+                            <div style="display:flex; justify-content:space-between; align-items:flex-start;">
+                                <div style="font-weight:700; color:var(--text)">${item.name}</div>
+                                <button onclick="speakMedicine('${item.name.replace(/'/g, "\\'")}', '${(item.dosage || '').replace(/'/g, "\\'")}', '', this)" style="background:none; border:none; cursor:pointer; opacity:0.6;">🔊</button>
+                            </div>
                             <div style="font-size:0.85rem; color:#666">${item.timing}</div>
+                            ${renderDosageIcons(item.dosage)}
                         </div>
                     `).join('');
                 } else {
@@ -1791,7 +1874,6 @@
         }
 
         // ===== WhatsApp Share Functions =====
-        const ALL_TRANSLATIONS = {{ all_translations | tojson }};
         let currentShareMode = 'report'; // 'report' or 'schedule'
 
         // Store medicine data for sharing
@@ -1882,6 +1964,122 @@
             window.open(`https://wa.me/?text=${encoded}`, '_blank');
         }
 
+        // ===== Visual Helpers =====
+        function renderDosageIcons(dosage) {
+            if (!dosage) return '';
+
+            // Try 1-0-1 format
+            const parts = dosage.match(/(\d+)\s*-\s*(\d+)\s*-\s*(\d+)/);
+            if (parts) {
+                let html = '<div style="display:flex; gap:8px; margin-top:4px; font-size: 1.1rem;">';
+                if (parts[1] !== '0') html += `<div title="Morning" style="display:flex; align-items:center;">☀️ ${'💊'.repeat(parseInt(parts[1]))}</div>`;
+                if (parts[2] !== '0') html += `<div title="Afternoon" style="display:flex; align-items:center;">🌤️ ${'💊'.repeat(parseInt(parts[2]))}</div>`;
+                if (parts[3] !== '0') html += `<div title="Night" style="display:flex; align-items:center;">🌙 ${'💊'.repeat(parseInt(parts[3]))}</div>`;
+                html += '</div>';
+                return html;
+            }
+
+            // Fallback keywords
+            const lower = dosage.toLowerCase();
+            let icons = '';
+            if (lower.includes('morn') || lower.includes('am')) icons += '☀️ ';
+            if (lower.includes('after') || lower.includes('noon') || lower.includes('lunch')) icons += '🌤️ ';
+            if (lower.includes('night') || lower.includes('bed') || lower.includes('pm')) icons += '🌙 ';
+
+            return icons ? `<div style="margin-top:4px; font-size: 1.1rem;">${icons}</div>` : '';
+        }
+
+        function naturalDosageText(dosage) {
+            if (!dosage) return '';
+            // Use current user lang or fallback
+            const lang = '{{ language }}' || 'English';
+            const t = ALL_TRANSLATIONS[lang] || ALL_TRANSLATIONS['English'];
+
+            // Try 1-0-1 format
+            const parts = dosage.match(/(\d+)\s*-\s*(\d+)\s*-\s*(\d+)/);
+            if (parts) {
+                let partsText = [];
+                // Use new TTS keys if available, else fallback
+                const tablet = t.tts_tablet || t.tablet || 'tablet';
+                const take = t.tts_take || 'Take';
+
+                if (parts[1] !== '0') partsText.push(`${parts[1]} ${tablet} ${t.tts_morning || t.morning}`);
+                if (parts[2] !== '0') partsText.push(`${parts[2]} ${tablet} ${t.tts_afternoon || t.afternoon}`);
+                if (parts[3] !== '0') partsText.push(`${parts[3]} ${tablet} ${t.tts_night || t.night}`);
+
+                if (partsText.length > 0) return `${take} ${partsText.join(', ')}`;
+            }
+            return dosage;
+        }
+
+        let currentAudio = null;
+
+        function stopSpeech() {
+            if (currentAudio) {
+                currentAudio.pause();
+                currentAudio = null;
+            }
+            window.speechSynthesis.cancel();
+        }
+
+        function speakMedicine(name, dosage, purpose, btnElement) {
+            stopSpeech();
+
+            // UI Feedback
+            const originalContent = btnElement ? btnElement.innerHTML : '🔊';
+            if (btnElement) btnElement.innerHTML = '⏳';
+
+            // Use translation keys
+            let text = `${name}. `;
+            const naturalDosage = naturalDosageText(dosage);
+
+            if (naturalDosage) text += `${naturalDosage}. `
+            else if (dosage) text += `{{ texts.dosage_label }}: ${dosage}. `
+
+            if (purpose) text += `{{ texts.purpose_label }}: ${purpose}.`
+
+            // Server-Side TTS Call
+            fetch('/speak', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    text: text,
+                    language: '{{ language }}' || 'English'
+                })
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.audio_url) {
+                        const audio = new Audio(data.audio_url);
+                        currentAudio = audio;
+                        audio.play();
+                        audio.onended = () => {
+                            if (btnElement) btnElement.innerHTML = originalContent;
+                        };
+                        audio.onerror = () => {
+                            // Fallback on playback error
+                            if (btnElement) btnElement.innerHTML = originalContent;
+                            fallbackTTS(text);
+                        }
+                    } else {
+                        fallbackTTS(text, btnElement, originalContent);
+                    }
+                })
+                .catch(err => {
+                    console.error("TTS Error:", err);
+                    fallbackTTS(text, btnElement, originalContent);
+                });
+        }
+
+        function fallbackTTS(text, btnElement, originalContent) {
+            const utterance = new SpeechSynthesisUtterance(text);
+            utterance.lang = getLangCode('{{ language }}');
+            window.speechSynthesis.speak(utterance);
+            utterance.onend = () => {
+                if (btnElement) btnElement.innerHTML = originalContent;
+            };
+        }
+
         // ===== Schedule Functions =====
         function parseDosage(dosageStr) {
             // Returns [Morning, Afternoon, Night] booleans
@@ -1915,9 +2113,9 @@
                 const name = med.medicine_name || med.name || 'Medicine';
                 const timing = med.timing || med.frequency || '';
 
-                if (isM) morningList.push({ name, timing });
-                if (isA) afternoonList.push({ name, timing });
-                if (isN) nightList.push({ name, timing });
+                if (isM) morningList.push({ name, timing, dosage: med.dosage });
+                if (isA) afternoonList.push({ name, timing, dosage: med.dosage });
+                if (isN) nightList.push({ name, timing, dosage: med.dosage });
             });
 
             // Helper to render a list into a DOM element
@@ -1927,8 +2125,12 @@
                     el.style.display = 'block';
                     el.querySelector('.slot-content').innerHTML = list.map(item => `
                         <div class="schedule-item">
-                            <div style="font-weight:700; color:var(--text)">${item.name}</div>
+                            <div style="display:flex; justify-content:space-between; align-items:flex-start;">
+                                <div style="font-weight:700; color:var(--text)">${item.name}</div>
+                                <button onclick="speakMedicine('${item.name.replace(/'/g, "\\'")}', '${(item.dosage || '').replace(/'/g, "\\'")}', '', this)" style="background:none; border:none; cursor:pointer; opacity:0.6;">🔊</button>
+                            </div>
                             <div style="font-size:0.85rem; color:#666">${item.timing}</div>
+                            ${renderDosageIcons(item.dosage)}
                         </div>
                     `).join('');
                 }
@@ -2056,6 +2258,31 @@
         renderSchedule(medicines);
         {% endif %}
         });
+
+        // Robust Voice Loading Logic
+        let allVoices = [];
+        function loadVoices() {
+            allVoices = speechSynthesis.getVoices();
+        }
+        speechSynthesis.onvoiceschanged = loadVoices;
+        loadVoices(); // Init immediately in case already loaded
+
+        function getVoiceForLang(langCode) {
+            if (allVoices.length === 0) loadVoices(); // Try again
+
+            // 1. Try exact match + strict region (e.g., 'hi-IN' + 'Google')
+            let voice = allVoices.find(v => v.lang === langCode && (v.name.includes('Google') || v.name.includes('India')));
+
+            // 2. Try just language code match
+            if (!voice) voice = allVoices.find(v => v.lang === langCode);
+
+            // 3. Fallback for Indian context: Try to find ANY Indian English or Hindi voice if target is local
+            if (!voice && (langCode === 'en-IN' || langCode === 'hi-IN' || langCode === 'kn-IN')) {
+                voice = allVoices.find(v => v.lang === 'en-IN' || v.lang === 'hi-IN');
+            }
+
+            return voice;
+        }
     </script>
 
     <!-- ===== VOICE COPILOT ===== -->
