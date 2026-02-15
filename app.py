@@ -688,5 +688,24 @@ def speak():
         print(f"TTS error: {e}")
         return jsonify({"error": str(e)}), 500
 
+@app.route("/debug_models")
+def debug_models():
+    """Lists all available models for the configured API key."""
+    try:
+        import google.generativeai as genai
+        import os
+        api_key = os.environ.get("GOOGLE_API_KEY")
+        if not api_key:
+            return jsonify({"error": "GOOGLE_API_KEY not found"}), 500
+        
+        genai.configure(api_key=api_key)
+        models = []
+        for m in genai.list_models():
+            if 'generateContent' in m.supported_generation_methods:
+                models.append(m.name)
+        return jsonify({"models": models})
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
 if __name__ == "__main__":
     app.run(debug=True)
