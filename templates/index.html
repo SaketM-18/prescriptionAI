@@ -1961,22 +1961,32 @@
 
             // Mobile-first sharing (Web Share API)
             if (navigator.share) {
+                console.log("Attempting Web Share API");
                 navigator.share({
                     title: 'Prescription Guide',
                     text: text
                 }).catch(err => {
-                    console.log('Share API failed, falling back to WhatsApp', err);
-                    openWhatsAppFallback(text);
+                    console.error("Share API failed:", err);
+                    // Fallback to direct WhatsApp link if native share fails/cancelled
+                    openWhatsAppDirect(text);
                 });
             } else {
-                openWhatsAppFallback(text);
+                openWhatsAppDirect(text);
             }
         }
 
-        function openWhatsAppFallback(text) {
+        function openWhatsAppDirect(text) {
             const encoded = encodeURIComponent(text);
-            // Use api.whatsapp.com for better compatibility
-            window.open(`https://api.whatsapp.com/send?text=${encoded}`, '_blank');
+            const url = `https://wa.me/?text=${encoded}`;
+
+            // Try creating a temporary link - bypasses some blockers
+            const link = document.createElement('a');
+            link.href = url;
+            link.target = '_blank';
+            link.rel = 'noopener noreferrer';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
         }
 
         // ===== Visual Helpers =====
