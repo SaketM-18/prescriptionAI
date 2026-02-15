@@ -21,8 +21,17 @@ def clean_json(text):
 def run_pipeline(image_path, language):
     # Load image for Gemini (Multimodal)
     try:
-        with open(image_path, "rb") as f:
-            image_data = f.read()
+        from PIL import Image
+        import io
+
+        # Resize image to reduce memory usage
+        img = Image.open(image_path)
+        img = img.convert("RGB")
+        img.thumbnail((1024, 1024))  # Max 1024x1024
+        buffer = io.BytesIO()
+        img.save(buffer, format="JPEG", quality=85)
+        image_data = buffer.getvalue()
+        del img, buffer  # Free memory
     except Exception as e:
         return json.dumps({"error": f"Could not read image: {e}"})
 
