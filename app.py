@@ -1,5 +1,5 @@
 from flask import Flask, render_template, request, make_response, redirect, url_for, session, jsonify
-from pipeline import run_pipeline, client
+from pipeline import run_pipeline, get_client
 import time
 from gtts import gTTS
 import json, os, uuid
@@ -580,7 +580,7 @@ Answer:"""
     answer = "Sorry, all models are busy. Please try again in a minute."
     for i, model in enumerate(models):
         try:
-            response = client.models.generate_content(
+            response = get_client().models.generate_content(
                 model=model,
                 contents=prompt
             )
@@ -602,7 +602,7 @@ def translate_text(text, target_language):
             return text
             
         prompt = f"Translate this short medical purpose to {target_language}. Keep it concise. Return only the translation: '{text}'"
-        response = client.models.generate_content(
+        response = get_client().models.generate_content(
             model='gemini-2.0-flash-exp',
             contents=prompt
         )
