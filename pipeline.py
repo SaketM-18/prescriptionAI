@@ -101,9 +101,16 @@ def run_pipeline(image_path, language):
     """
 
     # Retry with fallback models on 503 errors
-    models = ["gemini-2.0-flash", "gemini-2.0-flash-lite", "gemini-1.5-flash"]
+    models = [
+    "gemini-1.5-flash-latest",  # Most reliable free tier model
+    "gemini-1.5-flash",
+    "gemini-1.5-pro"
+]
 
-    for i, model_name in enumerate(models):
+    max_retries = 3
+
+for i, model_name in enumerate(models):
+    for retry in range(max_retries):
         try:
             response = client.models.generate_content(
                 model=model_name,
@@ -114,11 +121,59 @@ def run_pipeline(image_path, language):
             del image_data  # Free memory after success
             return result
 
-        except Exception as e:
-            if i == len(models) - 1: # Last try
-                print(f"Final Model {model_name} failed: {e}")
-                # Fallback to empty JSON structure if AI completely fails
-                return json.dumps({"english": [], "translated": [], "dangerous_combinations": []})
+        except Exception as e: 
+            error_str = str(e)
             
-            print(f"Model {model_name} failed, retrying... ({e})")
-            time.sleep(2)
+            # Handle quota exhaustion (429 error)
+            if "429" in error_str or "RESOURCE_EXHAUSTED" in error_str:
+                wait_time = (2 ** retry) * 5  # Exponential backoff: 5s, 10s, 20s
+                print(f"⚠️ Quota exceeded. Waiting {wait_time}s before retry {retry+1}/{max_retries}...")
+                time.sleep(wait_time)
+                
+                if retry == max_retries - 1:
+                    print(f"❌ Max retries reached for {model_name} due to quota limits")
+                    if i < len(models) - 1:
+                        print(f"🔄 Switching to {models[i+1]}...")
+                        break  # Try next model
+                    else:
+                        return json.dumps({
+                            "error": "API quota exceeded. Please try again in a few minutes.",
+                            "english": [], 
+                            "translated": [], 
+                            "dangerous_combinations": []
+                        })
+                continue
+            
+            # Handle 404 model not found
+            elif "404" in error_str or "NOT_FOUND" in error_str:
+                print(f"❌ Model {model_name} not found. Trying next model...")
+                break  # Try next model immediately
+            
+            # Other errors
+            else:
+                if retry < max_retries - 1:
+                    wait_time = 2 ** retry  # 1s, 2s, 4s
+                    print(f"⚠️ Error with {model_name}: {e}. Retrying in {wait_time}s...")
+                    time.sleep(wait_time)
+                else:
+                    print(f"❌ Model {model_name} failed after {max_retries} retries: {e}")
+                    if i < len(models) - 1:
+                        break  # Try next model
+                    else:
+                        return json.dumps({
+                            "error": f"All models failed: {e}",
+                            "english": [], 
+                            "translated": [], 
+                            "dangerous_combinations": []
+                        })
+
+# If we get here, all models and retries failed
+return json.dumps({
+    "error": "All API attempts failed. Please try again later.",
+    "english": [], 
+    "translated": [], 
+    "dangerous_combinations": []
+})
+            
+print(f"Model {model_name} failed, retrying... ({e})")
+time.sleep(2)
