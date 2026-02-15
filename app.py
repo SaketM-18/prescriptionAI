@@ -543,7 +543,14 @@ def reset_language():
 import google.generativeai as genai
 
 # Models to try for chat/translation (lighter models)
-CHAT_MODELS = ["gemini-1.5-flash", "gemini-1.5-pro"]
+# Models to try for chat/translation
+CHAT_MODELS = [
+    "gemini-1.5-flash",
+    "gemini-1.5-flash-001",
+    "gemini-1.5-flash-002",
+    "gemini-1.5-pro",
+    "gemini-1.5-pro-001"
+]
 
 @app.route("/ask", methods=["POST"])
 def ask_question():

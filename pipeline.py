@@ -57,10 +57,13 @@ def run_pipeline(image_path, language):
 
     # Models to try (standard names for google-generativeai SDK)
     models = [
-        "gemini-2.0-flash",
-        "gemini-1.5-flash", 
+        "gemini-2.0-flash",           # Primary
+        "gemini-1.5-flash",           # Standard
+        "gemini-1.5-flash-001",       # Specific version
+        "gemini-1.5-flash-002",       # Specific version
         "gemini-1.5-pro",
-        "gemini-1.0-pro-vision"
+        "gemini-1.5-pro-001",
+        "gemini-1.5-pro-002",
     ]
 
     max_retries = 3
