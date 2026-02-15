@@ -576,7 +576,7 @@ Rules:
 
 Answer:"""
 
-    models = ["gemini-1.5-flash-latest", "gemini-1.5-flash", "gemini-1.5-pro"]
+    models = ["gemini-1.5-flash-002", "gemini-1.5-pro-002", "gemini-1.5-flash-8b"]
     answer = "Sorry, all models are busy. Please try again in a minute."
     for i, model in enumerate(models):
         try:
@@ -603,7 +603,7 @@ def translate_text(text, target_language):
             
         prompt = f"Translate this short medical purpose to {target_language}. Keep it concise. Return only the translation: '{text}'"
         response = get_client().models.generate_content(
-            model='gemini-2.0-flash-exp',
+            model='gemini-2.0-flash-exp', # Keep this if it works, or switch to gemini-1.5-flash-002
             contents=prompt
         )
         return response.text.strip()
