@@ -77,7 +77,10 @@ TRANSLATIONS = {
         "tts_tablet": "tablet",
         "tts_take": "Take",
         "find_pharmacy_btn": "Find Pharmacy",
-        "share_short": "Share"
+        "share_short": "Share",
+        "tts_after_food": "after food",
+        "tts_before_food": "before food",
+        "tts_as_directed": "as directed"
     },
     "Hindi": {
         "hero_title": "अपनी सेहत<br><span>को समझें</span>",
@@ -142,7 +145,10 @@ TRANSLATIONS = {
         "tts_tablet": "गोली",
         "tts_take": "लीजिए",
         "find_pharmacy_btn": "फार्मेसी खोजें",
-        "share_short": "शेयर"
+        "share_short": "शेयर",
+        "tts_after_food": "खाने के बाद",
+        "tts_before_food": "खाने से पहले",
+        "tts_as_directed": "निर्देशानुसार"
     },
     "Kannada": {
         "hero_title": "ನಿಮ್ಮ ಆರೋಗ್ಯವನ್ನು<br><span>ಅರ್ಥಮಾಡಿಕೊಳ್ಳಿ</span>",
@@ -207,7 +213,10 @@ TRANSLATIONS = {
         "tts_tablet": "ಮಾತ್ರೆ",
         "tts_take": "ತೆಗೆದುಕೊಳ್ಳಿ",
         "find_pharmacy_btn": "ಔಷಧಾಲಯ ಹುಡುಕಿ",
-        "share_short": "ಹಂಚಿಕೊಳ್ಳಿ"
+        "share_short": "ಹಂಚಿಕೊಳ್ಳಿ",
+        "tts_after_food": "ಊಟದ ನಂತರ",
+        "tts_before_food": "ಊಟಕ್ಕೆ ಮೊದಲು",
+        "tts_as_directed": "ಸೂಚಿಸಿದಂತೆ"
     },
     "Tamil": {
         "hero_title": "உங்கள் ஆரோக்கியத்தைப்<br><span>புரிந்துகொள்ளுங்கள்</span>",
@@ -272,7 +281,10 @@ TRANSLATIONS = {
         "tts_tablet": "மாத்திரை",
         "tts_take": "எடுத்துக்கொள்ளுங்கள்",
         "find_pharmacy_btn": "மருந்தகம் தேடு",
-        "share_short": "பகிர்"
+        "share_short": "பகிர்",
+        "tts_after_food": "உணவுக்குப் பிறகு",
+        "tts_before_food": "உணவுக்கு முன்",
+        "tts_as_directed": "பரிந்துரைத்தபடி"
     },
     "Telugu": {
         "hero_title": "మీ ఆరోగ్యాన్ని<br><span>అర్థం చేసుకోండి</span>",
@@ -337,7 +349,10 @@ TRANSLATIONS = {
         "tts_tablet": "మాత్ర",
         "tts_take": "తీసుకోండి",
         "find_pharmacy_btn": "ఫార్మసీ వెతకండి",
-        "share_short": "షేర్"
+        "share_short": "షేర్",
+        "tts_after_food": "ఆహారం తర్వాత",
+        "tts_before_food": "ఆహారం ముందు",
+        "tts_as_directed": "సూచించిన విధంగా"
     },
     "Malayalam": {
         "hero_title": "നിങ്ങളുടെ ആരോഗ്യം<br><span>മനസ്സിലാക്കുക</span>",
@@ -402,7 +417,10 @@ TRANSLATIONS = {
         "tts_tablet": "ഗുളിക",
         "tts_take": "കഴിക്കുക",
         "find_pharmacy_btn": "ഫാർമസി കണ്ടെത്തുക",
-        "share_short": "പങ്കിടുക"
+        "share_short": "പങ്കിടുക",
+        "tts_after_food": "ഭക്ഷണത്തിന് ശേഷം",
+        "tts_before_food": "ഭക്ഷണത്തിന് മുമ്പ്",
+        "tts_as_directed": "നിർദ്ദേശിച്ച പ്രകാരം"
     },
 }
 
@@ -578,11 +596,37 @@ Answer:"""
 
     return jsonify({"answer": answer})
 
+def translate_text(text, target_language):
+    try:
+        if not text or target_language == 'English':
+            return text
+            
+        prompt = f"Translate this short medical purpose to {target_language}. Keep it concise. Return only the translation: '{text}'"
+        response = client.models.generate_content(
+            model='gemini-2.0-flash-exp',
+            contents=prompt
+        )
+        return response.text.strip()
+    except Exception as e:
+        print(f"Translation error: {e}")
+        return text
+
 @app.route("/speak", methods=["POST"])
 def speak():
     data = request.get_json()
     text = data.get("text", "")
     language = data.get("language", "English")
+    
+    # Handle dynamic purpose translation
+    purpose = data.get('purpose', '')
+    purpose_label = data.get('purpose_label', 'Purpose')
+    
+    if purpose:
+        if language != 'English':
+             translated_purpose = translate_text(purpose, language)
+             text += f" {purpose_label}: {translated_purpose}."
+        else:
+             text += f" {purpose_label}: {purpose}."
 
     if not text:
         return jsonify({"error": "No text provided"}), 400

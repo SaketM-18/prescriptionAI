@@ -1163,7 +1163,7 @@
                         <div class="med-name" style="color: white; font-size: 1.5rem; font-weight: 700;">{{ med.name or
                             med.medicine_name or 'Medicine' }}</div>
                         <button
-                            onclick="speakMedicine('{{ (med.name or med.medicine_name or 'Medicine') | replace('\'', '\\\'') }}', '{{ (med.dosage or '') | replace('\'', '\\\'') }}', '{{ (med.purpose or '') | replace('\'', '\\\'') }}', this)"
+                            onclick="speakMedicine('{{ (med.name or med.medicine_name or 'Medicine') | replace('\'', '\\\'') }}', '{{ (med.dosage or '') | replace('\'', '\\\'') }}', '{{ (med.purpose or '') | replace('\'', '\\\'') }}', '{{ (med.timing or med.frequency or '') | replace('\'', '\\\'') }}', this)"
                             style="background: rgba(255,255,255,0.2); border: none; color: white; width: 40px; height: 40px; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 1.2rem;">
                             🔊
                         </button>
@@ -2022,7 +2022,7 @@
             window.speechSynthesis.cancel();
         }
 
-        function speakMedicine(name, dosage, purpose, btnElement) {
+        function speakMedicine(name, dosage, purpose, timing, btnElement) {
             stopSpeech();
 
             // UI Feedback
@@ -2036,7 +2036,36 @@
             if (naturalDosage) text += `${naturalDosage}. `
             else if (dosage) text += `{{ texts.dosage_label }}: ${dosage}. `
 
-            if (purpose) text += `{{ texts.purpose_label }}: ${purpose}.`
+            if (purpose) {
+                // Purpose is now handled server-side for translation
+                // text += `{{ texts.purpose_label }}: ${purpose}. `
+            }
+
+            // Ensure translations are available
+            const lang = '{{ language }}' || 'English';
+            const t = (typeof ALL_TRANSLATIONS !== 'undefined' && ALL_TRANSLATIONS[lang]) ? ALL_TRANSLATIONS[lang] : (ALL_TRANSLATIONS['English'] || {});
+
+            if (timing) {
+                // Try to translate hardcoded English timing if manageable
+                const lowerTiming = timing.toLowerCase();
+                if (lowerTiming.includes('after') && (lowerTiming.includes('food') || lowerTiming.includes('meal'))) {
+                    text += `${t.tts_after_food}.`;
+                } else if (lowerTiming.includes('before') && (lowerTiming.includes('food') || lowerTiming.includes('meal'))) {
+                    text += `${t.tts_before_food}.`;
+                } else {
+                    text += `${timing}.`;
+                }
+            } else {
+                const lower = (dosage || '').toLowerCase();
+                // Heuristic: If 1-0-1 pattern, assume After Food
+                if ((dosage || '').match(/(\d+)\s*-\s*(\d+)\s*-\s*(\d+)/)) {
+                    text += `${t.tts_after_food}.`;
+                } else if (lower.includes('after') || lower.includes('food') || lower.includes('meal') || lower.includes('before')) {
+                    // already in dosage
+                } else {
+                    text += `${t.tts_as_directed}.`;
+                }
+            }
 
             // Server-Side TTS Call
             fetch('/speak', {
@@ -2044,7 +2073,9 @@
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
                     text: text,
-                    language: '{{ language }}' || 'English'
+                    language: '{{ language }}' || 'English',
+                    purpose: purpose,
+                    purpose_label: '{{ texts.purpose_label }}'
                 })
             })
                 .then(response => response.json())
@@ -2127,7 +2158,7 @@
                         <div class="schedule-item">
                             <div style="display:flex; justify-content:space-between; align-items:flex-start;">
                                 <div style="font-weight:700; color:var(--text)">${item.name}</div>
-                                <button onclick="speakMedicine('${item.name.replace(/'/g, "\\'")}', '${(item.dosage || '').replace(/'/g, "\\'")}', '', this)" style="background:none; border:none; cursor:pointer; opacity:0.6;">🔊</button>
+                                <button onclick="speakMedicine('${item.name.replace(/'/g, "\\'")}', '${(item.dosage || '').replace(/'/g, "\\'")}', '', '${(item.timing || '').replace(/'/g, "\\'")}', this)" style="background:none; border:none; cursor:pointer; opacity:0.6;">🔊</button>
                             </div>
                             <div style="font-size:0.85rem; color:#666">${item.timing}</div>
                             ${renderDosageIcons(item.dosage)}
