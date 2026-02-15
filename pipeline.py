@@ -3,10 +3,7 @@ from PIL import Image
 import json, os, time
 from google import genai
 
-with open("key.json") as f:
-    key_data = json.load(f)
-
-client = genai.Client(api_key=key_data["api_key"])
+client = genai.Client(api_key=os.environ.get("GOOGLE_API_KEY"))
 
 
 def extract_text(image_path):
