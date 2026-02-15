@@ -101,18 +101,18 @@ def run_pipeline(image_path, language):
     """
 
     # Retry with fallback models on 503 errors
-    models = ["gemini-1.5-flash-latest", "gemini-1.5-pro", "gemini-2.0-flash-lite"]
-    
+    models = ["gemini-2.0-flash", "gemini-2.0-flash-lite", "gemini-1.5-flash"]
+
     for i, model_name in enumerate(models):
         try:
-            # Pass both the prompt text and the image data
             response = client.models.generate_content(
                 model=model_name,
                 contents=[prompt, types.Part.from_bytes(data=image_data, mime_type="image/jpeg")]
             )
-            
-            del image_data  # Free memory immediately
-            return clean_json(response.text)
+        
+            result = clean_json(response.text)
+            del image_data  # Free memory after success
+            return result
 
         except Exception as e:
             if i == len(models) - 1: # Last try
