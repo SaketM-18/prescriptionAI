@@ -54,6 +54,9 @@ def run_pipeline(image_path, language):
         ]
     }}
     """
+    
+    import logging
+    print("🚀 STARTING APP WITH STABLE SDK (google-generativeai) 🚀")
 
     # Models to try (standard names for google-generativeai SDK)
     models = [
@@ -63,7 +66,7 @@ def run_pipeline(image_path, language):
         "gemini-1.5-flash-002",       # Specific version
         "gemini-1.5-pro",
         "gemini-1.5-pro-001",
-        "gemini-1.5-pro-002",
+        "gemini-pro",                 # Classic 1.0 Fallback
     ]
 
     max_retries = 3
