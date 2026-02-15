@@ -60,8 +60,9 @@ def run_pipeline(image_path, language):
 
     # Models to try (standard names for google-generativeai SDK)
     models = [
-        "gemini-2.0-flash",           # Primary
+        "gemini-2.0-flash",           # Primary (often hits quota)
         "gemini-1.5-flash",           # Standard
+        "gemini-1.5-flash-8b",        # Newer, smaller flash
         "gemini-1.5-flash-001",       # Specific version
         "gemini-1.5-flash-002",       # Specific version
         "gemini-1.5-pro",
@@ -101,14 +102,14 @@ def run_pipeline(image_path, language):
                 error_str = str(e)
                 print(f"⚠️ Error with {model_name} (Attempt {retry+1}/{max_retries}): {error_str}")
                 
-                # Handle Resource Exhausted (429)
+                # Handle Resource Exhausted (429) - Wait and Retry aggressively on known good models
                 if "429" in error_str or "quota" in error_str.lower():
-                    if retry < max_retries - 1:
-                        time.sleep(1) # Very short wait, better to fail fast to next model
-                        continue
-                    else:
+                    print(f"⏳ Quota hit for {model_name}. Waiting 10s...")
+                    time.sleep(10) # Wait 10s for quota recovery
+                    if retry == max_retries - 1:
                         print(f"❌ Quota exceeded for {model_name}. Switching model...")
-                        break # Break inner loop to try next model
+                        break
+                    continue
                 
                 # Handle Not Found (404) - specific to model version
                 elif "404" in error_str or "not found" in error_str.lower():
