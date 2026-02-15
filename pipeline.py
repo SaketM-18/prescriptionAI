@@ -102,9 +102,9 @@ def run_pipeline(image_path, language):
 
     # Retry with fallback models on 503 errors
     models = [
-        "gemini-1.5-flash-latest",  # Most reliable free tier model
-        "gemini-1.5-flash",
-        "gemini-1.5-pro"
+        "gemini-2.0-flash",           # Newest, fastest, best for vision
+        "gemini-1.5-flash",           # Stable fallback
+        "gemini-1.5-pro"              # High intelligence fallback
     ]
 
     max_retries = 3
