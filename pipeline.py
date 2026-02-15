@@ -126,7 +126,7 @@ def run_pipeline(image_path, language):
                 
                 # Handle quota exhaustion (429 error)
                 if "429" in error_str or "RESOURCE_EXHAUSTED" in error_str:
-                    wait_time = (2 ** retry) * 5  # Exponential backoff: 5s, 10s, 20s
+                    wait_time = retry + 1  # Linear backoff: 1s, 2s, 3s (keep it short for web request)
                     print(f"⚠️ Quota exceeded. Waiting {wait_time}s before retry {retry+1}/{max_retries}...")
                     time.sleep(wait_time)
                     
@@ -137,7 +137,7 @@ def run_pipeline(image_path, language):
                             break  # Try next model
                         else:
                             return json.dumps({
-                                "error": "API quota exceeded. Please try again in a few minutes.",
+                                "error": "Server is busy (API quota exceeded). Please try again in a minute.",
                                 "english": [], 
                                 "translated": [], 
                                 "dangerous_combinations": []
