@@ -92,7 +92,7 @@ def run_pipeline(image_path, language):
     """
 
     # Retry with fallback models on 503 errors
-    models = ["gemini-2.0-flash", "gemini-1.5-flash", "models/gemini-flash-latest"]
+    models = ["gemini-1.5-flash-latest", "gemini-1.5-pro", "gemini-2.0-flash-lite"]
     
     for i, model_name in enumerate(models):
         try:
