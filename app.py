@@ -6,27 +6,8 @@ import json, os, uuid
 
 app = Flask(__name__)
 
-# --- DIAGNOSTIC START ---
-try:
-    import google.generativeai as genai
-    import os
-    print("----------------------------------------------------------------")
-    print("🔍 DIAGNOSTIC: Checking available models for API Key...")
-    if not os.environ.get("GOOGLE_API_KEY"):
-        print("❌ CRITICAL: GOOGLE_API_KEY NOT FOUND")
-    else:
-        genai.configure(api_key=os.environ.get("GOOGLE_API_KEY"))
-        try:
-            print("📜 Available Models:")
-            for m in genai.list_models():
-                if 'generateContent' in m.supported_generation_methods:
-                    print(f"   - {m.name}")
-            print("✅ Model list complete.")
-        except Exception as e:
-            print(f"❌ FAILED TO LIST MODELS: {e}")
-    print("----------------------------------------------------------------")
-except Exception as e:
-    print(f"❌ DIAGNOSTIC FAILED: {e}")
+# --- DIAGNOSTIC: Moved to route ---
+# Keeping startup fast and non-blocking.
 # --- DIAGNOSTIC END ---
 app.secret_key = os.urandom(24) # Generates new key on every restart -> Invalidates all old sessions
 
