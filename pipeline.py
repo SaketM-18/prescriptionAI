@@ -2,6 +2,7 @@ import pytesseract
 from PIL import Image
 import json, os, time
 from google import genai
+from google.genai import types
 
 client = genai.Client(api_key=os.environ.get("GOOGLE_API_KEY"))
 
@@ -23,88 +24,96 @@ def clean_json(text):
 
 
 def run_pipeline(image_path, language):
-    ocr = extract_text(image_path)
+    # Load image for Gemini (Multimodal)
+    try:
+        with open(image_path, "rb") as f:
+            image_data = f.read()
+    except Exception as e:
+        return json.dumps({"error": f"Could not read image: {e}"})
 
     prompt = f"""
-You are a helpful medical assistant for villagers. 
-Analyze this prescription and extract medicines.
-Also check if any of the medicines have dangerous interactions with each other.
+    You are a helpful medical assistant for rural villagers. 
+    Analyze this prescription image and extract medicines.
+    Also check if any of the medicines have dangerous interactions with each other.
 
-Return ONLY a valid JSON object with this exact structure:
+    Return ONLY a valid JSON object with this exact structure:
 
-{{
-  "english": [
     {{
-      "name": "Medicine Name",
-      "purpose": "Simple purpose (e.g. for fever)",
-      "dosage": "1-0-1",
-      "visual_timing": "Use emojis: ☀️/🌤️/🌙. Example: ☀️ -- 🌙",
-      "timing": "After food",
-      "frequency": "After food",
-      "duration": "5 days",
-      "warnings": "Take with water",
-      "precautions": "Take with water",
-      "generic_alternative": "Name of cheaper generic version (if applicable)"
+      "english": [
+        {{
+          "name": "Medicine Name",
+          "purpose": "Simple purpose (e.g. for fever)",
+          "dosage": "1-0-1",
+          "visual_timing": "Use emojis: ☀️/🌤️/🌙. Example: ☀️ -- 🌙",
+          "timing": "After food",
+          "frequency": "After food",
+          "duration": "5 days",
+          "warnings": "Take with water",
+          "precautions": "Take with water",
+          "generic_alternative": "Name of cheaper generic version (if applicable)"
+        }}
+      ],
+      "translated": [
+        {{
+          "name": "Medicine Name (keep original English name)",
+          "purpose": "FULLY translated purpose in {language} script",
+          "dosage": "1-0-1",
+          "visual_timing": "Use emojis: ☀️/🌤️/🌙. Example: ☀️ -- 🌙",
+          "timing": "FULLY translated in {language} script (e.g. for Hindi: खाने के बाद, for Kannada: ಊಟದ ನಂತರ)",
+          "frequency": "Same as timing, FULLY translated in {language} script",
+          "duration": "FULLY translated in {language} script (e.g. for Hindi: 5 दिन, for Kannada: 5 ದಿನಗಳು)",
+          "warnings": "FULLY translated in {language} script",
+          "precautions": "Same as warnings, FULLY translated in {language} script",
+          "generic_alternative": "Medicine name + FULLY translated description in {language} script"
+        }}
+      ],
+      "dangerous_combinations": [
+        {{
+          "medicines": "Medicine A + Medicine B",
+          "risk": "Simple explanation of what could go wrong in English",
+          "risk_translated": "Same explanation FULLY in {language} script",
+          "severity": "high or medium"
+        }}
+      ]
     }}
-  ],
-  "translated": [
-    {{
-      "name": "Medicine Name (keep original English name)",
-      "purpose": "FULLY translated purpose in {language} script",
-      "dosage": "1-0-1",
-      "visual_timing": "Use emojis: ☀️/🌤️/🌙. Example: ☀️ -- 🌙",
-      "timing": "FULLY translated in {language} script (e.g. for Hindi: खाने के बाद, for Kannada: ಊಟದ ನಂತರ)",
-      "frequency": "Same as timing, FULLY translated in {language} script",
-      "duration": "FULLY translated in {language} script (e.g. for Hindi: 5 दिन, for Kannada: 5 ದಿನಗಳು)",
-      "warnings": "FULLY translated in {language} script",
-      "precautions": "Same as warnings, FULLY translated in {language} script",
-      "generic_alternative": "Medicine name + FULLY translated description in {language} script"
-    }}
-  ],
-  "dangerous_combinations": [
-    {{
-      "medicines": "Medicine A + Medicine B",
-      "risk": "Simple explanation of what could go wrong in English",
-      "risk_translated": "Same explanation FULLY in {language} script",
-      "severity": "high or medium"
-    }}
-  ]
-}}
 
-CRITICAL TRANSLATION RULES:
-- In the "translated" array, EVERY value MUST be written in {language} script/language, NOT in English
-- The medicine "name" can stay in English since it's a brand name
-- But purpose, timing, frequency, duration, warnings, precautions, generic_alternative MUST ALL be in {language}
-- Do NOT write English words like "After food", "5 days", "Morning-Afternoon-Night" in the translated array
-- Instead write the {language} equivalent, for example in Kannada: "ಊಟದ ನಂತರ", "5 ದಿನಗಳು", "ಬೆಳಿಗ್ಗೆ-ಮಧ್ಯಾಹ್ನ-ರಾತ್ರಿ"
-- The "timing" and "frequency" fields should have the same translated value
-- The "warnings" and "precautions" fields should have the same translated value
+    CRITICAL TRANSLATION RULES:
+    - In the "translated" array, EVERY value MUST be written in {language} script/language, NOT in English
+    - The medicine "name" can stay in English since it's a brand name
+    - But purpose, timing, frequency, duration, warnings, precautions, generic_alternative MUST ALL be in {language}
+    - Do NOT write English words like "After food", "5 days", "Morning-Afternoon-Night" in the translated array
+    - Instead write the {language} equivalent, for example in Kannada: "ಊಟದ ನಂತರ", "5 ದಿನಗಳು", "ಬೆಳಿಗ್ಗೆ-ಮಧ್ಯಾಹ್ನ-ರಾತ್ರಿ"
+    - The "timing" and "frequency" fields should have the same translated value
+    - The "warnings" and "precautions" fields should have the same translated value
 
-IMPORTANT for dangerous_combinations:
-- Check ALL pairs of medicines for known interactions
-- If no dangerous combinations exist, return an empty array: "dangerous_combinations": []
-- Use very simple language a villager can understand
-- severity should be "high" for life-threatening or "medium" for uncomfortable side effects
+    IMPORTANT for dangerous_combinations:
+    - Check ALL pairs of medicines for known interactions
+    - If no dangerous combinations exist, return an empty array: "dangerous_combinations": []
+    - Use very simple language a villager can understand
+    - severity should be "high" for life-threatening or "medium" for uncomfortable side effects
 
-Keep the explanation very simple and easy to understand for a villager.
-Do NOT use markdown code blocks (```json). Just return raw JSON string.
-
-OCR Text:
-{ocr}
-"""
+    Keep the explanation very simple and easy to understand for a villager.
+    Do NOT use markdown code blocks (```json). Just return raw JSON string.
+    """
 
     # Retry with fallback models on 503 errors
-    models = ["models/gemini-flash-latest", "gemini-2.0-flash", "gemini-2.0-flash-lite"]
-    for i, model in enumerate(models):
+    models = ["gemini-2.0-flash", "gemini-1.5-flash", "models/gemini-flash-latest"]
+    
+    for i, model_name in enumerate(models):
         try:
+            # Pass both the prompt text and the image data
             response = client.models.generate_content(
-                model=model,
-                contents=prompt
+                model=model_name,
+                contents=[prompt, types.Part.from_bytes(data=image_data, mime_type="image/jpeg")]
             )
+            
             return clean_json(response.text)
+
         except Exception as e:
-            if ("503" in str(e) or "429" in str(e)) and i < len(models) - 1:
-                print(f"Model {model} unavailable, trying {models[i+1]}...")
-                time.sleep(2)
-                continue
-            raise
+            if i == len(models) - 1: # Last try
+                print(f"Final Model {model_name} failed: {e}")
+                # Fallback to empty JSON structure if AI completely fails
+                return json.dumps({"english": [], "translated": [], "dangerous_combinations": []})
+            
+            print(f"Model {model_name} failed, retrying... ({e})")
+            time.sleep(2)
