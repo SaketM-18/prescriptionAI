@@ -1959,9 +1959,24 @@
                 text += `_Shared via ClearScript AI_`;
             }
 
-            // Open WhatsApp with the text
+            // Mobile-first sharing (Web Share API)
+            if (navigator.share) {
+                navigator.share({
+                    title: 'Prescription Guide',
+                    text: text
+                }).catch(err => {
+                    console.log('Share API failed, falling back to WhatsApp', err);
+                    openWhatsAppFallback(text);
+                });
+            } else {
+                openWhatsAppFallback(text);
+            }
+        }
+
+        function openWhatsAppFallback(text) {
             const encoded = encodeURIComponent(text);
-            window.open(`https://wa.me/?text=${encoded}`, '_blank');
+            // Use api.whatsapp.com for better compatibility
+            window.open(`https://api.whatsapp.com/send?text=${encoded}`, '_blank');
         }
 
         // ===== Visual Helpers =====
