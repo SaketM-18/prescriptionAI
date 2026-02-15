@@ -576,7 +576,7 @@ Rules:
 
 Answer:"""
 
-    models = ["gemini-2.0-flash", "models/gemini-flash-latest", "gemini-2.0-flash-lite"]
+    models = ["gemini-1.5-flash-latest", "gemini-1.5-flash", "gemini-1.5-pro"]
     answer = "Sorry, all models are busy. Please try again in a minute."
     for i, model in enumerate(models):
         try:
