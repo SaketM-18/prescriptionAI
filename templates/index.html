@@ -1887,7 +1887,12 @@
 
         function showSharePicker(mode = 'report') {
             currentShareMode = mode;
-            document.getElementById('share-picker').style.display = 'flex';
+            const picker = document.getElementById('share-picker');
+            if (!picker) {
+                alert('Please scan a prescription first!');
+                return;
+            }
+            picker.style.display = 'flex';
         }
 
         function closeSharePicker(e) {
