@@ -1,5 +1,5 @@
 from flask import Flask, render_template, request, make_response, redirect, url_for, session, jsonify
-from pipeline import run_pipeline, get_client
+from pipeline import run_pipeline
 import time
 from gtts import gTTS
 import json, os, uuid
@@ -540,6 +540,11 @@ def reset_language():
     resp.set_cookie("user_lang", "", expires=0)
     return resp
 
+import google.generativeai as genai
+
+# Models to try for chat/translation (lighter models)
+CHAT_MODELS = ["gemini-1.5-flash", "gemini-1.5-pro"]
+
 @app.route("/ask", methods=["POST"])
 def ask_question():
     data = request.get_json()
@@ -576,39 +581,43 @@ Rules:
 
 Answer:"""
 
-    models = ["gemini-1.5-flash", "gemini-1.5-pro"]
     answer = "Sorry, all models are busy. Please try again in a minute."
-    for i, model in enumerate(models):
+    
+    for model_name in CHAT_MODELS:
         try:
-            response = get_client().models.generate_content(
-                model=model,
-                contents=prompt
-            )
-            answer = response.text.strip()
-            break
+            model = genai.GenerativeModel(model_name)
+            response = model.generate_content(prompt) # Default config is fine for text
+            if response.text:
+                answer = response.text.strip()
+                break
         except Exception as e:
-            if ("503" in str(e) or "429" in str(e)) and i < len(models) - 1:
-                print(f"Chat model {model} unavailable, trying {models[i+1]}...")
-                time.sleep(2)
-                continue
-            answer = f"Sorry, I could not process your question. ({str(e)})"
-            break
+            print(f"⚠️ Chat model {model_name} error: {e}")
+            if "429" in str(e) or "quota" in str(e).lower():
+                continue # Try next model
+            time.sleep(1) 
 
     return jsonify({"answer": answer})
 
 def translate_text(text, target_language):
     try:
-        if not text or target_language == 'English':
+        if not text or target_language == "English":
             return text
             
-        prompt = f"Translate this short medical purpose to {target_language}. Keep it concise. Return only the translation: '{text}'"
-        response = get_client().models.generate_content(
-            model='gemini-1.5-flash',
-            contents=prompt
-        )
-        return response.text.strip()
+        prompt = f"Translate the following medical text to {target_language}. Keep it simple and accurate for a patient. If it's a medicine name, keep it in English but transliterated if needed. Text: '{text}'"
+        
+        for model_name in CHAT_MODELS:
+            try:
+                model = genai.GenerativeModel(model_name)
+                response = model.generate_content(prompt)
+                if response.text:
+                    return response.text.strip()
+            except Exception as e:
+                print(f"⚠️ Translation error with {model_name}: {e}")
+                continue
+                
+        return text # Fallback to original
     except Exception as e:
-        print(f"Translation error: {e}")
+        print(f"Translation failed: {e}")
         return text
 
 @app.route("/speak", methods=["POST"])

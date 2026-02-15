@@ -1,30 +1,21 @@
 from PIL import Image
 import json, os, time
-from google import genai
-from google.genai import types
+import google.generativeai as genai
 
-client = None
-def get_client():
-    global client
-    if client is None:
-        api_key = os.environ.get("GOOGLE_API_KEY")
-        if not api_key:
-            print("❌ GOOGLE_API_KEY not found in environment variables!")
-        client = genai.Client(api_key=api_key)
-    return client
-
+# Configure API Key globally
+api_key = os.environ.get("GOOGLE_API_KEY")
+if not api_key:
+    print("❌ GOOGLE_API_KEY not found in environment variables!")
+else:
+    genai.configure(api_key=api_key)
 
 def clean_json(text):
     text = text.strip()
-
     if text.startswith("```"):
         text = text.replace("```", "").strip()
-
     if text.lower().startswith("json"):
         text = text[4:].strip()
-
     return text
-
 
 def run_pipeline(image_path, language):
     # Load image for Gemini (Multimodal)
@@ -32,14 +23,15 @@ def run_pipeline(image_path, language):
         from PIL import Image
         import io
 
-        # Resize image to reduce memory usage
+        # Resize image to reduce memory usage and payload size
         img = Image.open(image_path)
         img = img.convert("RGB")
         img.thumbnail((1024, 1024))  # Max 1024x1024
         buffer = io.BytesIO()
         img.save(buffer, format="JPEG", quality=85)
         image_data = buffer.getvalue()
-        del img, buffer  # Free memory
+        # Re-open as PIL image for SDK
+        pil_image = Image.open(io.BytesIO(image_data))
     except Exception as e:
         return json.dumps({"error": f"Could not read image: {e}"})
 
@@ -48,68 +40,22 @@ def run_pipeline(image_path, language):
     Analyze this prescription image and extract medicines.
     Also check if any of the medicines have dangerous interactions with each other.
 
-    Return ONLY a valid JSON object with this exact structure:
-
+    Return ONLY valid JSON.
+    Structure:
     {{
-      "english": [
-        {{
-          "name": "Medicine Name",
-          "purpose": "Simple purpose (e.g. for fever)",
-          "dosage": "1-0-1",
-          "visual_timing": "Use emojis: ☀️/🌤️/🌙. Example: ☀️ -- 🌙",
-          "timing": "After food",
-          "frequency": "After food",
-          "duration": "5 days",
-          "warnings": "Take with water",
-          "precautions": "Take with water",
-          "generic_alternative": "Name of cheaper generic version (if applicable)"
-        }}
-      ],
-      "translated": [
-        {{
-          "name": "Medicine Name (keep original English name)",
-          "purpose": "FULLY translated purpose in {language} script",
-          "dosage": "1-0-1",
-          "visual_timing": "Use emojis: ☀️/🌤️/🌙. Example: ☀️ -- 🌙",
-          "timing": "FULLY translated in {language} script (e.g. for Hindi: खाने के बाद, for Kannada: ಊಟದ ನಂತರ)",
-          "frequency": "Same as timing, FULLY translated in {language} script",
-          "duration": "FULLY translated in {language} script (e.g. for Hindi: 5 दिन, for Kannada: 5 ದಿನಗಳು)",
-          "warnings": "FULLY translated in {language} script",
-          "precautions": "Same as warnings, FULLY translated in {language} script",
-          "generic_alternative": "Medicine name + FULLY translated description in {language} script"
-        }}
-      ],
-      "dangerous_combinations": [
-        {{
-          "medicines": "Medicine A + Medicine B",
-          "risk": "Simple explanation of what could go wrong in English",
-          "risk_translated": "Same explanation FULLY in {language} script",
-          "severity": "high or medium"
-        }}
-      ]
+        "english": [
+            {{ "name": "Medicine Name", "dosage": "Dosage (e.g. 500mg)", "timing": "Frequency (e.g. 1-0-1)", "instructions": "When to take (e.g. After food)" }}
+        ],
+        "translated": [
+            {{ "name": "Medicine Name", "dosage": "Dosage", "timing": "Frequency", "instructions": "Translated instructions in {language}" }}
+        ],
+        "dangerous_combinations": [
+            {{ "medicines": ["Med A", "Med B"], "reason": "Reason in {language}" }}
+        ]
     }}
-
-    CRITICAL TRANSLATION RULES:
-    - In the "translated" array, EVERY value MUST be written in {language} script/language, NOT in English
-    - The medicine "name" can stay in English since it's a brand name
-    - But purpose, timing, frequency, duration, warnings, precautions, generic_alternative MUST ALL be in {language}
-    - Do NOT write English words like "After food", "5 days", "Morning-Afternoon-Night" in the translated array
-    - Instead write the {language} equivalent, for example in Kannada: "ಊಟದ ನಂತರ", "5 ದಿನಗಳು", "ಬೆಳಿಗ್ಗೆ-ಮಧ್ಯಾಹ್ನ-ರಾತ್ರಿ"
-    - The "timing" and "frequency" fields should have the same translated value
-    - The "warnings" and "precautions" fields should have the same translated value
-
-    IMPORTANT for dangerous_combinations:
-    - Check ALL pairs of medicines for known interactions
-    - If no dangerous combinations exist, return an empty array: "dangerous_combinations": []
-    - Use very simple language a villager can understand
-    - severity should be "high" for life-threatening or "medium" for uncomfortable side effects
-
-    Keep the explanation very simple and easy to understand for a villager.
-    Do NOT use markdown code blocks (```json). Just return raw JSON string.
     """
 
-    # Retry with fallback# Models to try (in order of preference)
-# Using standard names as they are most stable
+    # Models to try (standard names for google-generativeai SDK)
     models = [
         "gemini-2.0-flash",
         "gemini-1.5-flash", 
@@ -118,72 +64,64 @@ def run_pipeline(image_path, language):
     ]
 
     max_retries = 3
+    final_error = None
 
     for i, model_name in enumerate(models):
+        print(f"🤖 Trying model: {model_name}...")
+        
         for retry in range(max_retries):
             try:
-                client = get_client()
-                response = client.models.generate_content(
-                    model=model_name,
-                    contents=[prompt, types.Part.from_bytes(data=image_data, mime_type="image/jpeg")]
+                # Initialize model
+                model = genai.GenerativeModel(model_name)
+                
+                # Generate content
+                response = model.generate_content(
+                    [prompt, pil_image],
+                    generation_config=genai.types.GenerationConfig(
+                        temperature=0.2,
+                        response_mime_type="application/json"
+                    )
                 )
-            
-                result = clean_json(response.text)
-                # del image_data  # Free memory after success (optional, python is garbage collected)
-                return result
-
-            except Exception as e: 
-                error_str = str(e)
                 
-                # Handle quota exhaustion (429 error)
-                if "429" in error_str or "RESOURCE_EXHAUSTED" in error_str:
-                    wait_time = retry + 1  # Linear backoff: 1s, 2s, 3s (keep it short for web request)
-                    print(f"⚠️ Quota exceeded. Waiting {wait_time}s before retry {retry+1}/{max_retries}...")
-                    time.sleep(wait_time)
+                # Check response
+                if not response.text:
+                    raise ValueError("Empty response from API")
                     
-                    if retry == max_retries - 1:
-                        print(f"❌ Max retries reached for {model_name} due to quota limits")
-                        if i < len(models) - 1:
-                            print(f"🔄 Switching to {models[i+1]}...")
-                            break  # Try next model
-                        else:
-                            return json.dumps({
-                                "error": "Server is busy (API quota exceeded). Please try again in a minute.",
-                                "english": [], 
-                                "translated": [], 
-                                "dangerous_combinations": []
-                            })
-                    continue
+                json_str = clean_json(response.text)
+                print(f"✅ Success with {model_name}")
+                return json_str
+
+            except Exception as e:
+                error_str = str(e)
+                print(f"⚠️ Error with {model_name} (Attempt {retry+1}/{max_retries}): {error_str}")
                 
-                # Handle 404 model not found
-                elif "404" in error_str or "NOT_FOUND" in error_str:
-                    print(f"❌ Model {model_name} not found. Trying next model...")
-                    break  # Try next model immediately
+                # Handle Resource Exhausted (429)
+                if "429" in error_str or "quota" in error_str.lower():
+                    if retry < max_retries - 1:
+                        time.sleep(1) # Very short wait, better to fail fast to next model
+                        continue
+                    else:
+                        print(f"❌ Quota exceeded for {model_name}. Switching model...")
+                        break # Break inner loop to try next model
                 
-                # Other errors
+                # Handle Not Found (404) - specific to model version
+                elif "404" in error_str or "not found" in error_str.lower():
+                    print(f"❌ Model {model_name} not found. Switching model...")
+                    break # Break inner loop immediately to try next model
+
+                # Other errors - wait and retry
                 else:
                     if retry < max_retries - 1:
-                        wait_time = 2 ** retry  # 1s, 2s, 4s
-                        print(f"⚠️ Error with {model_name}: {e}. Retrying in {wait_time}s...")
-                        time.sleep(wait_time)
+                        time.sleep(1)
                     else:
-                        print(f"❌ Model {model_name} failed after {max_retries} retries: {e}")
-                        if i < len(models) - 1:
-                            break  # Try next model
-                        else:
-                            return json.dumps({
-                                "error": f"All models failed: {e}",
-                                "english": [], 
-                                "translated": [], 
-                                "dangerous_combinations": []
-                            })
+                        final_error = str(e)
+        
+        # If we broke out of retry loop, outer loop continues to next model
 
-    # If we get here, all models and retries failed
+    # If all models failed
     return json.dumps({
-        "error": "All API attempts failed. Please try again later.",
+        "error": f"All AI models failed. Please try again. Last error: {final_error}",
         "english": [], 
         "translated": [], 
         "dangerous_combinations": []
     })
-            
-
