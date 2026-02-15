@@ -59,16 +59,14 @@ def run_pipeline(image_path, language):
     
     print("🚀 STARTING APP WITH STABLE SDK (google-generativeai) 🚀")
 
-    # Models to try (standard names for google-generativeai SDK)
+    # Models to try (Verified available from debug_models)
     models = [
-        "gemini-2.0-flash",           # Primary (often hits quota)
-        "gemini-1.5-flash",           # Standard
-        "gemini-1.5-flash-8b",        # Newer, smaller flash
-        "gemini-1.5-flash-001",       # Specific version
-        "gemini-1.5-flash-002",       # Specific version
-        "gemini-1.5-pro",
-        "gemini-1.5-pro-001",
-        "gemini-pro",                 # Classic 1.0 Fallback
+        "gemini-2.0-flash",           # Primary (Fastest)
+        "gemini-2.0-flash-lite-001",  # Fallback 1 (Lite = standard efficient)
+        "gemini-2.0-flash-001",       # Fallback 2 (Specific version)
+        "gemini-2.5-flash",           # Fallback 3 (Newer model)
+        "gemini-2.0-flash-lite",      # Fallback 4 (Alias)
+        "gemini-flash-latest",        # Fallback 5 (Alias)
     ]
 
     max_retries = 3
