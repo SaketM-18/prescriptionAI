@@ -1,14 +1,9 @@
-import pytesseract
 from PIL import Image
 import json, os, time
 from google import genai
 from google.genai import types
 
 client = genai.Client(api_key=os.environ.get("GOOGLE_API_KEY"))
-
-
-def extract_text(image_path):
-    return pytesseract.image_to_string(Image.open(image_path))
 
 
 def clean_json(text):
