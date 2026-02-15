@@ -108,11 +108,13 @@ def run_pipeline(image_path, language):
     Do NOT use markdown code blocks (```json). Just return raw JSON string.
     """
 
-    # Retry with fallback models on 503 errors
+    # Retry with fallback# Models to try (in order of preference)
+# Using standard names as they are most stable
     models = [
-        "gemini-2.0-flash",           # Primary
-        "gemini-1.5-flash",           # Fallback 1 (Standard)
-        "gemini-1.5-pro",             # Fallback 2 (Standard)
+        "gemini-2.0-flash",
+        "gemini-1.5-flash", 
+        "gemini-1.5-pro",
+        "gemini-1.0-pro-vision"
     ]
 
     max_retries = 3
