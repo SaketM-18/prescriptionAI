@@ -543,7 +543,6 @@ def reset_language():
 import google.generativeai as genai
 
 # Models to try for chat/translation (lighter models)
-# Models to try for chat/translation
 CHAT_MODELS = [
     "gemini-1.5-flash",
     "gemini-1.5-flash-001",
