@@ -1,7 +1,6 @@
-from PIL import Image
-import json, os, time
-
-# Removed top-level genai import and config to prevent startup blocking
+from PIL import Image, ImageEnhance, ImageFilter
+import json, os, time, io
+from config import get_api_key
 
 def clean_json(text):
     text = text.strip()
@@ -11,123 +10,188 @@ def clean_json(text):
         text = text[4:].strip()
     return text
 
-def run_pipeline(image_path, language):
-    # Lazy Load SDK to prevent startup timeouts
+def preprocess_image(img):
+    """Enhance image quality for better recognition"""
     try:
-        import google.generativeai as genai
-        import logging
-        from PIL import Image
-        import io
+        # Convert to RGB if needed
+        if img.mode != 'RGB':
+            img = img.convert('RGB')
         
-        # Configure API Key (Lazy)
-        api_key = os.environ.get("GOOGLE_API_KEY")
-        if not api_key:
-            return json.dumps({"error": "GOOGLE_API_KEY not found in environment variables!"})
-        genai.configure(api_key=api_key)
-
-        # Resize image to reduce memory usage and payload size
-        img = Image.open(image_path)
-        img = img.convert("RGB")
-        img.thumbnail((1024, 1024))  # Max 1024x1024
-        buffer = io.BytesIO()
-        img.save(buffer, format="JPEG", quality=85)
-        image_data = buffer.getvalue()
-        # Re-open as PIL image for SDK
-        pil_image = Image.open(io.BytesIO(image_data))
+        # Enhance contrast
+        enhancer = ImageEnhance.Contrast(img)
+        img = enhancer.enhance(1.5)
+        
+        # Enhance sharpness
+        enhancer = ImageEnhance.Sharpness(img)
+        img = enhancer.enhance(2.0)
+        
+        # Enhance brightness
+        enhancer = ImageEnhance.Brightness(img)
+        img = enhancer.enhance(1.2)
+        
+        # Apply sharpening filter
+        img = img.filter(ImageFilter.SHARPEN)
+        
+        return img
     except Exception as e:
-        return json.dumps({"error": f"Could not initialize AI or read image: {e}"})
+        print(f"⚠️ Preprocessing error: {e}")
+        return img
 
-    prompt = f"""
-    You are a helpful medical assistant for rural villagers. 
-    Analyze this prescription image and extract medicines.
-    Also check if any of the medicines have dangerous interactions with each other.
-
-    Return ONLY valid JSON.
-    Structure:
-    {{
-        "english": [
-            {{ "name": "Medicine Name", "dosage": "Dosage (e.g. 500mg)", "timing": "Frequency (e.g. 1-0-1)", "instructions": "When to take (e.g. After food)" }}
-        ],
-        "translated": [
-            {{ "name": "Medicine Name", "dosage": "Dosage", "timing": "Frequency", "instructions": "Translated instructions in {language}" }}
-        ],
-        "dangerous_combinations": [
-            {{ "medicines": ["Med A", "Med B"], "reason": "Reason in {language}" }}
-        ]
-    }}
-    """
+def run_pipeline(image_path, language):
+    """Main pipeline for prescription processing"""
     
-    print("🚀 STARTING APP WITH STABLE SDK (google-generativeai) 🚀")
-
-    # Models to try (Verified available from debug_models)
-    models = [
-        "gemini-2.0-flash",           # Primary (Fastest)
-        "gemini-2.0-flash-lite-001",  # Fallback 1 (Lite = standard efficient)
-        "gemini-2.0-flash-001",       # Fallback 2 (Specific version)
-        "gemini-2.5-flash",           # Fallback 3 (Newer model)
-        "gemini-2.0-flash-lite",      # Fallback 4 (Alias)
-        "gemini-flash-latest",        # Fallback 5 (Alias)
-    ]
-
-    max_retries = 3
-    final_error = None
-
-    for i, model_name in enumerate(models):
-        print(f"🤖 Trying model: {model_name}...")
+    # Step 1: Load and preprocess image
+    try:
+        import google.generativeai as genai  # Use OLD SDK that works!
         
-        for retry in range(max_retries):
+        # Get API key (from environment or key.json)
+        api_key = get_api_key()
+        
+        if not api_key:
+            return json.dumps({
+                "error": "API key not configured. Add GOOGLE_API_KEY to environment or create key.json",
+                "english": [],
+                "translated": [],
+                "dangerous_combinations": []
+            })
+        
+        # Configure API
+        genai.configure(api_key=api_key)
+        
+        # Load image
+        img = Image.open(image_path)
+        print(f"📸 Original image: {img.size}, mode: {img.mode}")
+        
+        # Preprocess
+        img = preprocess_image(img)
+        
+        # Resize to optimal size
+        img.thumbnail((1024, 1024), Image.Resampling.LANCZOS)
+        
+        print(f"📸 Preprocessed: {img.size}")
+        
+    except Exception as e:
+        print(f"❌ Image processing error: {e}")
+        return json.dumps({
+            "error": f"Image processing failed: {str(e)}",
+            "english": [],
+            "translated": [],
+            "dangerous_combinations": []
+        })
+    
+    # Step 2: Create prompt
+    prompt = f"""Analyze this prescription image and extract medicine information.
+
+Return ONLY valid JSON with this structure:
+{{
+  "english": [
+    {{
+      "name": "Medicine Name with strength (e.g., Paracetamol 500mg)",
+      "purpose": "Simple purpose (e.g., for fever and pain)",
+      "dosage": "Format: Morning-Afternoon-Night (e.g., 1-0-1, 1-1-1)",
+      "visual_timing": "Emojis: ☀️ for morning, 🌤️ for afternoon, 🌙 for night",
+      "timing": "When to take (e.g., After food, Before food)",
+      "frequency": "Same as timing",
+      "duration": "How long (e.g., 5 days, 2 weeks)",
+      "warnings": "Warnings (e.g., Avoid alcohol, Take with water)",
+      "precautions": "Same as warnings",
+      "generic_alternative": "Cheaper option if available"
+    }}
+  ],
+  "translated": [
+    {{
+      "name": "Medicine Name (keep English)",
+      "purpose": "Translated to {language}",
+      "dosage": "1-0-1 (keep format)",
+      "visual_timing": "☀️ -- 🌙 (keep emojis)",
+      "timing": "Translated to {language}",
+      "frequency": "Translated to {language}",
+      "duration": "Translated to {language}",
+      "warnings": "Translated to {language}",
+      "precautions": "Translated to {language}",
+      "generic_alternative": "Translated to {language}"
+    }}
+  ],
+  "dangerous_combinations": [
+    {{
+      "medicines": "Medicine A + Medicine B",
+      "risk": "Risk in English",
+      "risk_translated": "Risk in {language}",
+      "severity": "high or medium"
+    }}
+  ]
+}}
+
+IMPORTANT:
+- Recognize abbreviations: OD (once daily), BD (twice daily), TDS (three times), AC (before food), PC (after food)
+- Convert to standard format (1-0-1 means morning and night)
+- Translate all fields except medicine names to {language}
+- If unclear, make educated guess
+- Return ONLY JSON, no markdown"""
+
+    # Step 3: Try models (using OLD SDK with correct model names)
+    models = [
+        "gemini-2.5-flash",      # Latest
+        "gemini-2.0-flash",      # Stable
+        "gemini-2.5-pro",        # Most capable
+        "gemini-flash-latest"    # Alias
+    ]
+    
+    for model_name in models:
+        print(f"🤖 Trying {model_name}...")
+        
+        for attempt in range(3):
             try:
-                # Initialize model
-                model = genai.GenerativeModel(model_name)
+                print(f"   Attempt {attempt + 1}/3...")
                 
-                # Generate content
+                model = genai.GenerativeModel(model_name)
                 response = model.generate_content(
-                    [prompt, pil_image],
+                    [prompt, img],
                     generation_config=genai.types.GenerationConfig(
-                        temperature=0.2,
+                        temperature=0.1,
+                        max_output_tokens=4096,
                         response_mime_type="application/json"
                     )
                 )
                 
-                # Check response
-                if not response.text:
-                    raise ValueError("Empty response from API")
+                print(f"   Got response from {model_name}")
+                
+                if response and response.text:
+                    result = clean_json(response.text)
+                    print(f"✅ Success with {model_name}")
                     
-                json_str = clean_json(response.text)
-                print(f"✅ Success with {model_name}")
-                return json_str
-
+                    # Validate JSON
+                    try:
+                        data = json.loads(result)
+                        if 'english' in data or 'translated' in data:
+                            print(f"   Extracted {len(data.get('english', []))} medicines")
+                            return result
+                        else:
+                            print(f"   Invalid response structure")
+                    except Exception as parse_error:
+                        print(f"   JSON parse error: {parse_error}")
+                
+                print(f"⚠️ Empty or invalid response from {model_name}")
+                
             except Exception as e:
-                error_str = str(e)
-                print(f"⚠️ Error with {model_name} (Attempt {retry+1}/{max_retries}): {error_str}")
+                error_msg = str(e)
+                print(f"⚠️ {model_name} attempt {attempt+1}: {error_msg[:200]}")
                 
-                # Handle Resource Exhausted (429) - Wait and Retry aggressively on known good models
-                if "429" in error_str or "quota" in error_str.lower():
-                    print(f"⏳ Quota hit for {model_name}. Waiting 10s...")
-                    time.sleep(10) # Wait 10s for quota recovery
-                    if retry == max_retries - 1:
-                        print(f"❌ Quota exceeded for {model_name}. Switching model...")
-                        break
+                if "429" in error_msg or "quota" in error_msg.lower():
+                    print("⏳ Quota exceeded, waiting 10s...")
+                    time.sleep(10)
                     continue
-                
-                # Handle Not Found (404) - specific to model version
-                elif "404" in error_str or "not found" in error_str.lower():
-                    print(f"❌ Model {model_name} not found. Switching model...")
-                    break # Break inner loop immediately to try next model
-
-                # Other errors - wait and retry
+                elif "404" in error_msg or "not found" in error_msg.lower():
+                    print(f"❌ {model_name} not available")
+                    break
                 else:
-                    if retry < max_retries - 1:
-                        time.sleep(1)
-                    else:
-                        final_error = str(e)
-        
-        # If we broke out of retry loop, outer loop continues to next model
-
-    # If all models failed
+                    time.sleep(2)
+    
+    # All failed
+    print("❌ All models failed")
     return json.dumps({
-        "error": f"All AI models failed. Please try again. Last error: {final_error}",
-        "english": [], 
-        "translated": [], 
+        "error": "Could not process prescription. Please try again with a clearer image.",
+        "english": [],
+        "translated": [],
         "dangerous_combinations": []
     })

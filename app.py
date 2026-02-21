@@ -84,7 +84,17 @@ TRANSLATIONS = {
         "share_short": "Share",
         "tts_after_food": "after food",
         "tts_before_food": "before food",
-        "tts_as_directed": "as directed"
+        "tts_as_directed": "as directed",
+        "alarm_title": "Medication Reminder",
+        "alarm_opening_clock": "Opening Clock app...",
+        "alarm_set_for": "Alarm set for",
+        "alarm_set_manually": "Set alarm manually for",
+        "alarm_open_clock": "Open Clock app?",
+        "alarm_ios_instructions": "Please set an alarm for",
+        "alarm_label": "Label",
+        "alarm_not_supported": "Alarm feature not supported on this device",
+        "alarm_permission_denied": "Please allow notifications to set alarms",
+        "no_medicines_for_slot": "No medicines scheduled for this time"
     },
     "Hindi": {
         "hero_title": "अपनी सेहत<br><span>को समझें</span>",
@@ -152,7 +162,17 @@ TRANSLATIONS = {
         "share_short": "शेयर",
         "tts_after_food": "खाने के बाद",
         "tts_before_food": "खाने से पहले",
-        "tts_as_directed": "निर्देशानुसार"
+        "tts_as_directed": "निर्देशानुसार",
+        "alarm_title": "दवाई याद दिलाना",
+        "alarm_opening_clock": "घड़ी ऐप खोल रहे हैं...",
+        "alarm_set_for": "अलार्म सेट किया गया",
+        "alarm_set_manually": "मैन्युअल रूप से अलार्म सेट करें",
+        "alarm_open_clock": "घड़ी ऐप खोलें?",
+        "alarm_ios_instructions": "कृपया अलार्म सेट करें",
+        "alarm_label": "लेबल",
+        "alarm_not_supported": "इस डिवाइस पर अलार्म सुविधा समर्थित नहीं है",
+        "alarm_permission_denied": "कृपया अलार्म सेट करने के लिए सूचनाओं की अनुमति दें",
+        "no_medicines_for_slot": "इस समय के लिए कोई दवाई निर्धारित नहीं है"
     },
     "Kannada": {
         "hero_title": "ನಿಮ್ಮ ಆರೋಗ್ಯವನ್ನು<br><span>ಅರ್ಥಮಾಡಿಕೊಳ್ಳಿ</span>",
@@ -220,7 +240,17 @@ TRANSLATIONS = {
         "share_short": "ಹಂಚಿಕೊಳ್ಳಿ",
         "tts_after_food": "ಊಟದ ನಂತರ",
         "tts_before_food": "ಊಟಕ್ಕೆ ಮೊದಲು",
-        "tts_as_directed": "ಸೂಚಿಸಿದಂತೆ"
+        "tts_as_directed": "ಸೂಚಿಸಿದಂತೆ",
+        "alarm_title": "ಔಷಧಿ ಜ್ಞಾಪನೆ",
+        "alarm_opening_clock": "ಗಡಿಯಾರ ಅಪ್ಲಿಕೇಶನ್ ತೆರೆಯಲಾಗುತ್ತಿದೆ...",
+        "alarm_set_for": "ಅಲಾರಾಂ ಹೊಂದಿಸಲಾಗಿದೆ",
+        "alarm_set_manually": "ಹಸ್ತಚಾಲಿತವಾಗಿ ಅಲಾರಾಂ ಹೊಂದಿಸಿ",
+        "alarm_open_clock": "ಗಡಿಯಾರ ಅಪ್ಲಿಕೇಶನ್ ತೆರೆಯುವುದೇ?",
+        "alarm_ios_instructions": "ದಯವಿಟ್ಟು ಅಲಾರಾಂ ಹೊಂದಿಸಿ",
+        "alarm_label": "ಲೇಬಲ್",
+        "alarm_not_supported": "ಈ ಸಾಧನದಲ್ಲಿ ಅಲಾರಾಂ ವೈಶಿಷ್ಟ್ಯ ಬೆಂಬಲಿತವಾಗಿಲ್ಲ",
+        "alarm_permission_denied": "ಅಲಾರಾಂಗಳನ್ನು ಹೊಂದಿಸಲು ದಯವಿಟ್ಟು ಅಧಿಸೂಚನೆಗಳನ್ನು ಅನುಮತಿಸಿ",
+        "no_medicines_for_slot": "ಈ ಸಮಯಕ್ಕೆ ಯಾವುದೇ ಔಷಧಿಗಳನ್ನು ನಿಗದಿಪಡಿಸಲಾಗಿಲ್ಲ"
     },
     "Tamil": {
         "hero_title": "உங்கள் ஆரோக்கியத்தைப்<br><span>புரிந்துகொள்ளுங்கள்</span>",
@@ -288,7 +318,17 @@ TRANSLATIONS = {
         "share_short": "பகிர்",
         "tts_after_food": "உணவுக்குப் பிறகு",
         "tts_before_food": "உணவுக்கு முன்",
-        "tts_as_directed": "பரிந்துரைத்தபடி"
+        "tts_as_directed": "பரிந்துரைத்தபடி",
+        "alarm_title": "மருந்து நினைவூட்டல்",
+        "alarm_opening_clock": "கடிகார பயன்பாட்டைத் திறக்கிறது...",
+        "alarm_set_for": "அலாரம் அமைக்கப்பட்டது",
+        "alarm_set_manually": "கைமுறையாக அலாரம் அமைக்கவும்",
+        "alarm_open_clock": "கடிகார பயன்பாட்டைத் திறக்கவா?",
+        "alarm_ios_instructions": "தயவுசெய்து அலாரம் அமைக்கவும்",
+        "alarm_label": "லேபிள்",
+        "alarm_not_supported": "இந்த சாதனத்தில் அலாரம் அம்சம் ஆதரிக்கப்படவில்லை",
+        "alarm_permission_denied": "அலாரங்களை அமைக்க அறிவிப்புகளை அனுமதிக்கவும்",
+        "no_medicines_for_slot": "இந்த நேரத்திற்கு மருந்துகள் திட்டமிடப்படவில்லை"
     },
     "Telugu": {
         "hero_title": "మీ ఆరోగ్యాన్ని<br><span>అర్థం చేసుకోండి</span>",
@@ -356,7 +396,17 @@ TRANSLATIONS = {
         "share_short": "షేర్",
         "tts_after_food": "ఆహారం తర్వాత",
         "tts_before_food": "ఆహారం ముందు",
-        "tts_as_directed": "సూచించిన విధంగా"
+        "tts_as_directed": "సూచించిన విధంగా",
+        "alarm_title": "మందుల రిమైండర్",
+        "alarm_opening_clock": "గడియారం యాప్ తెరుస్తోంది...",
+        "alarm_set_for": "అలారం సెట్ చేయబడింది",
+        "alarm_set_manually": "మాన్యువల్‌గా అలారం సెట్ చేయండి",
+        "alarm_open_clock": "గడియారం యాప్ తెరవాలా?",
+        "alarm_ios_instructions": "దయచేసి అలారం సెట్ చేయండి",
+        "alarm_label": "లేబుల్",
+        "alarm_not_supported": "ఈ పరికరంలో అలారం ఫీచర్ మద్దతు లేదు",
+        "alarm_permission_denied": "అలారాలను సెట్ చేయడానికి నోటిఫికేషన్‌లను అనుమతించండి",
+        "no_medicines_for_slot": "ఈ సమయానికి మందులు షెడ్యూల్ చేయబడలేదు"
     },
     "Malayalam": {
         "hero_title": "നിങ്ങളുടെ ആരോഗ്യം<br><span>മനസ്സിലാക്കുക</span>",
@@ -424,7 +474,17 @@ TRANSLATIONS = {
         "share_short": "പങ്കിടുക",
         "tts_after_food": "ഭക്ഷണത്തിന് ശേഷം",
         "tts_before_food": "ഭക്ഷണത്തിന് മുമ്പ്",
-        "tts_as_directed": "നിർദ്ദേശിച്ച പ്രകാരം"
+        "tts_as_directed": "നിർദ്ദേശിച്ച പ്രകാരം",
+        "alarm_title": "മരുന്ന് ഓർമ്മപ്പെടുത്തൽ",
+        "alarm_opening_clock": "ക്ലോക്ക് ആപ്പ് തുറക്കുന്നു...",
+        "alarm_set_for": "അലാറം സെറ്റ് ചെയ്തു",
+        "alarm_set_manually": "സ്വമേധയാ അലാറം സെറ്റ് ചെയ്യുക",
+        "alarm_open_clock": "ക്ലോക്ക് ആപ്പ് തുറക്കണോ?",
+        "alarm_ios_instructions": "ദയവായി അലാറം സെറ്റ് ചെയ്യുക",
+        "alarm_label": "ലേബൽ",
+        "alarm_not_supported": "ഈ ഉപകരണത്തിൽ അലാറം ഫീച്ചർ പിന്തുണയ്ക്കുന്നില്ല",
+        "alarm_permission_denied": "അലാറങ്ങൾ സെറ്റ് ചെയ്യാൻ അറിയിപ്പുകൾ അനുവദിക്കുക",
+        "no_medicines_for_slot": "ഈ സമയത്തേക്ക് മരുന്നുകൾ ഷെഡ്യൂൾ ചെയ്തിട്ടില്ല"
     },
 }
 
@@ -653,16 +713,8 @@ def speak():
     text = data.get("text", "")
     language = data.get("language", "English")
     
-    # Handle dynamic purpose translation
-    purpose = data.get('purpose', '')
-    purpose_label = data.get('purpose_label', 'Purpose')
-    
-    if purpose:
-        if language != 'English':
-             translated_purpose = translate_text(purpose, language)
-             text += f" {purpose_label}: {translated_purpose}."
-        else:
-             text += f" {purpose_label}: {purpose}."
+    # Don't add purpose here - it's already in the text from frontend
+    # The purpose field was causing extra unwanted text to be spoken
 
     if not text:
         return jsonify({"error": "No text provided"}), 400
