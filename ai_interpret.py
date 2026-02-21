@@ -1,6 +1,12 @@
 from google import genai
+import os
 
-client = genai.Client(api_key="AIzaSyCvphqIp4rjmJKjwD4kqJORPo_nz0lW1zc")
+# NEVER hardcode API keys! Use environment variables or config
+api_key = os.environ.get("GOOGLE_API_KEY")
+if not api_key:
+    raise ValueError("GOOGLE_API_KEY environment variable not set")
+
+client = genai.Client(api_key=api_key)
 
 OCR_TEXT = """
 Smile Designing | Teeth Whitening THE Cu ITE TUSK.
