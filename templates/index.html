@@ -2291,8 +2291,11 @@
 
 
         function setAlarm(type) {
+            console.log('setAlarm called with type:', type);
+            
             // Get medicines for this time slot
             const medicines = getMedicinesForTimeSlot(type);
+            console.log('Medicines for', type, ':', medicines);
             
             if (!medicines || medicines.length === 0) {
                 alert("{{ texts.no_medicines_for_slot or 'No medicines scheduled for this time' }}");
@@ -2318,6 +2321,8 @@
                 alarmLabel += ` +${medicines.length - 3} more`;
             }
             
+            console.log('Alarm label:', alarmLabel);
+            
             // Set default times
             let hour = 8, minute = 0;
             if (type === 'morning') {
@@ -2330,6 +2335,7 @@
             
             // Detect mobile device
             const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+            console.log('Is mobile:', isMobile, 'User agent:', navigator.userAgent);
             
             if (isMobile) {
                 // Mobile: Try to open native clock app
@@ -2338,23 +2344,17 @@
                 
                 if (isIOS) {
                     // iOS: Use clock-alarm:// URL scheme
-                    // Note: iOS doesn't support pre-filling alarm details via URL
-                    // We'll show instructions instead
                     const message = `{{ texts.alarm_ios_instructions or "Please set an alarm for" }} ${hour}:${minute < 10 ? '0' + minute : minute}\n\n{{ texts.alarm_label or "Label" }}: ${alarmLabel}`;
                     
                     if (confirm(message + '\n\n{{ texts.alarm_open_clock or "Open Clock app?" }}')) {
-                        // Try to open Clock app
                         window.location.href = 'clock-alarm://';
-                        
-                        // Fallback: If clock app doesn't open, show instructions
                         setTimeout(() => {
                             showToast(`{{ texts.alarm_set_manually or "Set alarm manually for" }} ${hour}:${minute < 10 ? '0' + minute : minute}`);
                         }, 1000);
                     }
                 } else if (isAndroid) {
-                    // Android: Use AlarmClock intent
-                    // Format: intent://alarm#Intent;scheme=android.intent.action.SET_ALARM;...
-                    const intentUrl = `intent://alarm#Intent;` +
+                    // Android: Use AlarmClock intent with proper format
+                    const intentUrl = `intent:#Intent;` +
                         `action=android.intent.action.SET_ALARM;` +
                         `i.android.intent.extra.alarm.HOUR=${hour};` +
                         `i.android.intent.extra.alarm.MINUTES=${minute};` +
@@ -2362,32 +2362,38 @@
                         `i.android.intent.extra.alarm.SKIP_UI=false;` +
                         `end`;
                     
+                    console.log('Opening Android Clock with intent:', intentUrl);
+                    
                     try {
                         window.location.href = intentUrl;
                         showToast(`{{ texts.alarm_opening_clock or "Opening Clock app..." }}`);
                     } catch (e) {
                         console.error('Failed to open clock app:', e);
-                        // Fallback to notification
-                        setAlarmNotification(type, alarmLabel, hour, minute);
+                        alert('{{ texts.alarm_error or "Could not open Clock app. Please set alarm manually." }}');
                     }
                 } else {
-                    // Other mobile devices - use notification fallback
-                    setAlarmNotification(type, alarmLabel, hour, minute);
+                    alert(`{{ texts.alarm_set_manually or "Please set an alarm manually for" }} ${hour}:${minute < 10 ? '0' + minute : minute}\n\n${alarmLabel}`);
                 }
             } else {
-                // Desktop: Use browser notifications
-                setAlarmNotification(type, alarmLabel, hour, minute);
+                alert(`{{ texts.alarm_desktop or "Alarm feature is for mobile devices. Please set an alarm on your phone for" }} ${hour}:${minute < 10 ? '0' + minute : minute}\n\n${alarmLabel}`);
             }
         }
         
         function getMedicinesForTimeSlot(type) {
             // Get medicines from the current results
             const medicines = {{ (translated if translated else english) | tojson | safe }};
-            if (!medicines) return [];
+            console.log('All medicines:', medicines);
             
-            return medicines.filter(med => {
+            if (!medicines || !Array.isArray(medicines)) {
+                console.error('No medicines data available');
+                return [];
+            }
+            
+            const filtered = medicines.filter(med => {
                 const dosage = (med.dosage || '').toLowerCase();
                 const timing = (med.visual_timing || '').toLowerCase();
+                
+                console.log('Checking medicine:', med.name || med.medicine_name, 'dosage:', dosage, 'timing:', timing);
                 
                 if (type === 'morning') {
                     return timing.includes('☀️') || dosage.match(/^1-/) || dosage.includes('morning');
@@ -2398,6 +2404,9 @@
                 }
                 return false;
             });
+            
+            console.log('Filtered medicines for', type, ':', filtered);
+            return filtered;
         }
         
         function setAlarmNotification(type, alarmLabel, hour, minute) {
