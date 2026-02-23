@@ -1262,7 +1262,7 @@
                     <div id="schedule-morning" class="time-slot-card morning-slot" style="display:none">
                         <div class="slot-header">
                             <span>{{ texts.morning }}</span>
-                            <a href="#" onclick="setAlarm('morning')" class="alarm-link">🔔 {{ texts.set_alarm }}</a>
+                            <button type="button" onclick="setAlarm('morning')" class="alarm-link">🔔 {{ texts.set_alarm }}</button>
                         </div>
                         <div class="slot-content"></div>
                     </div>
@@ -1270,7 +1270,7 @@
                     <div id="schedule-afternoon" class="time-slot-card afternoon-slot" style="display:none">
                         <div class="slot-header">
                             <span>{{ texts.afternoon }}</span>
-                            <a href="#" onclick="setAlarm('afternoon')" class="alarm-link">🔔 {{ texts.set_alarm }}</a>
+                            <button type="button" onclick="setAlarm('afternoon')" class="alarm-link">🔔 {{ texts.set_alarm }}</button>
                         </div>
                         <div class="slot-content"></div>
                     </div>
@@ -1278,7 +1278,7 @@
                     <div id="schedule-night" class="time-slot-card night-slot" style="display:none">
                         <div class="slot-header">
                             <span>{{ texts.night }}</span>
-                            <a href="#" onclick="setAlarm('night')" class="alarm-link">🔔 {{ texts.set_alarm }}</a>
+                            <button type="button" onclick="setAlarm('night')" class="alarm-link">🔔 {{ texts.set_alarm }}</button>
                         </div>
                         <div class="slot-content"></div>
                     </div>
@@ -1498,6 +1498,13 @@
             background: rgba(255, 255, 255, 0.2);
             padding: 4px 10px;
             border-radius: 20px;
+            border: none;
+            cursor: pointer;
+            font-family: inherit;
+        }
+
+        .alarm-link:hover {
+            background: rgba(255, 255, 255, 0.3);
         }
 
         .alarm-link:active {
