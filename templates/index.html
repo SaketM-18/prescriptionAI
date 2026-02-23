@@ -2298,6 +2298,8 @@
             const medicines = getMedicinesForTimeSlot(type);
             console.log('Medicines for', type, ':', medicines);
             
+            alert('Found ' + (medicines ? medicines.length : 0) + ' medicines for ' + type); // DEBUG
+            
             if (!medicines || medicines.length === 0) {
                 alert("{{ texts.no_medicines_for_slot or 'No medicines scheduled for this time' }}");
                 return;
@@ -2364,13 +2366,15 @@
                         `end`;
                     
                     console.log('Opening Android Clock with intent:', intentUrl);
+                    alert('About to open Clock app with intent URL'); // DEBUG
                     
                     try {
                         window.location.href = intentUrl;
+                        alert('Intent URL executed'); // DEBUG
                         showToast(`{{ texts.alarm_opening_clock or "Opening Clock app..." }}`);
                     } catch (e) {
                         console.error('Failed to open clock app:', e);
-                        alert('{{ texts.alarm_error or "Could not open Clock app. Please set alarm manually." }}');
+                        alert('Error: ' + e.message); // DEBUG
                     }
                 } else {
                     alert(`{{ texts.alarm_set_manually or "Please set an alarm manually for" }} ${hour}:${minute < 10 ? '0' + minute : minute}\n\n${alarmLabel}`);
