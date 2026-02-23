@@ -2372,21 +2372,21 @@
                     link.click();
                     document.body.removeChild(link);
                     
-                    // Show helpful message with alarm details
+                    // Show helpful message with alarm details in user's language
                     setTimeout(() => {
                         const message = 
-                            `⏰ Set alarm for ${timeStr}\n\n` +
-                            `📝 Label: ${alarmLabel}\n\n` +
-                            `If Clock app didn't open automatically, please:\n` +
-                            `1. Open your Clock app\n` +
-                            `2. Tap the + button\n` +
-                            `3. Set time to ${timeStr}\n` +
-                            `4. Add label: ${alarmLabel}`;
+                            `{{ texts.alarm_instructions_title }} ${timeStr}\n\n` +
+                            `{{ texts.alarm_instructions_label }} ${alarmLabel}\n\n` +
+                            `{{ texts.alarm_instructions_if_not_open }}\n` +
+                            `{{ texts.alarm_instructions_step1 }}\n` +
+                            `{{ texts.alarm_instructions_step2 }}\n` +
+                            `{{ texts.alarm_instructions_step3 }} ${timeStr}\n` +
+                            `{{ texts.alarm_instructions_step4 }} ${alarmLabel}`;
                         
                         // Try to copy label to clipboard
                         if (navigator.clipboard && navigator.clipboard.writeText) {
                             navigator.clipboard.writeText(alarmLabel).then(() => {
-                                alert(message + '\n\n✅ Label copied to clipboard!');
+                                alert(message + '\n\n{{ texts.alarm_label_copied }}');
                             }).catch(() => {
                                 alert(message);
                             });
