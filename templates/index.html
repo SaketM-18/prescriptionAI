@@ -2356,7 +2356,9 @@
                         }, 1000);
                     }
                 } else if (isAndroid) {
-                    // Android: Use AlarmClock intent with proper format
+                    // Android: Try multiple methods to open Clock app
+                    
+                    // Method 1: Try direct intent URL (works in Chrome)
                     const intentUrl = `intent:#Intent;` +
                         `action=android.intent.action.SET_ALARM;` +
                         `i.android.intent.extra.alarm.HOUR=${hour};` +
@@ -2365,17 +2367,35 @@
                         `i.android.intent.extra.alarm.SKIP_UI=false;` +
                         `end`;
                     
-                    console.log('Opening Android Clock with intent:', intentUrl);
-                    alert('About to open Clock app with intent URL'); // DEBUG
+                    // Method 2: Try alternative format (works in some browsers)
+                    const altIntentUrl = `intent://alarm#Intent;` +
+                        `action=android.intent.action.SET_ALARM;` +
+                        `i.android.intent.extra.alarm.HOUR=${hour};` +
+                        `i.android.intent.extra.alarm.MINUTES=${minute};` +
+                        `S.android.intent.extra.alarm.MESSAGE=${encodeURIComponent(alarmLabel)};` +
+                        `i.android.intent.extra.alarm.SKIP_UI=false;` +
+                        `end`;
                     
-                    try {
-                        window.location.href = intentUrl;
-                        alert('Intent URL executed'); // DEBUG
-                        showToast(`{{ texts.alarm_opening_clock or "Opening Clock app..." }}`);
-                    } catch (e) {
-                        console.error('Failed to open clock app:', e);
-                        alert('Error: ' + e.message); // DEBUG
-                    }
+                    console.log('Trying intent URL:', intentUrl);
+                    
+                    // Try opening with window.location
+                    window.location.href = intentUrl;
+                    
+                    // Fallback: If Clock doesn't open in 2 seconds, show manual instructions
+                    setTimeout(() => {
+                        const opened = confirm(
+                            `Did the Clock app open?\n\n` +
+                            `If not, please set an alarm manually:\n` +
+                            `Time: ${hour}:${minute < 10 ? '0' + minute : minute}\n` +
+                            `Label: ${alarmLabel}\n\n` +
+                            `Click OK to try alternative method, or Cancel to set manually.`
+                        );
+                        
+                        if (opened) {
+                            // Try alternative format
+                            window.location.href = altIntentUrl;
+                        }
+                    }, 2000);
                 } else {
                     alert(`{{ texts.alarm_set_manually or "Please set an alarm manually for" }} ${hour}:${minute < 10 ? '0' + minute : minute}\n\n${alarmLabel}`);
                 }
