@@ -2291,14 +2291,8 @@
 
 
         function setAlarm(type) {
-            alert('Button clicked! Type: ' + type); // DEBUG: Test if function is called
-            console.log('setAlarm called with type:', type);
-            
             // Get medicines for this time slot
             const medicines = getMedicinesForTimeSlot(type);
-            console.log('Medicines for', type, ':', medicines);
-            
-            alert('Found ' + (medicines ? medicines.length : 0) + ' medicines for ' + type); // DEBUG
             
             if (!medicines || medicines.length === 0) {
                 alert("{{ texts.no_medicines_for_slot or 'No medicines scheduled for this time' }}");
@@ -2356,19 +2350,11 @@
                         }, 1000);
                     }
                 } else if (isAndroid) {
-                    // Android: Try multiple methods to open Clock app
+                    // Android: Show instructions with copy-to-clipboard functionality
+                    const timeStr = `${hour}:${minute < 10 ? '0' + minute : minute}`;
                     
-                    // Method 1: Try direct intent URL (works in Chrome)
+                    // Try to open Clock app first
                     const intentUrl = `intent:#Intent;` +
-                        `action=android.intent.action.SET_ALARM;` +
-                        `i.android.intent.extra.alarm.HOUR=${hour};` +
-                        `i.android.intent.extra.alarm.MINUTES=${minute};` +
-                        `S.android.intent.extra.alarm.MESSAGE=${encodeURIComponent(alarmLabel)};` +
-                        `i.android.intent.extra.alarm.SKIP_UI=false;` +
-                        `end`;
-                    
-                    // Method 2: Try alternative format (works in some browsers)
-                    const altIntentUrl = `intent://alarm#Intent;` +
                         `action=android.intent.action.SET_ALARM;` +
                         `i.android.intent.extra.alarm.HOUR=${hour};` +
                         `i.android.intent.extra.alarm.MINUTES=${minute};` +
@@ -2378,24 +2364,36 @@
                     
                     console.log('Trying intent URL:', intentUrl);
                     
-                    // Try opening with window.location
-                    window.location.href = intentUrl;
+                    // Create a hidden link and click it (works better than window.location)
+                    const link = document.createElement('a');
+                    link.href = intentUrl;
+                    link.style.display = 'none';
+                    document.body.appendChild(link);
+                    link.click();
+                    document.body.removeChild(link);
                     
-                    // Fallback: If Clock doesn't open in 2 seconds, show manual instructions
+                    // Show helpful message with alarm details
                     setTimeout(() => {
-                        const opened = confirm(
-                            `Did the Clock app open?\n\n` +
-                            `If not, please set an alarm manually:\n` +
-                            `Time: ${hour}:${minute < 10 ? '0' + minute : minute}\n` +
-                            `Label: ${alarmLabel}\n\n` +
-                            `Click OK to try alternative method, or Cancel to set manually.`
-                        );
+                        const message = 
+                            `⏰ Set alarm for ${timeStr}\n\n` +
+                            `📝 Label: ${alarmLabel}\n\n` +
+                            `If Clock app didn't open automatically, please:\n` +
+                            `1. Open your Clock app\n` +
+                            `2. Tap the + button\n` +
+                            `3. Set time to ${timeStr}\n` +
+                            `4. Add label: ${alarmLabel}`;
                         
-                        if (opened) {
-                            // Try alternative format
-                            window.location.href = altIntentUrl;
+                        // Try to copy label to clipboard
+                        if (navigator.clipboard && navigator.clipboard.writeText) {
+                            navigator.clipboard.writeText(alarmLabel).then(() => {
+                                alert(message + '\n\n✅ Label copied to clipboard!');
+                            }).catch(() => {
+                                alert(message);
+                            });
+                        } else {
+                            alert(message);
                         }
-                    }, 2000);
+                    }, 1500);
                 } else {
                     alert(`{{ texts.alarm_set_manually or "Please set an alarm manually for" }} ${hour}:${minute < 10 ? '0' + minute : minute}\n\n${alarmLabel}`);
                 }
@@ -2407,18 +2405,14 @@
         function getMedicinesForTimeSlot(type) {
             // Get medicines from the current results
             const medicines = {{ (translated if translated else english) | tojson | safe }};
-            console.log('All medicines:', medicines);
             
             if (!medicines || !Array.isArray(medicines)) {
-                console.error('No medicines data available');
                 return [];
             }
             
-            const filtered = medicines.filter(med => {
+            return medicines.filter(med => {
                 const dosage = (med.dosage || '').toLowerCase();
                 const timing = (med.visual_timing || '').toLowerCase();
-                
-                console.log('Checking medicine:', med.name || med.medicine_name, 'dosage:', dosage, 'timing:', timing);
                 
                 if (type === 'morning') {
                     return timing.includes('☀️') || dosage.match(/^1-/) || dosage.includes('morning');
@@ -2429,9 +2423,6 @@
                 }
                 return false;
             });
-            
-            console.log('Filtered medicines for', type, ':', filtered);
-            return filtered;
         }
         
         function setAlarmNotification(type, alarmLabel, hour, minute) {
