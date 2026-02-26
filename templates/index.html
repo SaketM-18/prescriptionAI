@@ -1229,6 +1229,17 @@
                             {{ med.duration }}
                         </div>
                     </div>
+                    
+                    <!-- Refill Reminder -->
+                    <div class="full-width refill-reminder" data-medicine="{{ med.name or med.medicine_name }}" data-duration="{{ med.duration }}" style="padding: 15px; background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%); border-radius: 8px; margin-top: 10px;">
+                        <div class="label" style="color: #0369a1; font-weight: 600;">{{ texts.refill_title }}</div>
+                        <div class="refill-status" style="margin-top: 10px;">
+                            <div class="refill-days" style="font-size: 1.5rem; font-weight: 700; color: #0c4a6e;"></div>
+                            <div class="refill-progress" style="width: 100%; height: 8px; background: #bae6fd; border-radius: 4px; margin-top: 8px; overflow: hidden;">
+                                <div class="refill-progress-bar" style="height: 100%; background: linear-gradient(90deg, #0ea5e9, #0284c7); border-radius: 4px; transition: width 0.3s ease;"></div>
+                            </div>
+                        </div>
+                    </div>
                     {% endif %}
 
                     <!-- Purpose -->
@@ -1777,8 +1788,10 @@
                              ${renderDosageIcons(med.dosage)}
                         </div>
                         <div class="saved-med-detail"><span class="label">{{ texts.frequency_label }}</span><span class="value">${med.frequency || med.timing || '-'}</span></div>
+                        ${med.duration ? `<div class="saved-med-detail"><span class="label">{{ texts.duration_label }}</span><span class="value">${med.duration}</span></div>` : ''}
                         <div class="saved-med-detail"><span class="label">{{ texts.purpose_label }}</span><span class="value">${med.purpose || '-'}</span></div>
                         ${med.precautions ? '<div style="background:#fffbeb; border:1px solid #fcd34d; border-radius:6px; padding:10px; margin-top:8px; color:#92400e; font-size:0.85rem;">' + med.precautions + '</div>' : ''}
+                        ${med.duration ? renderSavedRefillStatus(med.name || med.medicine_name, med.duration) : ''}
                     </div>
                 `;
             });
@@ -2402,6 +2415,147 @@
             }
         }
         
+        // ===== REFILL REMINDER FUNCTIONS =====
+        
+        function parseDuration(durationStr) {
+            // Parse duration like "5 days", "2 weeks", "1 month" into days
+            if (!durationStr) return null;
+            
+            const str = durationStr.toLowerCase();
+            const match = str.match(/(\d+)\s*(day|week|month|year)/);
+            
+            if (!match) return null;
+            
+            const num = parseInt(match[1]);
+            const unit = match[2];
+            
+            switch(unit) {
+                case 'day': return num;
+                case 'week': return num * 7;
+                case 'month': return num * 30;
+                case 'year': return num * 365;
+                default: return null;
+            }
+        }
+        
+        function calculateRefillStatus(medicineName, duration) {
+            // Get start date from localStorage or use today
+            const storageKey = `refill_${medicineName}`;
+            let startDate = localStorage.getItem(storageKey);
+            
+            if (!startDate) {
+                // First time - save today as start date
+                startDate = new Date().toISOString().split('T')[0];
+                localStorage.setItem(storageKey, startDate);
+            }
+            
+            const durationDays = parseDuration(duration);
+            if (!durationDays) return null;
+            
+            const start = new Date(startDate);
+            const today = new Date();
+            const endDate = new Date(start);
+            endDate.setDate(endDate.getDate() + durationDays);
+            
+            // Calculate days remaining
+            const daysRemaining = Math.ceil((endDate - today) / (1000 * 60 * 60 * 24));
+            const percentRemaining = Math.max(0, Math.min(100, (daysRemaining / durationDays) * 100));
+            
+            return {
+                daysRemaining: Math.max(0, daysRemaining),
+                totalDays: durationDays,
+                percentRemaining: percentRemaining,
+                endDate: endDate
+            };
+        }
+        
+        function updateRefillDisplay(element, status) {
+            if (!status) return;
+            
+            const daysDiv = element.querySelector('.refill-days');
+            const progressBar = element.querySelector('.refill-progress-bar');
+            const container = element.closest('.refill-reminder');
+            
+            // Update progress bar
+            progressBar.style.width = status.percentRemaining + '%';
+            
+            // Simple, clear text - no confusing colors
+            if (status.daysRemaining === 0) {
+                daysDiv.innerHTML = '✅ {{ texts.refill_ended }}';
+                daysDiv.style.fontSize = '1.2rem';
+                progressBar.style.background = '#94a3b8';
+                container.style.background = '#f1f5f9';
+            } else if (status.daysRemaining === 1) {
+                daysDiv.innerHTML = '🚨 <strong style="font-size:2rem;">1</strong> {{ texts.refill_day_left }}';
+                progressBar.style.background = '#ef4444';
+                container.style.background = '#fee2e2';
+            } else if (status.daysRemaining <= 3) {
+                daysDiv.innerHTML = '⚠️ <strong style="font-size:2rem;">${status.daysRemaining}</strong> {{ texts.refill_days_left }}';
+                progressBar.style.background = '#f97316';
+                container.style.background = '#ffedd5';
+            } else {
+                daysDiv.innerHTML = '<strong style="font-size:2rem;">${status.daysRemaining}</strong> {{ texts.refill_days_left }}';
+                progressBar.style.background = '#0ea5e9';
+                container.style.background = '#f0f9ff';
+            }
+        }
+        
+        function initializeRefillReminders() {
+            // Update all refill reminders on page
+            document.querySelectorAll('.refill-reminder').forEach(element => {
+                const medicineName = element.dataset.medicine;
+                const duration = element.dataset.duration;
+                
+                const status = calculateRefillStatus(medicineName, duration);
+                if (status) {
+                    updateRefillDisplay(element, status);
+                }
+            });
+        }
+        
+        // Initialize refill reminders when page loads
+        document.addEventListener('DOMContentLoaded', () => {
+            initializeRefillReminders();
+            
+            // Update every hour
+            setInterval(initializeRefillReminders, 60 * 60 * 1000);
+        });
+        
+        function renderSavedRefillStatus(medicineName, duration) {
+            const status = calculateRefillStatus(medicineName, duration);
+            if (!status) return '';
+            
+            let emoji, statusText, bgColor;
+            
+            if (status.daysRemaining === 0) {
+                emoji = '✅';
+                statusText = '{{ texts.refill_ended }}';
+                bgColor = '#f1f5f9';
+            } else if (status.daysRemaining === 1) {
+                emoji = '🚨';
+                statusText = `<strong style="font-size:1.5rem;">1</strong> {{ texts.refill_day_left }}`;
+                bgColor = '#fee2e2';
+            } else if (status.daysRemaining <= 3) {
+                emoji = '⚠️';
+                statusText = `<strong style="font-size:1.5rem;">${status.daysRemaining}</strong> {{ texts.refill_days_left }}`;
+                bgColor = '#ffedd5';
+            } else {
+                emoji = '📦';
+                statusText = `<strong style="font-size:1.5rem;">${status.daysRemaining}</strong> {{ texts.refill_days_left }}`;
+                bgColor = '#f0f9ff';
+            }
+            
+            return `
+                <div style="background: ${bgColor}; border-radius: 8px; padding: 12px; margin-top: 10px; border: 2px solid rgba(0,0,0,0.05);">
+                    <div style="font-size: 0.9rem; font-weight: 600; opacity: 0.7; margin-bottom: 5px;">${emoji} {{ texts.refill_title }}</div>
+                    <div style="font-size: 1.1rem; font-weight: 700;">${statusText}</div>
+                    <div style="width: 100%; height: 8px; background: rgba(0,0,0,0.1); border-radius: 4px; margin-top: 8px; overflow: hidden;">
+                        <div style="height: 100%; width: ${status.percentRemaining}%; background: #0ea5e9; border-radius: 4px;"></div>
+                    </div>
+                </div>
+            `;
+        }
+        
         function getMedicinesForTimeSlot(type) {
             // Get medicines from the current results
             const medicines = {{ (translated if translated else english) | tojson | safe }};
@@ -2510,6 +2664,11 @@
 
         // ALSO RENDER SCHEDULE
         renderSchedule(medicines);
+        
+        // Initialize refill reminders for the displayed results
+        setTimeout(() => {
+            initializeRefillReminders();
+        }, 100);
         {% endif %}
         });
 
