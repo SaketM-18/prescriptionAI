@@ -2593,8 +2593,11 @@
         }
         
         function watchApplicationVideo(medicineType) {
-            // Open YouTube search for how to apply this type of medicine
-            const searchQuery = `how to apply ${medicineType} medicine`;
+            // Get user's selected language
+            const language = '{{ language }}' || 'English';
+            
+            // Open YouTube search for how to apply this type of medicine in user's language
+            const searchQuery = `how to apply ${medicineType} medicine in ${language}`;
             const youtubeUrl = `https://www.youtube.com/results?search_query=${encodeURIComponent(searchQuery)}`;
             window.open(youtubeUrl, '_blank');
         }
