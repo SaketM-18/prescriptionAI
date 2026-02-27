@@ -2593,13 +2593,70 @@
         }
         
         function watchApplicationVideo(medicineType) {
-            // Get user's selected language
-            const language = '{{ language }}' || 'English';
+            // Visual demonstration videos (minimal language, maximum visuals)
+            // These work universally across all languages
+            const visualVideos = {
+                'cream': 'https://www.youtube.com/results?search_query=how+to+apply+topical+cream+demonstration+visual',
+                'ointment': 'https://www.youtube.com/results?search_query=how+to+apply+ointment+demonstration+visual',
+                'lotion': 'https://www.youtube.com/results?search_query=how+to+apply+lotion+demonstration+visual',
+                'eye drops': 'https://www.youtube.com/results?search_query=how+to+use+eye+drops+demonstration+visual',
+                'ear drops': 'https://www.youtube.com/results?search_query=how+to+use+ear+drops+demonstration+visual',
+                'nasal drops': 'https://www.youtube.com/results?search_query=how+to+use+nasal+drops+demonstration+visual',
+                'drops': 'https://www.youtube.com/results?search_query=how+to+use+drops+demonstration+visual',
+                'gum paint': 'https://www.youtube.com/results?search_query=how+to+apply+oral+gel+gum+paint+demonstration',
+                'inhaler': 'https://www.youtube.com/results?search_query=how+to+use+inhaler+demonstration+visual+technique',
+                'spray': 'https://www.youtube.com/results?search_query=how+to+use+nasal+spray+demonstration+visual',
+                'nasal spray': 'https://www.youtube.com/results?search_query=how+to+use+nasal+spray+demonstration+visual',
+                'patch': 'https://www.youtube.com/results?search_query=how+to+apply+transdermal+patch+demonstration+visual',
+                'injection': 'https://www.youtube.com/results?search_query=how+to+give+injection+demonstration+visual',
+                'suppository': 'https://www.youtube.com/results?search_query=how+to+use+suppository+demonstration+visual',
+                'pessary': 'https://www.youtube.com/results?search_query=how+to+use+pessary+demonstration+visual'
+            };
             
-            // Open YouTube search for how to apply this type of medicine in user's language
-            const searchQuery = `how to apply ${medicineType} medicine in ${language}`;
-            const youtubeUrl = `https://www.youtube.com/results?search_query=${encodeURIComponent(searchQuery)}`;
-            window.open(youtubeUrl, '_blank');
+            // Normalize medicine type
+            const medicineKey = medicineType.toLowerCase().trim();
+            
+            // Try exact match first
+            if (visualVideos[medicineKey]) {
+                window.open(visualVideos[medicineKey], '_blank');
+            }
+            // Try partial matches (e.g., "eye" in "eye drops")
+            else if (medicineKey.includes('eye')) {
+                window.open(visualVideos['eye drops'], '_blank');
+            }
+            else if (medicineKey.includes('ear')) {
+                window.open(visualVideos['ear drops'], '_blank');
+            }
+            else if (medicineKey.includes('nasal')) {
+                window.open(visualVideos['nasal spray'], '_blank');
+            }
+            else if (medicineKey.includes('drop')) {
+                window.open(visualVideos['drops'], '_blank');
+            }
+            else if (medicineKey.includes('spray')) {
+                window.open(visualVideos['spray'], '_blank');
+            }
+            else if (medicineKey.includes('inhaler')) {
+                window.open(visualVideos['inhaler'], '_blank');
+            }
+            else if (medicineKey.includes('cream')) {
+                window.open(visualVideos['cream'], '_blank');
+            }
+            else if (medicineKey.includes('ointment')) {
+                window.open(visualVideos['ointment'], '_blank');
+            }
+            else if (medicineKey.includes('lotion')) {
+                window.open(visualVideos['lotion'], '_blank');
+            }
+            else if (medicineKey.includes('patch')) {
+                window.open(visualVideos['patch'], '_blank');
+            }
+            // Generic fallback: Search for visual demonstration
+            else {
+                const searchQuery = `how to use ${medicineType} medicine demonstration visual`;
+                const youtubeUrl = `https://www.youtube.com/results?search_query=${encodeURIComponent(searchQuery)}`;
+                window.open(youtubeUrl, '_blank');
+            }
         }
         
         function renderSavedRefillStatus(medicineName, duration) {
