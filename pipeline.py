@@ -87,6 +87,7 @@ Return ONLY valid JSON with this structure:
   "english": [
     {{
       "name": "Medicine Name with strength (e.g., Paracetamol 500mg)",
+      "medicine_type": "Type: tablet, capsule, syrup, cream, ointment, drops, inhaler, injection, gum paint, lotion, spray, patch",
       "purpose": "Simple purpose (e.g., for fever and pain)",
       "dosage": "Format: Morning-Afternoon-Night (e.g., 1-0-1, 1-1-1)",
       "visual_timing": "Emojis: ☀️ for morning, 🌤️ for afternoon, 🌙 for night",
@@ -95,12 +96,14 @@ Return ONLY valid JSON with this structure:
       "duration": "How long (e.g., 5 days, 2 weeks)",
       "warnings": "Warnings (e.g., Avoid alcohol, Take with water)",
       "precautions": "Same as warnings",
-      "generic_alternative": "Cheaper option if available"
+      "generic_alternative": "Cheaper option if available",
+      "application_instructions": "ONLY for topical medicines (cream, ointment, drops, gum paint, inhaler, spray, patch). Step-by-step instructions on how to apply/use. Leave empty for tablets/capsules/syrups."
     }}
   ],
   "translated": [
     {{
       "name": "Medicine Name (keep English)",
+      "medicine_type": "Keep English",
       "purpose": "Translated to {language}",
       "dosage": "1-0-1 (keep format)",
       "visual_timing": "☀️ -- 🌙 (keep emojis)",
@@ -109,7 +112,8 @@ Return ONLY valid JSON with this structure:
       "duration": "Translated to {language}",
       "warnings": "Translated to {language}",
       "precautions": "Translated to {language}",
-      "generic_alternative": "Translated to {language}"
+      "generic_alternative": "Translated to {language}",
+      "application_instructions": "Translated to {language}"
     }}
   ],
   "dangerous_combinations": [
@@ -125,6 +129,8 @@ Return ONLY valid JSON with this structure:
 IMPORTANT:
 - Recognize abbreviations: OD (once daily), BD (twice daily), TDS (three times), AC (before food), PC (after food)
 - Convert to standard format (1-0-1 means morning and night)
+- Detect medicine type from name or context (cream, drops, ointment, etc.)
+- For topical medicines, provide clear step-by-step application instructions
 - Translate all fields except medicine names to {language}
 - If unclear, make educated guess
 - Return ONLY JSON, no markdown"""

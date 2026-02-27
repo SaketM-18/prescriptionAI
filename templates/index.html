@@ -1242,6 +1242,19 @@
                         <div class="value">{{ med.purpose }}</div>
                     </div>
 
+                    <!-- Application Instructions (for topical medicines) -->
+                    {% if med.application_instructions %}
+                    <div class="full-width" style="background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%); border-radius: 12px; padding: 20px; margin-top: 15px; border: 2px solid #86efac;">
+                        <div style="font-weight: 700; font-size: 1.1rem; color: #166534; margin-bottom: 15px; display: flex; align-items: center; gap: 10px;">
+                            {{ texts.how_to_apply }}
+                        </div>
+                        <div style="color: #15803d; line-height: 1.8; white-space: pre-line;">{{ med.application_instructions }}</div>
+                        <button onclick="watchApplicationVideo('{{ med.medicine_type or 'medicine' }}')" style="margin-top: 15px; background: #16a34a; color: white; border: none; padding: 12px 20px; border-radius: 8px; cursor: pointer; font-size: 1rem; font-weight: 600; display: flex; align-items: center; gap: 8px; width: 100%; justify-content: center;">
+                            {{ texts.watch_video }}
+                        </button>
+                    </div>
+                    {% endif %}
+
                     <!-- Warning (Amber Safety) -->
                     {% if med.precautions %}
                     <div class="full-width warning-box">
@@ -2577,6 +2590,13 @@
                     element.textContent = dosage;
                 }
             });
+        }
+        
+        function watchApplicationVideo(medicineType) {
+            // Open YouTube search for how to apply this type of medicine
+            const searchQuery = `how to apply ${medicineType} medicine`;
+            const youtubeUrl = `https://www.youtube.com/results?search_query=${encodeURIComponent(searchQuery)}`;
+            window.open(youtubeUrl, '_blank');
         }
         
         function renderSavedRefillStatus(medicineName, duration) {
