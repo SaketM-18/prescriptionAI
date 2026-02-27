@@ -1196,8 +1196,8 @@
                     <!-- Dosage (Big & Visual) -->
                     <div class="full-width" style="text-align: center; padding: 20px 0; border-bottom: 1px solid #eee;">
                         <div class="label" style="font-size: 1rem; color: #666;">{{ texts.dosage_label }}</div>
-                        <div class="value" style="font-size: 2.5rem; color: var(--text); font-weight: 900;">
-                            {{ med.dosage }}
+                        <div class="value dosage-visual" data-dosage="{{ med.dosage }}" style="font-size: 2rem; color: var(--text); font-weight: 900; display: flex; justify-content: center; align-items: center; gap: 15px; flex-wrap: wrap;">
+                            <!-- Will be populated by JavaScript with visual icons -->
                         </div>
                     </div>
 
@@ -1231,14 +1231,8 @@
                     </div>
                     
                     <!-- Refill Reminder -->
-                    <div class="full-width refill-reminder" data-medicine="{{ med.name or med.medicine_name }}" data-duration="{{ med.duration }}" style="padding: 15px; background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%); border-radius: 8px; margin-top: 10px;">
-                        <div class="label" style="color: #0369a1; font-weight: 600;">{{ texts.refill_title }}</div>
-                        <div class="refill-status" style="margin-top: 10px;">
-                            <div class="refill-days" style="font-size: 1.5rem; font-weight: 700; color: #0c4a6e;"></div>
-                            <div class="refill-progress" style="width: 100%; height: 8px; background: #bae6fd; border-radius: 4px; margin-top: 8px; overflow: hidden;">
-                                <div class="refill-progress-bar" style="height: 100%; background: linear-gradient(90deg, #0ea5e9, #0284c7); border-radius: 4px; transition: width 0.3s ease;"></div>
-                            </div>
-                        </div>
+                    <div class="full-width refill-reminder" data-medicine="{{ med.name or med.medicine_name }}" data-duration="{{ med.duration }}" style="padding: 15px; background: #f0f9ff; border-radius: 8px; margin-top: 10px; border-left: 4px solid #0ea5e9; display: none;">
+                        <div class="refill-days" style="font-size: 1.3rem; font-weight: 700; color: #0c4a6e;"></div>
                     </div>
                     {% endif %}
 
@@ -2473,31 +2467,40 @@
             if (!status) return;
             
             const daysDiv = element.querySelector('.refill-days');
-            const progressBar = element.querySelector('.refill-progress-bar');
             const container = element.closest('.refill-reminder');
             
-            // Update progress bar
-            progressBar.style.width = status.percentRemaining + '%';
+            const daysCompleted = status.totalDays - status.daysRemaining;
             
-            // Simple, clear text - no confusing colors
+            // Show completion progress and remaining days
             if (status.daysRemaining === 0) {
                 daysDiv.innerHTML = '✅ {{ texts.refill_ended }}';
-                daysDiv.style.fontSize = '1.2rem';
-                progressBar.style.background = '#94a3b8';
                 container.style.background = '#f1f5f9';
-            } else if (status.daysRemaining === 1) {
-                daysDiv.innerHTML = '🚨 <strong style="font-size:2rem;">1</strong> {{ texts.refill_day_left }}';
-                progressBar.style.background = '#ef4444';
-                container.style.background = '#fee2e2';
-            } else if (status.daysRemaining <= 3) {
-                daysDiv.innerHTML = '⚠️ <strong style="font-size:2rem;">${status.daysRemaining}</strong> {{ texts.refill_days_left }}';
-                progressBar.style.background = '#f97316';
-                container.style.background = '#ffedd5';
-            } else {
-                daysDiv.innerHTML = '<strong style="font-size:2rem;">${status.daysRemaining}</strong> {{ texts.refill_days_left }}';
-                progressBar.style.background = '#0ea5e9';
+                container.style.borderLeft = '4px solid #94a3b8';
+            } else if (daysCompleted === 0) {
+                // First day - show total duration
+                if (status.totalDays === 1) {
+                    daysDiv.innerHTML = '📦 {{ texts.refill_course_duration }}: <span style="font-size:1.8rem;">${status.totalDays}</span> {{ texts.refill_day_left }}';
+                } else {
+                    daysDiv.innerHTML = '📦 {{ texts.refill_course_duration }}: <span style="font-size:1.8rem;">${status.totalDays}</span> {{ texts.refill_days_left }}';
+                }
                 container.style.background = '#f0f9ff';
+                container.style.borderLeft = '4px solid #0ea5e9';
+            } else if (status.daysRemaining === 1) {
+                daysDiv.innerHTML = '🚨 {{ texts.refill_completed }} <span style="font-size:1.8rem;">${daysCompleted}</span> {{ texts.refill_days_left }}<br><span style="font-size:1.5rem;">{{ texts.refill_only }} 1 {{ texts.refill_day_left }}</span>';
+                container.style.background = '#fee2e2';
+                container.style.borderLeft = '4px solid #ef4444';
+            } else if (status.daysRemaining <= 3) {
+                daysDiv.innerHTML = '⚠️ {{ texts.refill_completed }} <span style="font-size:1.8rem;">${daysCompleted}</span> {{ texts.refill_days_left }}<br><span style="font-size:1.5rem;">${status.daysRemaining} {{ texts.refill_days_left }}</span>';
+                container.style.background = '#ffedd5';
+                container.style.borderLeft = '4px solid #f97316';
+            } else {
+                daysDiv.innerHTML = '📦 {{ texts.refill_completed }} <span style="font-size:1.8rem;">${daysCompleted}</span> {{ texts.refill_days_left }}<br><span style="font-size:1.5rem;">${status.daysRemaining} {{ texts.refill_days_left }}</span>';
+                container.style.background = '#f0f9ff';
+                container.style.borderLeft = '4px solid #0ea5e9';
             }
+            
+            // Show the container now that it has content
+            container.style.display = 'block';
         }
         
         function initializeRefillReminders() {
@@ -2517,41 +2520,96 @@
         document.addEventListener('DOMContentLoaded', () => {
             initializeRefillReminders();
             
+            // Initialize visual dosage display
+            initializeVisualDosage();
+            
             // Update every hour
             setInterval(initializeRefillReminders, 60 * 60 * 1000);
         });
+        
+        function initializeVisualDosage() {
+            document.querySelectorAll('.dosage-visual').forEach(element => {
+                const dosage = element.dataset.dosage;
+                if (!dosage) return;
+                
+                // Parse dosage like "1-0-1" or "1-1-1"
+                const parts = dosage.match(/(\d+)-(\d+)-(\d+)/);
+                if (!parts) {
+                    // If not in X-X-X format, just show as is
+                    element.textContent = dosage;
+                    return;
+                }
+                
+                const morning = parseInt(parts[1]);
+                const afternoon = parseInt(parts[2]);
+                const night = parseInt(parts[3]);
+                
+                // Create visual display
+                let html = '';
+                
+                if (morning > 0) {
+                    html += `<div style="display:flex; flex-direction:column; align-items:center; background:#fff7ed; padding:10px 15px; border-radius:8px; border:2px solid #fed7aa;">
+                        <div style="font-size:2rem;">☀️</div>
+                        <div style="font-size:1.8rem; font-weight:900;">${morning}</div>
+                        <div style="font-size:0.9rem; opacity:0.7;">{{ texts.tts_morning }}</div>
+                    </div>`;
+                }
+                
+                if (afternoon > 0) {
+                    html += `<div style="display:flex; flex-direction:column; align-items:center; background:#fef3c7; padding:10px 15px; border-radius:8px; border:2px solid #fde047;">
+                        <div style="font-size:2rem;">🌤️</div>
+                        <div style="font-size:1.8rem; font-weight:900;">${afternoon}</div>
+                        <div style="font-size:0.9rem; opacity:0.7;">{{ texts.tts_afternoon }}</div>
+                    </div>`;
+                }
+                
+                if (night > 0) {
+                    html += `<div style="display:flex; flex-direction:column; align-items:center; background:#dbeafe; padding:10px 15px; border-radius:8px; border:2px solid #93c5fd;">
+                        <div style="font-size:2rem;">🌙</div>
+                        <div style="font-size:1.8rem; font-weight:900;">${night}</div>
+                        <div style="font-size:0.9rem; opacity:0.7;">{{ texts.tts_night }}</div>
+                    </div>`;
+                }
+                
+                if (html) {
+                    element.innerHTML = html;
+                } else {
+                    element.textContent = dosage;
+                }
+            });
+        }
         
         function renderSavedRefillStatus(medicineName, duration) {
             const status = calculateRefillStatus(medicineName, duration);
             if (!status) return '';
             
-            let emoji, statusText, bgColor;
+            let emoji, statusText, bgColor, borderColor;
             
             if (status.daysRemaining === 0) {
                 emoji = '✅';
                 statusText = '{{ texts.refill_ended }}';
                 bgColor = '#f1f5f9';
+                borderColor = '#94a3b8';
             } else if (status.daysRemaining === 1) {
                 emoji = '🚨';
-                statusText = `<strong style="font-size:1.5rem;">1</strong> {{ texts.refill_day_left }}`;
+                statusText = `<span style="font-size:1.8rem; font-weight:900;">1</span> {{ texts.refill_day_left }}`;
                 bgColor = '#fee2e2';
+                borderColor = '#ef4444';
             } else if (status.daysRemaining <= 3) {
                 emoji = '⚠️';
-                statusText = `<strong style="font-size:1.5rem;">${status.daysRemaining}</strong> {{ texts.refill_days_left }}`;
+                statusText = `<span style="font-size:1.8rem; font-weight:900;">${status.daysRemaining}</span> {{ texts.refill_days_left }}`;
                 bgColor = '#ffedd5';
+                borderColor = '#f97316';
             } else {
                 emoji = '📦';
-                statusText = `<strong style="font-size:1.5rem;">${status.daysRemaining}</strong> {{ texts.refill_days_left }}`;
+                statusText = `<span style="font-size:1.8rem; font-weight:900;">${status.daysRemaining}</span> {{ texts.refill_days_left }}`;
                 bgColor = '#f0f9ff';
+                borderColor = '#0ea5e9';
             }
             
             return `
-                <div style="background: ${bgColor}; border-radius: 8px; padding: 12px; margin-top: 10px; border: 2px solid rgba(0,0,0,0.05);">
-                    <div style="font-size: 0.9rem; font-weight: 600; opacity: 0.7; margin-bottom: 5px;">${emoji} {{ texts.refill_title }}</div>
-                    <div style="font-size: 1.1rem; font-weight: 700;">${statusText}</div>
-                    <div style="width: 100%; height: 8px; background: rgba(0,0,0,0.1); border-radius: 4px; margin-top: 8px; overflow: hidden;">
-                        <div style="height: 100%; width: ${status.percentRemaining}%; background: #0ea5e9; border-radius: 4px;"></div>
-                    </div>
+                <div style="background: ${bgColor}; border-radius: 8px; padding: 15px; margin-top: 10px; border-left: 4px solid ${borderColor};">
+                    <div style="font-size: 1.2rem; font-weight: 700; text-align: center;">${emoji} ${statusText}</div>
                 </div>
             `;
         }
