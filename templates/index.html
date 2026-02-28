@@ -826,6 +826,32 @@
 
         <!-- TAB 1: New Scan -->
         <div class="tab-content active" id="tab-scan">
+            <!-- Find Pharmacy Button (Always Visible) -->
+            <div style="margin-bottom: 16px; text-align: center;">
+                <a href="https://www.google.com/maps/search/pharmacy+near+me" target="_blank" style="
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    gap: 8px;
+                    background: #e0f2fe;
+                    color: #0369a1;
+                    text-decoration: none;
+                    padding: 14px;
+                    border-radius: 12px;
+                    font-weight: 700;
+                    font-size: 1rem;
+                    border: 1px solid #bae6fd;
+                    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+                    transition: all 0.2s;
+                ">
+                    <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"
+                        stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+                        <circle cx="12" cy="10" r="3"></circle>
+                    </svg>
+                    {{ texts.find_pharmacy_btn }}
+                </a>
+            </div>
             <div class="upload-section">
                 <form method="POST" enctype="multipart/form-data" onsubmit="return checkImageAndSubmit(this)">
 
@@ -931,32 +957,7 @@
                     </div>
                 </form>
 
-                <!-- Persistent Find Pharmacy Button -->
-                <div style="margin-top: 20px; text-align: center;">
-                    <a href="https://www.google.com/maps/search/pharmacy+near+me" target="_blank" style="
-                        display: flex;
-                        align-items: center;
-                        justify-content: center;
-                        gap: 8px;
-                        background: #e0f2fe;
-                        color: #0369a1;
-                        text-decoration: none;
-                        padding: 14px;
-                        border-radius: 12px;
-                        font-weight: 700;
-                        font-size: 1rem;
-                        border: 1px solid #bae6fd;
-                        box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-                        transition: all 0.2s;
-                    ">
-                        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor"
-                            stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
-                            <circle cx="12" cy="10" r="3"></circle>
-                        </svg>
-                        {{ texts.find_pharmacy_btn }}
-                    </a>
-                </div>
+                <!-- Pharmacy Button moved above the form -->
             </div>
         </div>
 
@@ -1196,7 +1197,8 @@
                     <!-- Dosage (Big & Visual) -->
                     <div class="full-width" style="text-align: center; padding: 20px 0; border-bottom: 1px solid #eee;">
                         <div class="label" style="font-size: 1rem; color: #666;">{{ texts.dosage_label }}</div>
-                        <div class="value dosage-visual" data-dosage="{{ med.dosage }}" style="font-size: 2rem; color: var(--text); font-weight: 900; display: flex; justify-content: center; align-items: center; gap: 15px; flex-wrap: wrap;">
+                        <div class="value dosage-visual" data-dosage="{{ med.dosage }}"
+                            style="font-size: 2rem; color: var(--text); font-weight: 900; display: flex; justify-content: center; align-items: center; gap: 15px; flex-wrap: wrap;">
                             <!-- Will be populated by JavaScript with visual icons -->
                         </div>
                     </div>
@@ -1229,9 +1231,11 @@
                             {{ med.duration }}
                         </div>
                     </div>
-                    
+
                     <!-- Refill Reminder -->
-                    <div class="full-width refill-reminder" data-medicine="{{ med.name or med.medicine_name }}" data-duration="{{ med.duration }}" style="padding: 15px; background: #f0f9ff; border-radius: 8px; margin-top: 10px; border-left: 4px solid #0ea5e9; display: none;">
+                    <div class="full-width refill-reminder" data-medicine="{{ med.name or med.medicine_name }}"
+                        data-duration="{{ med.duration }}"
+                        style="padding: 15px; background: #f0f9ff; border-radius: 8px; margin-top: 10px; border-left: 4px solid #0ea5e9; display: none;">
                         <div class="refill-days" style="font-size: 1.3rem; font-weight: 700; color: #0c4a6e;"></div>
                     </div>
                     {% endif %}
@@ -1244,12 +1248,16 @@
 
                     <!-- Application Instructions (for topical medicines) -->
                     {% if med.application_instructions %}
-                    <div class="full-width" style="background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%); border-radius: 12px; padding: 20px; margin-top: 15px; border: 2px solid #86efac;">
-                        <div style="font-weight: 700; font-size: 1.1rem; color: #166534; margin-bottom: 15px; display: flex; align-items: center; gap: 10px;">
+                    <div class="full-width"
+                        style="background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%); border-radius: 12px; padding: 20px; margin-top: 15px; border: 2px solid #86efac;">
+                        <div
+                            style="font-weight: 700; font-size: 1.1rem; color: #166534; margin-bottom: 15px; display: flex; align-items: center; gap: 10px;">
                             {{ texts.how_to_apply }}
                         </div>
-                        <div style="color: #15803d; line-height: 1.8; white-space: pre-line;">{{ med.application_instructions }}</div>
-                        <button onclick="watchApplicationVideo('{{ med.medicine_type or 'medicine' }}')" style="margin-top: 15px; background: #16a34a; color: white; border: none; padding: 12px 20px; border-radius: 8px; cursor: pointer; font-size: 1rem; font-weight: 600; display: flex; align-items: center; gap: 8px; width: 100%; justify-content: center;">
+                        <div style="color: #15803d; line-height: 1.8; white-space: pre-line;">{{
+                            med.application_instructions }}</div>
+                        <button onclick="watchApplicationVideo('{{ med.medicine_type or 'medicine' }}')"
+                            style="margin-top: 15px; background: #16a34a; color: white; border: none; padding: 12px 20px; border-radius: 8px; cursor: pointer; font-size: 1rem; font-weight: 600; display: flex; align-items: center; gap: 8px; width: 100%; justify-content: center;">
                             {{ texts.watch_video }}
                         </button>
                     </div>
@@ -1280,7 +1288,8 @@
                     <div id="schedule-morning" class="time-slot-card morning-slot" style="display:none">
                         <div class="slot-header">
                             <span>{{ texts.morning }}</span>
-                            <button type="button" onclick="setAlarm('morning')" class="alarm-link">🔔 {{ texts.set_alarm }}</button>
+                            <button type="button" onclick="setAlarm('morning')" class="alarm-link">🔔 {{ texts.set_alarm
+                                }}</button>
                         </div>
                         <div class="slot-content"></div>
                     </div>
@@ -1288,7 +1297,8 @@
                     <div id="schedule-afternoon" class="time-slot-card afternoon-slot" style="display:none">
                         <div class="slot-header">
                             <span>{{ texts.afternoon }}</span>
-                            <button type="button" onclick="setAlarm('afternoon')" class="alarm-link">🔔 {{ texts.set_alarm }}</button>
+                            <button type="button" onclick="setAlarm('afternoon')" class="alarm-link">🔔 {{
+                                texts.set_alarm }}</button>
                         </div>
                         <div class="slot-content"></div>
                     </div>
@@ -1296,7 +1306,8 @@
                     <div id="schedule-night" class="time-slot-card night-slot" style="display:none">
                         <div class="slot-header">
                             <span>{{ texts.night }}</span>
-                            <button type="button" onclick="setAlarm('night')" class="alarm-link">🔔 {{ texts.set_alarm }}</button>
+                            <button type="button" onclick="setAlarm('night')" class="alarm-link">🔔 {{ texts.set_alarm
+                                }}</button>
                         </div>
                         <div class="slot-content"></div>
                     </div>
@@ -2087,19 +2098,19 @@
                 currentAudio.currentTime = 0;
                 currentAudio = null;
             }
-            
+
             // Stop chat audio
             if (typeof _chatAudio !== 'undefined' && _chatAudio) {
                 _chatAudio.pause();
                 _chatAudio.currentTime = 0;
                 _chatAudio = null;
             }
-            
+
             // Cancel any web speech synthesis
             if (window.speechSynthesis.speaking) {
                 window.speechSynthesis.cancel();
             }
-            
+
             // Reset button if there was one
             if (currentSpeakingButton) {
                 currentSpeakingButton.innerHTML = '🔊';
@@ -2122,7 +2133,7 @@
 
             // Build clean text - only essential information
             let text = `${name}. `;
-            
+
             // Add dosage in natural language
             const naturalDosage = naturalDosageText(dosage);
             if (naturalDosage) {
@@ -2169,15 +2180,15 @@
                     if (data.audio_url) {
                         const audio = new Audio(data.audio_url);
                         currentAudio = audio;
-                        
+
                         // Change to playing state
                         if (btnElement) {
                             btnElement.innerHTML = '⏸️'; // Pause icon while playing
                             btnElement.disabled = false;
                         }
-                        
+
                         audio.play();
-                        
+
                         audio.onended = () => {
                             if (btnElement) {
                                 btnElement.innerHTML = originalContent;
@@ -2186,7 +2197,7 @@
                             currentAudio = null;
                             currentSpeakingButton = null;
                         };
-                        
+
                         audio.onerror = () => {
                             // Fallback on playback error
                             if (btnElement) {
@@ -2216,14 +2227,14 @@
         function fallbackTTS(text, btnElement, originalContent) {
             const utterance = new SpeechSynthesisUtterance(text);
             utterance.lang = getLangCode('{{ language }}');
-            
+
             if (btnElement) {
                 btnElement.innerHTML = '⏸️';
                 btnElement.disabled = false;
             }
-            
+
             window.speechSynthesis.speak(utterance);
-            
+
             utterance.onend = () => {
                 if (btnElement) {
                     btnElement.innerHTML = originalContent;
@@ -2231,7 +2242,7 @@
                 }
                 currentSpeakingButton = null;
             };
-            
+
             utterance.onerror = () => {
                 if (btnElement) {
                     btnElement.innerHTML = originalContent;
@@ -2313,16 +2324,16 @@
         function setAlarm(type) {
             // Get medicines for this time slot
             const medicines = getMedicinesForTimeSlot(type);
-            
+
             if (!medicines || medicines.length === 0) {
                 alert("{{ texts.no_medicines_for_slot or 'No medicines scheduled for this time' }}");
                 return;
             }
-            
+
             // Build alarm label with medicine names in selected language
             const lang = '{{ language }}' || 'English';
             let alarmLabel = '';
-            
+
             if (type === 'morning') {
                 alarmLabel = '{{ texts.morning or "Morning" }} - ';
             } else if (type === 'afternoon') {
@@ -2330,16 +2341,16 @@
             } else if (type === 'night') {
                 alarmLabel = '{{ texts.night or "Night" }} - ';
             }
-            
+
             // Add medicine names (max 3 to keep label short)
             const medicineNames = medicines.slice(0, 3).map(m => m.name || m.medicine_name).join(', ');
             alarmLabel += medicineNames;
             if (medicines.length > 3) {
                 alarmLabel += ` +${medicines.length - 3} more`;
             }
-            
+
             console.log('Alarm label:', alarmLabel);
-            
+
             // Set default times
             let hour = 8, minute = 0;
             if (type === 'morning') {
@@ -2349,20 +2360,20 @@
             } else if (type === 'night') {
                 hour = 21; minute = 0;
             }
-            
+
             // Detect mobile device
             const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
             console.log('Is mobile:', isMobile, 'User agent:', navigator.userAgent);
-            
+
             if (isMobile) {
                 // Mobile: Try to open native clock app
                 const isIOS = /iPhone|iPad|iPod/i.test(navigator.userAgent);
                 const isAndroid = /Android/i.test(navigator.userAgent);
-                
+
                 if (isIOS) {
                     // iOS: Use clock-alarm:// URL scheme
                     const message = `{{ texts.alarm_ios_instructions or "Please set an alarm for" }} ${hour}:${minute < 10 ? '0' + minute : minute}\n\n{{ texts.alarm_label or "Label" }}: ${alarmLabel}`;
-                    
+
                     if (confirm(message + '\n\n{{ texts.alarm_open_clock or "Open Clock app?" }}')) {
                         window.location.href = 'clock-alarm://';
                         setTimeout(() => {
@@ -2372,7 +2383,7 @@
                 } else if (isAndroid) {
                     // Android: Show instructions with copy-to-clipboard functionality
                     const timeStr = `${hour}:${minute < 10 ? '0' + minute : minute}`;
-                    
+
                     // Try to open Clock app first
                     const intentUrl = `intent:#Intent;` +
                         `action=android.intent.action.SET_ALARM;` +
@@ -2381,9 +2392,9 @@
                         `S.android.intent.extra.alarm.MESSAGE=${encodeURIComponent(alarmLabel)};` +
                         `i.android.intent.extra.alarm.SKIP_UI=false;` +
                         `end`;
-                    
+
                     console.log('Trying intent URL:', intentUrl);
-                    
+
                     // Create a hidden link and click it (works better than window.location)
                     const link = document.createElement('a');
                     link.href = intentUrl;
@@ -2391,10 +2402,10 @@
                     document.body.appendChild(link);
                     link.click();
                     document.body.removeChild(link);
-                    
+
                     // Show helpful message with alarm details in user's language
                     setTimeout(() => {
-                        const message = 
+                        const message =
                             `{{ texts.alarm_instructions_title }} ${timeStr}\n\n` +
                             `{{ texts.alarm_instructions_label }} ${alarmLabel}\n\n` +
                             `{{ texts.alarm_instructions_if_not_open }}\n` +
@@ -2402,7 +2413,7 @@
                             `{{ texts.alarm_instructions_step2 }}\n` +
                             `{{ texts.alarm_instructions_step3 }} ${timeStr}\n` +
                             `{{ texts.alarm_instructions_step4 }} ${alarmLabel}`;
-                        
+
                         // Try to copy label to clipboard
                         if (navigator.clipboard && navigator.clipboard.writeText) {
                             navigator.clipboard.writeText(alarmLabel).then(() => {
@@ -2421,22 +2432,22 @@
                 alert(`{{ texts.alarm_desktop or "Alarm feature is for mobile devices. Please set an alarm on your phone for" }} ${hour}:${minute < 10 ? '0' + minute : minute}\n\n${alarmLabel}`);
             }
         }
-        
+
         // ===== REFILL REMINDER FUNCTIONS =====
-        
+
         function parseDuration(durationStr) {
             // Parse duration like "5 days", "2 weeks", "1 month" into days
             if (!durationStr) return null;
-            
+
             const str = durationStr.toLowerCase();
             const match = str.match(/(\d+)\s*(day|week|month|year)/);
-            
+
             if (!match) return null;
-            
+
             const num = parseInt(match[1]);
             const unit = match[2];
-            
-            switch(unit) {
+
+            switch (unit) {
                 case 'day': return num;
                 case 'week': return num * 7;
                 case 'month': return num * 30;
@@ -2444,30 +2455,30 @@
                 default: return null;
             }
         }
-        
+
         function calculateRefillStatus(medicineName, duration) {
             // Get start date from localStorage or use today
             const storageKey = `refill_${medicineName}`;
             let startDate = localStorage.getItem(storageKey);
-            
+
             if (!startDate) {
                 // First time - save today as start date
                 startDate = new Date().toISOString().split('T')[0];
                 localStorage.setItem(storageKey, startDate);
             }
-            
+
             const durationDays = parseDuration(duration);
             if (!durationDays) return null;
-            
+
             const start = new Date(startDate);
             const today = new Date();
             const endDate = new Date(start);
             endDate.setDate(endDate.getDate() + durationDays);
-            
+
             // Calculate days remaining
             const daysRemaining = Math.ceil((endDate - today) / (1000 * 60 * 60 * 24));
             const percentRemaining = Math.max(0, Math.min(100, (daysRemaining / durationDays) * 100));
-            
+
             return {
                 daysRemaining: Math.max(0, daysRemaining),
                 totalDays: durationDays,
@@ -2475,15 +2486,15 @@
                 endDate: endDate
             };
         }
-        
+
         function updateRefillDisplay(element, status) {
             if (!status) return;
-            
+
             const daysDiv = element.querySelector('.refill-days');
             const container = element.closest('.refill-reminder');
-            
+
             const daysCompleted = status.totalDays - status.daysRemaining;
-            
+
             // Show completion progress and remaining days
             if (status.daysRemaining === 0) {
                 daysDiv.innerHTML = '✅ {{ texts.refill_ended }}';
@@ -2511,40 +2522,40 @@
                 container.style.background = '#f0f9ff';
                 container.style.borderLeft = '4px solid #0ea5e9';
             }
-            
+
             // Show the container now that it has content
             container.style.display = 'block';
         }
-        
+
         function initializeRefillReminders() {
             // Update all refill reminders on page
             document.querySelectorAll('.refill-reminder').forEach(element => {
                 const medicineName = element.dataset.medicine;
                 const duration = element.dataset.duration;
-                
+
                 const status = calculateRefillStatus(medicineName, duration);
                 if (status) {
                     updateRefillDisplay(element, status);
                 }
             });
         }
-        
+
         // Initialize refill reminders when page loads
         document.addEventListener('DOMContentLoaded', () => {
             initializeRefillReminders();
-            
+
             // Initialize visual dosage display
             initializeVisualDosage();
-            
+
             // Update every hour
             setInterval(initializeRefillReminders, 60 * 60 * 1000);
         });
-        
+
         function initializeVisualDosage() {
             document.querySelectorAll('.dosage-visual').forEach(element => {
                 const dosage = element.dataset.dosage;
                 if (!dosage) return;
-                
+
                 // Parse dosage like "1-0-1" or "1-1-1"
                 const parts = dosage.match(/(\d+)-(\d+)-(\d+)/);
                 if (!parts) {
@@ -2552,14 +2563,14 @@
                     element.textContent = dosage;
                     return;
                 }
-                
+
                 const morning = parseInt(parts[1]);
                 const afternoon = parseInt(parts[2]);
                 const night = parseInt(parts[3]);
-                
+
                 // Create visual display
                 let html = '';
-                
+
                 if (morning > 0) {
                     html += `<div style="display:flex; flex-direction:column; align-items:center; background:#fff7ed; padding:10px 15px; border-radius:8px; border:2px solid #fed7aa;">
                         <div style="font-size:2rem;">☀️</div>
@@ -2567,7 +2578,7 @@
                         <div style="font-size:0.9rem; opacity:0.7;">{{ texts.tts_morning }}</div>
                     </div>`;
                 }
-                
+
                 if (afternoon > 0) {
                     html += `<div style="display:flex; flex-direction:column; align-items:center; background:#fef3c7; padding:10px 15px; border-radius:8px; border:2px solid #fde047;">
                         <div style="font-size:2rem;">🌤️</div>
@@ -2575,7 +2586,7 @@
                         <div style="font-size:0.9rem; opacity:0.7;">{{ texts.tts_afternoon }}</div>
                     </div>`;
                 }
-                
+
                 if (night > 0) {
                     html += `<div style="display:flex; flex-direction:column; align-items:center; background:#dbeafe; padding:10px 15px; border-radius:8px; border:2px solid #93c5fd;">
                         <div style="font-size:2rem;">🌙</div>
@@ -2583,7 +2594,7 @@
                         <div style="font-size:0.9rem; opacity:0.7;">{{ texts.tts_night }}</div>
                     </div>`;
                 }
-                
+
                 if (html) {
                     element.innerHTML = html;
                 } else {
@@ -2591,7 +2602,7 @@
                 }
             });
         }
-        
+
         function watchApplicationVideo(medicineType) {
             // Visual demonstration videos (minimal language, maximum visuals)
             // These work universally across all languages
@@ -2612,10 +2623,10 @@
                 'suppository': 'https://www.youtube.com/results?search_query=how+to+use+suppository+demonstration+visual',
                 'pessary': 'https://www.youtube.com/results?search_query=how+to+use+pessary+demonstration+visual'
             };
-            
+
             // Normalize medicine type
             const medicineKey = medicineType.toLowerCase().trim();
-            
+
             // Try exact match first
             if (visualVideos[medicineKey]) {
                 window.open(visualVideos[medicineKey], '_blank');
@@ -2658,13 +2669,13 @@
                 window.open(youtubeUrl, '_blank');
             }
         }
-        
+
         function renderSavedRefillStatus(medicineName, duration) {
             const status = calculateRefillStatus(medicineName, duration);
             if (!status) return '';
-            
+
             let emoji, statusText, bgColor, borderColor;
-            
+
             if (status.daysRemaining === 0) {
                 emoji = '✅';
                 statusText = '{{ texts.refill_ended }}';
@@ -2686,37 +2697,38 @@
                 bgColor = '#f0f9ff';
                 borderColor = '#0ea5e9';
             }
-            
+
             return `
                 <div style="background: ${bgColor}; border-radius: 8px; padding: 15px; margin-top: 10px; border-left: 4px solid ${borderColor};">
                     <div style="font-size: 1.2rem; font-weight: 700; text-align: center;">${emoji} ${statusText}</div>
                 </div>
             `;
         }
-        
+
         function getMedicinesForTimeSlot(type) {
             // Get medicines from the current results
-            const medicines = {{ (translated if translated else english) | tojson | safe }};
-            
-            if (!medicines || !Array.isArray(medicines)) {
-                return [];
-            }
-            
-            return medicines.filter(med => {
-                const dosage = (med.dosage || '').toLowerCase();
-                const timing = (med.visual_timing || '').toLowerCase();
-                
-                if (type === 'morning') {
-                    return timing.includes('☀️') || dosage.match(/^1-/) || dosage.includes('morning');
-                } else if (type === 'afternoon') {
-                    return timing.includes('🌤️') || dosage.match(/-1-/) || dosage.includes('afternoon');
-                } else if (type === 'night') {
-                    return timing.includes('🌙') || dosage.match(/-1$/) || dosage.includes('night');
-                }
-                return false;
-            });
+            const medicines = {{ (translated if translated else english) | tojson | safe
+        }};
+
+        if (!medicines || !Array.isArray(medicines)) {
+            return [];
         }
-        
+
+        return medicines.filter(med => {
+            const dosage = (med.dosage || '').toLowerCase();
+            const timing = (med.visual_timing || '').toLowerCase();
+
+            if (type === 'morning') {
+                return timing.includes('☀️') || dosage.match(/^1-/) || dosage.includes('morning');
+            } else if (type === 'afternoon') {
+                return timing.includes('🌤️') || dosage.match(/-1-/) || dosage.includes('afternoon');
+            } else if (type === 'night') {
+                return timing.includes('🌙') || dosage.match(/-1$/) || dosage.includes('night');
+            }
+            return false;
+        });
+        }
+
         function setAlarmNotification(type, alarmLabel, hour, minute) {
             // Fallback: Browser notification for desktop or unsupported mobile
             if (!("Notification" in window)) {
@@ -2737,7 +2749,7 @@
 
                     const timeDiff = targetTime - now;
                     const formattedTime = targetTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-                    
+
                     showToast(`{{ texts.alarm_set_for or "Alarm set for" }} ${formattedTime}`);
 
                     // Create the actual system notification timer
@@ -2802,7 +2814,7 @@
 
         // ALSO RENDER SCHEDULE
         renderSchedule(medicines);
-        
+
         // Initialize refill reminders for the displayed results
         setTimeout(() => {
             initializeRefillReminders();
