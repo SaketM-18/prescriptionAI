@@ -1232,12 +1232,7 @@
                         </div>
                     </div>
 
-                    <!-- Refill Reminder -->
-                    <div class="full-width refill-reminder" data-medicine="{{ med.name or med.medicine_name }}"
-                        data-duration="{{ med.duration }}"
-                        style="padding: 15px; background: #f0f9ff; border-radius: 8px; margin-top: 10px; border-left: 4px solid #0ea5e9; display: none;">
-                        <div class="refill-days" style="font-size: 1.3rem; font-weight: 700; color: #0c4a6e;"></div>
-                    </div>
+                    <!-- Refill Reminder REMOVED -->
                     {% endif %}
 
                     <!-- Purpose -->
@@ -1809,7 +1804,7 @@
                         ${med.duration ? `<div class="saved-med-detail"><span class="label">{{ texts.duration_label }}</span><span class="value">${med.duration}</span></div>` : ''}
                         <div class="saved-med-detail"><span class="label">{{ texts.purpose_label }}</span><span class="value">${med.purpose || '-'}</span></div>
                         ${med.precautions ? '<div style="background:#fffbeb; border:1px solid #fcd34d; border-radius:6px; padding:10px; margin-top:8px; color:#92400e; font-size:0.85rem;">' + med.precautions + '</div>' : ''}
-                        ${med.duration ? renderSavedRefillStatus(med.name || med.medicine_name, med.duration) : ''}
+
                     </div>
                 `;
             });
@@ -2503,22 +2498,22 @@
             } else if (daysCompleted === 0) {
                 // First day - show total duration
                 if (status.totalDays === 1) {
-                    daysDiv.innerHTML = '📦 {{ texts.refill_course_duration }}: <span style="font-size:1.8rem;">${status.totalDays}</span> {{ texts.refill_day_left }}';
+                    daysDiv.innerHTML = `📦 {{ texts.refill_course_duration }}: <span style="font-size:1.8rem;">${status.totalDays}</span> {{ texts.refill_day_left }}`;
                 } else {
-                    daysDiv.innerHTML = '📦 {{ texts.refill_course_duration }}: <span style="font-size:1.8rem;">${status.totalDays}</span> {{ texts.refill_days_left }}';
+                    daysDiv.innerHTML = `📦 {{ texts.refill_course_duration }}: <span style="font-size:1.8rem;">${status.totalDays}</span> {{ texts.refill_days_left }}`;
                 }
                 container.style.background = '#f0f9ff';
                 container.style.borderLeft = '4px solid #0ea5e9';
             } else if (status.daysRemaining === 1) {
-                daysDiv.innerHTML = '🚨 {{ texts.refill_completed }} <span style="font-size:1.8rem;">${daysCompleted}</span> {{ texts.refill_days_left }}<br><span style="font-size:1.5rem;">{{ texts.refill_only }} 1 {{ texts.refill_day_left }}</span>';
+                daysDiv.innerHTML = `🚨 {{ texts.refill_completed }} <span style="font-size:1.8rem;">${daysCompleted}</span> {{ texts.refill_days_left }}<br><span style="font-size:1.5rem;">{{ texts.refill_only }} 1 {{ texts.refill_day_left }}</span>`;
                 container.style.background = '#fee2e2';
                 container.style.borderLeft = '4px solid #ef4444';
             } else if (status.daysRemaining <= 3) {
-                daysDiv.innerHTML = '⚠️ {{ texts.refill_completed }} <span style="font-size:1.8rem;">${daysCompleted}</span> {{ texts.refill_days_left }}<br><span style="font-size:1.5rem;">${status.daysRemaining} {{ texts.refill_days_left }}</span>';
+                daysDiv.innerHTML = `⚠️ {{ texts.refill_completed }} <span style="font-size:1.8rem;">${daysCompleted}</span> {{ texts.refill_days_left }}<br><span style="font-size:1.5rem;">${status.daysRemaining} {{ texts.refill_days_left }}</span>`;
                 container.style.background = '#ffedd5';
                 container.style.borderLeft = '4px solid #f97316';
             } else {
-                daysDiv.innerHTML = '📦 {{ texts.refill_completed }} <span style="font-size:1.8rem;">${daysCompleted}</span> {{ texts.refill_days_left }}<br><span style="font-size:1.5rem;">${status.daysRemaining} {{ texts.refill_days_left }}</span>';
+                daysDiv.innerHTML = `📦 {{ texts.refill_completed }} <span style="font-size:1.8rem;">${daysCompleted}</span> {{ texts.refill_days_left }}<br><span style="font-size:1.5rem;">${status.daysRemaining} {{ texts.refill_days_left }}</span>`;
                 container.style.background = '#f0f9ff';
                 container.style.borderLeft = '4px solid #0ea5e9';
             }
@@ -2542,13 +2537,13 @@
 
         // Initialize refill reminders when page loads
         document.addEventListener('DOMContentLoaded', () => {
-            initializeRefillReminders();
+            // initializeRefillReminders(); // DISABLED - refill bar removed
 
             // Initialize visual dosage display
             initializeVisualDosage();
 
             // Update every hour
-            setInterval(initializeRefillReminders, 60 * 60 * 1000);
+            // setInterval(initializeRefillReminders, 60 * 60 * 1000); // DISABLED
         });
 
         function initializeVisualDosage() {
@@ -2815,10 +2810,10 @@
         // ALSO RENDER SCHEDULE
         renderSchedule(medicines);
 
-        // Initialize refill reminders for the displayed results
-        setTimeout(() => {
-            initializeRefillReminders();
-        }, 100);
+        // Initialize refill reminders for the displayed results - DISABLED
+        // setTimeout(() => {
+        //     initializeRefillReminders();
+        // }, 100);
         {% endif %}
         });
 
